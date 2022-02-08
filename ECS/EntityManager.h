@@ -1,9 +1,9 @@
 #pragma once
 
+#include <functional>
 #include <vector>
 #include <unordered_set>
 #include "Entity.h"
-#include "FilterFactory.h"
 
 namespace ecs {
 
@@ -13,7 +13,7 @@ public:
 
 	template<typename First, typename... Rest>
 	void For(Action action) const {
-		const Signature sample = Signer::GetSignature<First, Rest...>();
+		const Signer::Signature sample = Signer::GetSignature<First, Rest...>();
 
 		for (const auto it : entities_) {
 			if (Signer::IsMatch(it->GetSignature(), sample))

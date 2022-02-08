@@ -151,7 +151,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ComponentsIdentifier.h" />
+    <ClInclude Include="BitIdentifier.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="framework.h" />
@@ -160,6 +160,7 @@
     <ClInclude Include="Signer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BitIdentifier.cpp" />
     <ClCompile Include="ECS.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>

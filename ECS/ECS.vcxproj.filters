@@ -16,6 +16,9 @@
     <Filter Include="Header Files\ECS">
       <UniqueIdentifier>{ec644573-4cc8-4e1f-866c-3a86fb648c96}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\ECS">
+      <UniqueIdentifier>{bfd60fce-5f12-4184-acfe-98d96b98e955}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -33,7 +36,7 @@
     <ClInclude Include="IComponent.h">
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
-    <ClInclude Include="ComponentsIdentifier.h">
+    <ClInclude Include="BitIdentifier.h">
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
     <ClInclude Include="Signer.h">
@@ -46,6 +49,9 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="BitIdentifier.cpp">
+      <Filter>Source Files\ECS</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -2,7 +2,7 @@
 
 #include <cassert>
 #include <map>
-#include "ComponentsIdentifier.h"
+#include "BitIdentifier.h"
 #include "IComponent.h"
 #include "Signer.h"
 
@@ -22,13 +22,13 @@ public:
 		components_map_.clear();
 	}
 
-	Signature GetSignature() const {
+	Signer::Signature GetSignature() const {
 		return signature_;
 	}
 
 	template<typename TComponent>
 	TComponent& Add() {
-		const ComponentId component_id = ComponentsIdentifier::GetComponentId<TComponent>();
+		const ComponentId component_id = BitIdentifier::GetId<TComponent>();
 		const auto it = components_map_.find(component_id);
 		TComponent* component = new TComponent();
 
@@ -46,7 +46,7 @@ public:
 
 	template<typename TComponent>
 	bool Remove() {
-		const ComponentId component_id = ComponentsIdentifier::GetComponentId<TComponent>();
+		const ComponentId component_id = BitIdentifier::GetId<TComponent>();
 		const auto it = components_map_.find(component_id);
 
 		if (it != components_map_.end()) {
@@ -60,22 +60,22 @@ public:
 
 	template<typename TComponent>
 	bool Contain() {
-		const ComponentId component_id = ComponentsIdentifier::GetComponentId<TComponent>();
+		const ComponentId component_id = BitIdentifier::GetId<TComponent>();
 		const auto it = components_map_.find(component_id);
 		return it != components_map_.end();
 	}
 
 	template<typename TComponent>
 	TComponent& Get() {
-		const ComponentId component_id = ComponentsIdentifier::GetComponentId<TComponent>();
+		const ComponentId component_id = BitIdentifier::GetId<TComponent>();
 		const auto it = components_map_.find(component_id);
 		assert(it != components_map_.end() && "Entity don't contain component.");
 		return *static_cast<TComponent*>(it->second);
 	}
 
 private:
-	Signature signature_;
-	std::map<ComponentId, IComponent*> components_map_;
+	Signer::Signature signature_;
+	std::map<BitIdentifier::Id, IComponent*> components_map_;
 };
 
 } // namespace ecs

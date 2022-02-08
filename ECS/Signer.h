@@ -1,21 +1,21 @@
 #pragma once
 
-#include "ComponentsIdentifier.h"
+#include "BitIdentifier.h"
 
 namespace ecs {
-
-using Signature = ComponentId;
-
+	
 class Signer {
 public:
+	using Signature = BitIdentifier::Id;
+
 	template<typename Last>
 	static Signature GetSignature() {
-		return ComponentsIdentifier::GetComponentId<Last>();
+		return BitIdentifier::GetId<Last>();
 	}
 
 	template<typename First, typename Second, typename... Rest>
 	static Signature GetSignature() {
-		Signature signature = ComponentsIdentifier::GetComponentId<First>();
+		Signature signature = BitIdentifier::GetId<First>();
 		signature |= GetSignature<Second, Rest...>();
 		return signature;
 	}
