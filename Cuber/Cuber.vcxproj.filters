@@ -13,56 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\ECS">
-      <UniqueIdentifier>{f2f23a89-4723-4456-bbd3-e5cbc66f5f36}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ECS\Generator">
-      <UniqueIdentifier>{8f89b16c-9292-464b-9d9c-9db8bc8e64dd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ECS\Identifiers">
-      <UniqueIdentifier>{2f81251e-61a8-43c2-9af5-19bcbb69adcd}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\ECS\EventHandler">
-      <UniqueIdentifier>{e068b977-96ee-445f-bac1-e49d7cc4a963}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Engine.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="Filter.h">
-      <Filter>Header Files\ECS\Generator</Filter>
-    </ClInclude>
-    <ClInclude Include="FilterFactory.h">
-      <Filter>Header Files\ECS\Generator</Filter>
-    </ClInclude>
-    <ClInclude Include="Generator.h">
-      <Filter>Header Files\ECS\Generator</Filter>
-    </ClInclude>
-    <ClInclude Include="ComponentsIdentifier.h">
-      <Filter>Header Files\ECS\Identifiers</Filter>
-    </ClInclude>
-    <ClInclude Include="SystemsIdentifier.h">
-      <Filter>Header Files\ECS\Identifiers</Filter>
-    </ClInclude>
-    <ClInclude Include="Signer.h">
-      <Filter>Header Files\ECS\Identifiers</Filter>
-    </ClInclude>
-    <ClInclude Include="SystemBase.h">
-      <Filter>Header Files\ECS</Filter>
-    </ClInclude>
-    <ClInclude Include="EventHandler.h">
-      <Filter>Header Files\ECS\EventHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="ICallable.h">
-      <Filter>Header Files\ECS\EventHandler</Filter>
-    </ClInclude>
-    <ClInclude Include="Callback.h">
-      <Filter>Header Files\ECS\EventHandler</Filter>
-    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">

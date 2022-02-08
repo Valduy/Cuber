@@ -1,7 +1,5 @@
 #include <iostream>
-#include <tuple>
-#include "Entity.h"
-#include "Engine.h"
+#include <map>
 
 class TBase{
 public:
@@ -17,8 +15,9 @@ class TChild : public TBase {
 };
 
 int main() {
-	TBase base = TChild();
-	TBase* pBase = &base;
-	pBase->Test();
+	std::map<int, TBase*> arr;
+	arr[1] = new TChild();
+	auto it = arr.begin();
+	
 	return 0;
 }
