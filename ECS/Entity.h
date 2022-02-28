@@ -28,7 +28,7 @@ public:
 
 	template<typename TComponent>
 	TComponent& Add() {
-		const ComponentId component_id = BitIdentifier::GetId<TComponent>();
+		const auto component_id = BitIdentifier::GetId<TComponent>();
 		const auto it = components_map_.find(component_id);
 		TComponent* component = new TComponent();
 
@@ -46,7 +46,7 @@ public:
 
 	template<typename TComponent>
 	bool Remove() {
-		const ComponentId component_id = BitIdentifier::GetId<TComponent>();
+		const auto component_id = BitIdentifier::GetId<TComponent>();
 		const auto it = components_map_.find(component_id);
 
 		if (it != components_map_.end()) {
@@ -60,14 +60,14 @@ public:
 
 	template<typename TComponent>
 	bool Contain() {
-		const ComponentId component_id = BitIdentifier::GetId<TComponent>();
+		const auto component_id = BitIdentifier::GetId<TComponent>();
 		const auto it = components_map_.find(component_id);
 		return it != components_map_.end();
 	}
 
 	template<typename TComponent>
 	TComponent& Get() {
-		const ComponentId component_id = BitIdentifier::GetId<TComponent>();
+		const auto component_id = BitIdentifier::GetId<TComponent>();
 		const auto it = components_map_.find(component_id);
 		assert(it != components_map_.end() && "Entity don't contain component.");
 		return *static_cast<TComponent*>(it->second);

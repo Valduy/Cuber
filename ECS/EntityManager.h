@@ -16,8 +16,9 @@ public:
 		const Signer::Signature sample = Signer::GetSignature<First, Rest...>();
 
 		for (const auto it : entities_) {
-			if (Signer::IsMatch(it->GetSignature(), sample))
-			action(*it);
+			if (Signer::IsMatch(it->GetSignature(), sample)) {
+				action(*it);
+			}			
 		}
 	}
 
