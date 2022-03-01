@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{160b6897-7fe1-4c0b-b0a2-6684bab49baa}</ProjectGuid>
-    <RootNamespace>ECS</RootNamespace>
+    <ProjectGuid>{87b1b3aa-6f33-4516-bf73-47cd690bead7}</ProjectGuid>
+    <RootNamespace>Engine</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -124,7 +124,6 @@
       <ConformanceMode>true</ConformanceMode>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>
@@ -152,23 +151,26 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="BitIdentifier.h" />
-    <ClInclude Include="EntityManager.h" />
-    <ClInclude Include="Entity.h" />
+    <ClInclude Include="Game.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="IComponent.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Signer.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BitIdentifier.cpp" />
-    <ClCompile Include="ECS.cpp" />
+    <ClCompile Include="Engine.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ECS\ECS.vcxproj">
+      <Project>{160b6897-7fe1-4c0b-b0a2-6684bab49baa}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\GraphicEngine\GraphicEngine.vcxproj">
+      <Project>{5784c6a3-b25a-4f35-b09c-0f3c9eee105b}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

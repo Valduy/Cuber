@@ -1,7 +1,6 @@
 #pragma once
 
 #include <functional>
-#include <vector>
 #include <unordered_set>
 #include "Entity.h"
 
@@ -10,6 +9,14 @@ namespace ecs {
 class EntityManager {
 public:
 	using Action = std::function<void(Entity&)>;
+
+	~EntityManager() {
+		for (const auto it : entities_) {
+			delete it;
+		}
+
+		entities_.clear();
+	}
 
 	template<typename First, typename... Rest>
 	void For(Action action) const {
@@ -23,9 +30,8 @@ public:
 	}
 
 	Entity& AddEntity() {
-		const auto entity = new Entity();
-		entities_.insert(entity);
-		return *entity;
+		auto it = entities_.insert(new Entity());
+		return *(*it.first);
 	}
 	
 	bool RemoveEntity(Entity& entity) {

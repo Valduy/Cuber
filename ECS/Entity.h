@@ -10,6 +10,9 @@ namespace ecs {
 
 class Entity {
 public:
+	template<typename TComponent>
+	using Factory = std::function<TComponent* ()>;
+
 	Entity()
 		: signature_(0)
 	{}
@@ -28,9 +31,16 @@ public:
 
 	template<typename TComponent>
 	TComponent& Add() {
+		return Add<TComponent>([]() {
+			return new TComponent();
+		});
+	}
+
+	template<typename TComponent>
+	TComponent& Add(Factory<TComponent> factory) {
 		const auto component_id = BitIdentifier::GetId<TComponent>();
 		const auto it = components_map_.find(component_id);
-		TComponent* component = new TComponent();
+		TComponent* component = factory();
 
 		if (it != components_map_.end()) {
 			delete it->second;			
@@ -41,7 +51,7 @@ public:
 			signature_ |= component_id;
 		}
 
-		return component;
+		return *component;
 	}
 
 	template<typename TComponent>
@@ -51,6 +61,7 @@ public:
 
 		if (it != components_map_.end()) {
 			components_map_.erase(it);
+			delete it->second;
 			signature_ &= ~component_id;
 			return true;
 		}
