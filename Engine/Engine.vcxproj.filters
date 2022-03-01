@@ -16,6 +16,9 @@
     <Filter Include="Header Files\engine">
       <UniqueIdentifier>{1e903e20-68d3-45ad-a729-d8c26d8ca060}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\engine">
+      <UniqueIdentifier>{7954a9d0-6862-4daf-8d6a-5a8427ed7652}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -34,6 +37,9 @@
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Game.cpp">
+      <Filter>Source Files\engine</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

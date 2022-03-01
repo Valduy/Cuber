@@ -42,36 +42,44 @@ public:
 
 class RenderSystem : public engine::Game::SystemBase {
 public:
-	RenderSystem()
-		: window_(GetModuleHandle(nullptr), L"Pong", 800, 800)
-		, renderer_(window_)
-		, shader_(renderer_, L"../Shaders/MyVeryFirstShader.hlsl")
+	RenderSystem(engine::Game& game)
+		: shader_(game.GetRenderer(), L"../Shaders/MyVeryFirstShader.hlsl")
 	{}
 
 	void Init(engine::Game& game) override {
 		engine::Game::SystemBase::Init(game);
-		renderer_.Init();
 		shader_.Init();
 
 		GetGame().GetEntityManager().For<ShapeComponent>([&](ecs::Entity& e) {
 			e.Add<RenderComponent>([&]() {
 				auto shape_component = e.Get<ShapeComponent>();
 				auto vertices = GetVertices(shape_component.points, shape_component.color);
-				graph::VertexBuffer vb(renderer_, vertices.data(), vertices.size());
+
+				graph::VertexBuffer vb(
+					GetGame().GetRenderer(), 
+					vertices.data(), 
+					vertices.size());
 				vb.Init();
-				graph::IndexBuffer ib(renderer_, shape_component.indexes.data(), shape_component.indexes.size());
+
+				graph::IndexBuffer ib(
+					GetGame().GetRenderer(), 
+					shape_component.indexes.data(), 
+					shape_component.indexes.size());
 				ib.Init();
+
 				return new RenderComponent(shader_, vertices, vb, ib);
 			});
 		});
 	}
 
 	void Update(float dt) override {
-		std::cout << dt << std::endl;
+		if (GetGame().GetWindow().GetKeyboardState().IsKeyDown(VK_SPACE)) {
+			std::cout << "space!" << std::endl;
+		}
 	}
 
 	void Render() override {
-		renderer_.BeginRender();
+		GetGame().GetRenderer().BeginRender();
 
 		GetGame().GetEntityManager().For<RenderComponent>([&](ecs::Entity& e) {
 			auto render_component = e.Get<RenderComponent>();
@@ -79,15 +87,13 @@ public:
 			render_component.index_buffer.SetBuffer();
 			render_component.shader.SetShader();
 
-			renderer_.GetContext()->DrawIndexed(3, 0, 0);
+			GetGame().GetRenderer().GetContext()->DrawIndexed(3, 0, 0);
 		});
 
-		renderer_.EndRender();
+		GetGame().GetRenderer().EndRender();
 	}
 
 private:
-	graph::Window window_;
-	graph::Renderer renderer_;
 	graph::Shader shader_;
 
 	static std::vector<DirectX::XMFLOAT4> GetVertices(
@@ -106,8 +112,8 @@ private:
 
 int main() {
 	engine::Game game;
-	RenderSystem render_system;
-	game.PushSystems(render_system);
+	RenderSystem render_system(game);
+	game.PushSystem(render_system);
 
 	ecs::Entity& e1 = game.GetEntityManager().AddEntity();
 	ShapeComponent& shape1 = e1.Add<ShapeComponent>();

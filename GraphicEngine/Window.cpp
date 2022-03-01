@@ -13,13 +13,17 @@ unsigned graph::Window::GetHeight() {
 	return height_;
 }
 
+graph::KeyboardState& graph::Window::GetKeyboardState() {
+	return keyboard_state_;
+}
+
 graph::Window::Window(HINSTANCE instance, LPCWSTR window_name, unsigned width, unsigned height)
 	: instance_(instance)
 	, window_name_(window_name)
 	, width_(width)
 	, height_(height)
-	, handle_(RegisterAndCreateWindow()) {
-}
+	, handle_(RegisterAndCreateWindow())
+{}
 
 void graph::Window::Show() {
 	ShowWindow(handle_, SW_SHOW);
@@ -33,16 +37,28 @@ LRESULT graph::Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 
 	if (msg == WM_CREATE) {
 		const auto create_struct = reinterpret_cast<CREATESTRUCT*>(lparam);
-		window = reinterpret_cast<Window*>(create_struct);
+		window = static_cast<Window*>(create_struct->lpCreateParams);
 		SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(window));
 	} else {
 		window = reinterpret_cast<Window*>(GetWindowLongPtr(hwnd, GWLP_USERDATA));
 	}
 
 	switch (msg) {
-	case WM_SIZE:
+	case WM_SIZE: {
 		window->width_ = LOWORD(lparam);
 		window->height_ = HIWORD(lparam);
+		break;
+	}		
+	case WM_KEYDOWN: {
+		const auto key = static_cast<unsigned int>(wparam);
+		window->keyboard_state_.AddPressedKey(key);
+		return 0;
+	}		
+	case WM_KEYUP: {
+		const auto key = static_cast<unsigned int>(wparam);
+		window->keyboard_state_.RemovePressedKey(key);
+		return 0;
+	}		
 	}
 
 	return DefWindowProc(hwnd, msg, wparam, lparam);
