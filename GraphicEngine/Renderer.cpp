@@ -53,11 +53,14 @@ void graph::Renderer::BeginRender() {
 
 	context_->RSSetViewports(1, &viewport);
 	context_->OMSetRenderTargets(1, render_target_view_.GetAddressOf(), nullptr);
+
+	constexpr float color[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	context_->ClearRenderTargetView(render_target_view_.Get(), color);
 }
 
 void graph::Renderer::EndRender() {
 	context_->OMSetRenderTargets(0, nullptr, nullptr);
-	swap_chain_->Present(1, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+	swap_chain_->Present(0, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
 }
 
 HRESULT graph::Renderer::CreateDeviceAndSwapChain() {

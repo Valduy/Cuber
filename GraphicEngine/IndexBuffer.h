@@ -9,6 +9,8 @@ namespace graph {
 
 	class IndexBuffer {
 	public:
+		size_t GetSize();
+
 		IndexBuffer(Renderer& renderer, int* indices, size_t size);
 		HRESULT Init();
 		void SetBuffer();

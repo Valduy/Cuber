@@ -1,6 +1,10 @@
 #include "pch.h"
 #include "IndexBuffer.h"
 
+size_t graph::IndexBuffer::GetSize() {
+	return size_;
+}
+
 graph::IndexBuffer::IndexBuffer(Renderer& renderer, int* indices, size_t size)
 	: renderer_(renderer)
 	, indices_(indices)

@@ -152,6 +152,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="KeyboardState.h" />
@@ -162,6 +163,7 @@
     <ClInclude Include="Window.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="GraphicEngine.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
     <ClCompile Include="pch.cpp">
