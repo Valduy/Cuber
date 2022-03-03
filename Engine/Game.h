@@ -11,9 +11,10 @@ namespace engine {
 
 class Game {
 public:
-	const long kFps = 60;
-	const long kMsPerUpdate = 1000 / 60;
-	const float kDt = static_cast<float>(kMsPerUpdate) / 1000;
+	const std::chrono::nanoseconds kTimestep = 
+		std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::milliseconds(16));
+
+	const float kDt = static_cast<float>(16) / 1000;
 
 	class SystemBase {
 	public:

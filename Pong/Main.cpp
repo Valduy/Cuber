@@ -8,10 +8,12 @@
 #include "ShapeComponent.h"
 #include "BoundingBoxComponent.h"
 #include "CollisionSystem.h"
+#include "GoalSystem.h"
 #include "TransformComponent.h"
 #include "SpeedComponent.h"
 #include "VelocityComponent.h"
 #include "InputComponent.h"
+#include "RestartSystem.h"
 #include "VelocitySystem.h"
 
 #pragma comment(lib, "d3d11.lib")
@@ -106,6 +108,8 @@ int main() {
 	VelocitySystem velocity_system;	
 	InputSystem input_system;
 	MoveSystem move_system;
+	GoalSystem goal_system;
+	RestartSystem restart_system;
 
 	game.PushSystem(render_system);
 	game.PushSystem(collision_system);
@@ -113,11 +117,13 @@ int main() {
 	game.PushSystem(velocity_system);	
 	game.PushSystem(input_system);
 	game.PushSystem(move_system);
+	game.PushSystem(goal_system);
+	game.PushSystem(restart_system);
 
 	float field_width = 2.0f;
 	float field_height = 2.0f;
 
-	float paddle_speed = 0.001f;
+	float paddle_speed = 1.0f;
 	float paddle_width = 0.1f;
 	float paddle_height = 0.4f;
 
@@ -140,7 +146,7 @@ int main() {
 		PlayerType::kRight);
 
 	float ball_size = 0.1f;
-	float ball_speed = 0.001f;
+	float ball_speed = 1.0f;
 
 	CreateBall(
 		game, 

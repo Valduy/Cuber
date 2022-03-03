@@ -29,47 +29,51 @@ public:
 		engine::Game::SystemBase::Init(game);
 		shader_.Init();
 
-		GetGame().GetEntityManager().For<ShapeComponent, TransformComponent>([&](ecs::Entity& e) {
-			e.Add<RenderComponent>([&]() {
-				auto shape_component = e.Get<ShapeComponent>();
-				auto vertices = GetVertices(shape_component.points, shape_component.color);
+		GetGame().GetEntityManager().For<
+			ShapeComponent,
+			TransformComponent>([&](ecs::Entity& e) {
+				e.Add<RenderComponent>([&]() {
+					auto shape_component = e.Get<ShapeComponent>();
+					auto vertices = GetVertices(shape_component.points, shape_component.color);
 
-				graph::VertexBuffer vb(
-					GetGame().GetRenderer(),
-					vertices.data(),
-					vertices.size());
-				vb.Init();
+					graph::VertexBuffer vb(
+						GetGame().GetRenderer(),
+						vertices.data(),
+						vertices.size());
+					vb.Init();
 
-				graph::IndexBuffer ib(
-					GetGame().GetRenderer(),
-					shape_component.indexes.data(),
-					shape_component.indexes.size());
-				ib.Init();
+					graph::IndexBuffer ib(
+						GetGame().GetRenderer(),
+						shape_component.indexes.data(),
+						shape_component.indexes.size());
+					ib.Init();
 
-				graph::ConstantBuffer cb(GetGame().GetRenderer(), sizeof(ConstData));
-				cb.Init();
+					graph::ConstantBuffer cb(GetGame().GetRenderer(), sizeof(ConstData));
+					cb.Init();
 
-				return new RenderComponent(vertices, vb, ib, cb);
+					return new RenderComponent(vertices, vb, ib, cb);
+				});
 			});
-		});
 	}
 
 	void Render() override {
 		GetGame().GetRenderer().BeginRender();
 		shader_.SetShader();
 
-		GetGame().GetEntityManager().For<RenderComponent, TransformComponent>([&](ecs::Entity& e) {
-			RenderComponent& render_component = e.Get<RenderComponent>();
-			TransformComponent& transform_component = e.Get<TransformComponent>();
-			ConstData data{ transform_component.x, transform_component.y };
-			
-			render_component.vertex_buffer.SetBuffer();
-			render_component.index_buffer.SetBuffer();
-			render_component.constant_buffer.SetBuffer();					
-			render_component.constant_buffer.Update(&data);
+		GetGame().GetEntityManager().For<
+			RenderComponent,
+			TransformComponent>([&](ecs::Entity& e) {
+				RenderComponent& render_component = e.Get<RenderComponent>();
+				TransformComponent& transform_component = e.Get<TransformComponent>();
+				ConstData data{ transform_component.x, transform_component.y };
+				
+				render_component.vertex_buffer.SetBuffer();
+				render_component.index_buffer.SetBuffer();
+				render_component.constant_buffer.SetBuffer();					
+				render_component.constant_buffer.Update(&data);
 
-			GetGame().GetRenderer().GetContext()->DrawIndexed(
-				render_component.index_buffer.GetSize(), 0, 0);
+				GetGame().GetRenderer().GetContext()->DrawIndexed(
+					render_component.index_buffer.GetSize(), 0, 0);
 			});
 
 		GetGame().GetRenderer().EndRender();

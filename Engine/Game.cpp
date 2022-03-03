@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "Game.h"
 
+#include <iostream>
+
 engine::Game& engine::Game::SystemBase::GetGame() {
 	return *game_;
 }
@@ -61,8 +63,8 @@ void engine::Game::Run() {
 	bool is_exit_requested = false;
 
 	using namespace std::chrono;
-	auto previous = steady_clock::now();
-	long long lag = 0;
+	nanoseconds lag(0ns);
+	auto time_start = high_resolution_clock::now();
 
 	while (!is_exit_requested) {
 		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
@@ -74,14 +76,13 @@ void engine::Game::Run() {
 			is_exit_requested = true;
 		}
 
-		auto current = steady_clock::now();
-		const long long elapsed = duration_cast<microseconds>(current - previous).count();
-		previous = current;
-		lag += elapsed;
+		auto delta_time = high_resolution_clock::now() - time_start;
+		time_start = high_resolution_clock::now();
+		lag += duration_cast<nanoseconds>(delta_time);
 
-		while (lag >= kMsPerUpdate) {
+		while (lag >= kTimestep) {
+			lag -= kTimestep;
 			Update();
-			lag -= kMsPerUpdate;
 		}
 
 		Render();

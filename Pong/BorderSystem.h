@@ -19,7 +19,8 @@ public:
 				VelocityComponent& velocity_component = e.Get<VelocityComponent>();
 
 				if (transform_component.y + bounding_box_component.height / 2 >= 2.0f 
-					|| transform_component.y - bounding_box_component.height / 2 <= 0.0f) {
+					|| transform_component.y - bounding_box_component.height / 2 <= 0.0f) 
+				{
 					velocity_component.y *= -1;
 				}
 			});

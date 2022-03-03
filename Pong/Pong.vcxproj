@@ -156,11 +156,14 @@
     <ClInclude Include="BorderSystem.h" />
     <ClInclude Include="BoundingBoxComponent.h" />
     <ClInclude Include="CollisionSystem.h" />
+    <ClInclude Include="GoalSystem.h" />
     <ClInclude Include="InputComponent.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="MoveSystem.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="RestartComponent.h" />
+    <ClInclude Include="RestartSystem.h" />
     <ClInclude Include="ShapeComponent.h" />
     <ClInclude Include="SpeedComponent.h" />
     <ClInclude Include="TransformComponent.h" />

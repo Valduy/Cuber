@@ -60,8 +60,8 @@ public:
 		const auto it = components_map_.find(component_id);
 
 		if (it != components_map_.end()) {
-			components_map_.erase(it);
 			delete it->second;
+			components_map_.erase(it);			
 			signature_ &= ~component_id;
 			return true;
 		}
