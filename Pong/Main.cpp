@@ -37,6 +37,33 @@ ShapeComponent& AddRectangleShape(ecs::Entity& entity, float width, float height
 	return shape_component;
 }
 
+std::vector<DirectX::XMFLOAT4> GetCircleDots(float radius) {
+	std::vector<DirectX::XMFLOAT4> result;
+
+	for (int angle = 0; angle <= 360; angle += 10) {
+		float dot_x = -1.0f + cos(angle * 3.14f / 180)  * radius;
+		float dot_y = -1.0f + sin(angle * 3.14f / 180) * radius;
+		result.push_back(DirectX::XMFLOAT4(dot_x, dot_y, 0.5f, 1.0f));
+		result.push_back(DirectX::XMFLOAT4(-1.0f, -1.0f, 0.5f, 1.0f));
+	}
+
+	result.pop_back();
+	return result;
+}
+
+ShapeComponent& AddCircleShape(ecs::Entity& entity, float radius) {
+	ShapeComponent& shape_component = entity.Add<ShapeComponent>();
+	shape_component.points = GetCircleDots(radius);
+
+	for(int i = 0; i < shape_component.points.size(); i += 2) {
+		shape_component.indexes.push_back(i);
+		shape_component.indexes.push_back(i + 1);
+		shape_component.indexes.push_back(i + 2);
+	}
+
+	return shape_component;
+}
+
 ecs::Entity& CreatePaddle(
 	engine::Game& game,
 	float x,
@@ -74,17 +101,17 @@ ecs::Entity& CreateBall(
 	engine::Game& game, 
 	float x, 
 	float y, 
-	float size,
+	float radius,
 	float speed)
 {
 	ecs::Entity& ball = game.GetEntityManager().AddEntity();
 	
-	ShapeComponent& shape_component = AddRectangleShape(ball, size, size);
+	ShapeComponent& shape_component = AddCircleShape(ball, radius);
 	shape_component.color = { 1, 1, 1, 1 };
 
 	BoundingBoxComponent& bounding_box_component = ball.Add<BoundingBoxComponent>();
-	bounding_box_component.width = size;
-	bounding_box_component.height = size;
+	bounding_box_component.width = radius * 2;
+	bounding_box_component.height = radius * 2;
 
 	TransformComponent& transform_component = ball.Add<TransformComponent>();
 	transform_component.x = x;
@@ -145,14 +172,14 @@ int main() {
 		paddle_speed, 
 		PlayerType::kRight);
 
-	float ball_size = 0.1f;
+	float ball_radius = 0.05f;
 	float ball_speed = 1.0f;
 
 	CreateBall(
 		game, 
 		1.0f, 
 		1.0f, 
-		ball_size, 
+		ball_radius, 
 		ball_speed);
 
 	game.Run();
