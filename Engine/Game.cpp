@@ -1,8 +1,6 @@
 #include "pch.h"
 #include "Game.h"
 
-#include <iostream>
-
 engine::Game& engine::Game::SystemBase::GetGame() {
 	return *game_;
 }
