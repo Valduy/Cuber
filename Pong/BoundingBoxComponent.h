@@ -2,10 +2,8 @@
 
 #include "../ECS/IComponent.h"
 
-class BoundingBoxComponent : ecs::IComponent {
+class BoundingBoxComponent : public ecs::IComponent {
 public:
-	float left;
-	float top;
-	float right;
-	float bottom;
+	float width;
+	float height;
 };

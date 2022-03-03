@@ -38,7 +38,7 @@ graph::Renderer& engine::Game::GetRenderer() {
 }
 
 engine::Game::Game()
-	: window_(GetModuleHandle(nullptr), L"Game", 800, 800)
+	: window_(GetModuleHandle(nullptr), L"Game", 1000, 1000)
     , renderer_(window_)
 {}
 

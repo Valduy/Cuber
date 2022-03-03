@@ -58,10 +58,11 @@ LRESULT graph::Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		const auto key = static_cast<unsigned int>(wparam);
 		window->keyboard_state_.RemovePressedKey(key);
 		return 0;
-	}		
 	}
-
-	return DefWindowProc(hwnd, msg, wparam, lparam);
+	default: {
+		return DefWindowProc(hwnd, msg, wparam, lparam);
+	}
+	}	
 }
 
 HWND graph::Window::RegisterAndCreateWindow() {

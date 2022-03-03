@@ -8,7 +8,6 @@
 #include "../GraphicEngine/VertexBuffer.h"
 #include "../GraphicEngine/IndexBuffer.h"
 #include "../Engine/Game.h"
-#include "../GraphicEngine/Window.h"
 #include "../GraphicEngine/Renderer.h"
 
 #pragma pack(push, 4)
