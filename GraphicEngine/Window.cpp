@@ -59,6 +59,10 @@ LRESULT graph::Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 		window->keyboard_state_.RemovePressedKey(key);
 		return 0;
 	}
+	case WM_DESTROY: {
+		PostQuitMessage(0);
+		return 0;
+	}
 	default: {
 		return DefWindowProc(hwnd, msg, wparam, lparam);
 	}

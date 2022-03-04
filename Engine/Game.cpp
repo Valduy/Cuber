@@ -43,10 +43,6 @@ engine::Game::Game()
 {}
 
 engine::Game::~Game() {
-	for (const SystemBase* system : systems_) {
-		delete system;
-	}
-
 	systems_.clear();
 }
 
@@ -68,10 +64,10 @@ void engine::Game::Run() {
 		while (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
-		}
 
-		if (msg.message == WM_QUIT) {
-			is_exit_requested = true;
+			if (msg.message == WM_QUIT) {
+				is_exit_requested = true;
+			}
 		}
 
 		auto delta_time = high_resolution_clock::now() - time_start;
