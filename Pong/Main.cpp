@@ -40,9 +40,9 @@ ShapeComponent& AddRectangleShape(ecs::Entity& entity, float width, float height
 std::vector<DirectX::XMFLOAT4> GetCircleDots(float radius) {
 	std::vector<DirectX::XMFLOAT4> result;
 
-	for (int angle = 0; angle <= 360; angle += 10) {
-		float dot_x = -1.0f + cos(angle * 3.14f / 180)  * radius;
-		float dot_y = -1.0f + sin(angle * 3.14f / 180) * radius;
+	for (int angle = 0; angle <= 360; angle += 10) {		
+		float dot_x = -1.0f + cos(angle * 3.14159265358979323846f / 180)  * radius;
+		float dot_y = -1.0f + sin(angle * 3.14159265358979323846f / 180) * radius;
 		result.push_back(DirectX::XMFLOAT4(dot_x, dot_y, 0.5f, 1.0f));
 		result.push_back(DirectX::XMFLOAT4(-1.0f, -1.0f, 0.5f, 1.0f));
 	}
@@ -146,9 +146,6 @@ int main() {
 	game.PushSystem(move_system);
 	game.PushSystem(goal_system);
 	game.PushSystem(restart_system);
-
-	float field_width = 2.0f;
-	float field_height = 2.0f;
 
 	float paddle_speed = 1.0f;
 	float paddle_width = 0.1f;

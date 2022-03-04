@@ -14,10 +14,12 @@ public:
 		GetGame().GetEntityManager().For<
 			TransformComponent,
 			BoundingBoxComponent,
+			SpeedComponent,
 			VelocityComponent>([&] (ecs::Entity& ball) {
 				VelocityComponent& ball_velocity_component = ball.Get<VelocityComponent>();
 				TransformComponent& ball_transform_component = ball.Get<TransformComponent>();
 				BoundingBoxComponent& ball_bb_component = ball.Get<BoundingBoxComponent>();
+				SpeedComponent& speed = ball.Get<SpeedComponent>();
 
 				GetGame().GetEntityManager().For<
 					TransformComponent,
@@ -37,6 +39,7 @@ public:
 							float magnitude = sqrt(x * x + y * y);
 							ball_velocity_component.x = x / magnitude;
 							ball_velocity_component.y = y / magnitude;
+							speed.speed *= 1.1f;
 						}
 					});
 			});
