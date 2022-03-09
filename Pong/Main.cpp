@@ -37,8 +37,8 @@ ShapeComponent& AddRectangleShape(ecs::Entity& entity, float width, float height
 	return shape_component;
 }
 
-std::vector<DirectX::XMFLOAT4> GetCircleDots(float radius) {
-	std::vector<DirectX::XMFLOAT4> result;
+std::vector<DirectX::SimpleMath::Vector4> GetCircleDots(float radius) {
+	std::vector<DirectX::SimpleMath::Vector4> result;
 
 	for (int angle = 0; angle <= 360; angle += 10) {		
 		float dot_x = -1.0f + cos(angle * 3.14159265358979323846f / 180)  * radius;
@@ -76,7 +76,7 @@ ecs::Entity& CreatePaddle(
 	ecs::Entity& paddle = game.GetEntityManager().AddEntity();
 
 	ShapeComponent& shape_component = AddRectangleShape(paddle, width, height);
-	shape_component.color = { 1, 1, 1, 1 };
+	shape_component.color = DirectX::SimpleMath::Vector4{ 1, 1, 1, 1 };
 
 	BoundingBoxComponent& bounding_box_component = paddle.Add<BoundingBoxComponent>();
 	bounding_box_component.width = width;
@@ -107,7 +107,7 @@ ecs::Entity& CreateBall(
 	ecs::Entity& ball = game.GetEntityManager().AddEntity();
 	
 	ShapeComponent& shape_component = AddCircleShape(ball, radius);
-	shape_component.color = { 1, 1, 1, 1 };
+	shape_component.color = DirectX::SimpleMath::Vector4{ 1, 1, 1, 1 };
 
 	BoundingBoxComponent& bounding_box_component = ball.Add<BoundingBoxComponent>();
 	bounding_box_component.width = radius * 2;

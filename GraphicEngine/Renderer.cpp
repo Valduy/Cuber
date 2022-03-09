@@ -51,11 +51,11 @@ void graph::Renderer::BeginRender() {
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = 1.0f;
 
-	context_->RSSetViewports(1, &viewport);
-	context_->OMSetRenderTargets(1, render_target_view_.GetAddressOf(), nullptr);
-
 	constexpr float color[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	context_->ClearRenderTargetView(render_target_view_.Get(), color);
+
+	context_->RSSetViewports(1, &viewport);
+	context_->OMSetRenderTargets(1, render_target_view_.GetAddressOf(), nullptr);
 }
 
 void graph::Renderer::EndRender() {

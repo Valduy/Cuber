@@ -1,12 +1,13 @@
 #include "pch.h"
 #include "VertexBuffer.h"
 
-graph::VertexBuffer::VertexBuffer(Renderer& renderer, DirectX::XMFLOAT4* points, size_t size)
+graph::VertexBuffer::VertexBuffer(
+	Renderer& renderer, 
+	std::vector<DirectX::SimpleMath::Vector4> vertexes)
 	: renderer_(renderer)
-	, points_(points)
-	, size_(size)
-	, vertex_buffer_(nullptr) {
-}
+	, vertexes_(vertexes)
+	, vertex_buffer_(nullptr)
+{}
 
 HRESULT graph::VertexBuffer::Init() {
 	D3D11_BUFFER_DESC vertex_buf_desc = {};
@@ -15,10 +16,10 @@ HRESULT graph::VertexBuffer::Init() {
 	vertex_buf_desc.CPUAccessFlags = 0;
 	vertex_buf_desc.MiscFlags = 0;
 	vertex_buf_desc.StructureByteStride = 0;
-	vertex_buf_desc.ByteWidth = sizeof(DirectX::XMFLOAT4) * size_;
+	vertex_buf_desc.ByteWidth = sizeof(DirectX::SimpleMath::Vector4) * vertexes_.size();
 
 	D3D11_SUBRESOURCE_DATA vertex_data = {};
-	vertex_data.pSysMem = points_;
+	vertex_data.pSysMem = vertexes_.data();
 	vertex_data.SysMemPitch = 0;
 	vertex_data.SysMemSlicePitch = 0;
 

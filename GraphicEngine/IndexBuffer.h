@@ -7,20 +7,19 @@
 
 namespace graph {
 
-	class IndexBuffer {
-	public:
-		size_t GetSize();
+class IndexBuffer {
+public:
+	size_t GetSize();
 
-		IndexBuffer(Renderer& renderer, int* indices, size_t size);
-		HRESULT Init();
-		void SetBuffer();
+	IndexBuffer(Renderer& renderer, std::vector<int> indices);
+	HRESULT Init();
+	void SetBuffer();
 
-	private:
-		Renderer& renderer_;
-		int* indices_;
-		size_t size_;
+private:
+	Renderer& renderer_;
+	std::vector<int> indices_;
 
-		Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer_;
-	};
+	Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer_;
+};
 
 } // namespace engine

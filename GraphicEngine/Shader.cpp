@@ -34,8 +34,7 @@ HRESULT graph::Shader::Init() {
 }
 
 void graph::Shader::SetShader() {
-	renderer_.GetContext()->IASetInputLayout(layout_.Get());
-	renderer_.GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	renderer_.GetContext()->IASetInputLayout(layout_.Get());	
 	renderer_.GetContext()->VSSetShader(vertex_shader_.Get(), nullptr, 0);
 	renderer_.GetContext()->PSSetShader(pixel_shader_.Get(), nullptr, 0);
 }

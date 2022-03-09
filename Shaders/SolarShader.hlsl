@@ -1,3 +1,8 @@
+cbuffer	Matrixes : register(b0)
+{
+	matrix mat;
+};
+
 struct VS_IN
 {
 	float4 pos : POSITION0;
@@ -7,27 +12,20 @@ struct VS_IN
 struct PS_IN
 {
 	float4 pos : SV_POSITION;
- 	float4 col : COLOR;
+	float4 col : COLOR;
 };
 
-cbuffer ConstBuffer : register(bo)
-{
-	float x;
-	float y;
-	float2 dummy;
-};
-
-PS_IN VSMain( VS_IN input )
+PS_IN VSMain(VS_IN input)
 {
 	PS_IN output = (PS_IN)0;
-	
-	output.pos = input.pos + float4(x, y, 0, 0);
+
+	output.pos = mul(input.pos, mat);
 	output.col = input.col;
-	
+
 	return output;
 }
 
-float4 PSMain( PS_IN input ) : SV_Target
+float4 PSMain(PS_IN input) : SV_Target
 {
 	float4 col = input.col;
 	return col;

@@ -2,13 +2,12 @@
 #include "IndexBuffer.h"
 
 size_t graph::IndexBuffer::GetSize() {
-	return size_;
+	return indices_.size();
 }
 
-graph::IndexBuffer::IndexBuffer(Renderer& renderer, int* indices, size_t size)
+graph::IndexBuffer::IndexBuffer(Renderer& renderer, std::vector<int> indices)
 	: renderer_(renderer)
 	, indices_(indices)
-	, size_(size)
 	, index_buffer_(nullptr) 
 {}
 
@@ -19,10 +18,10 @@ HRESULT graph::IndexBuffer::Init() {
 	index_buf_desc.CPUAccessFlags = 0;
 	index_buf_desc.MiscFlags = 0;
 	index_buf_desc.StructureByteStride = 0;
-	index_buf_desc.ByteWidth = sizeof(int) * size_;
+	index_buf_desc.ByteWidth = sizeof(int) * indices_.size();
 
 	D3D11_SUBRESOURCE_DATA index_data = {};
-	index_data.pSysMem = indices_;
+	index_data.pSysMem = indices_.data();
 	index_data.SysMemPitch = 0;
 	index_data.SysMemSlicePitch = 0;
 

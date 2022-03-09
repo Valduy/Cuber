@@ -22,7 +22,7 @@ struct ConstData {
 class RenderSystem : public engine::Game::SystemBase {
 public:
 	RenderSystem(engine::Game& game)
-		: shader_(game.GetRenderer(), L"../Shaders/MyVeryFirstShader.hlsl")
+		: shader_(game.GetRenderer(), L"../Shaders/PongShader.hlsl")
 	{}
 
 	void Init(engine::Game& game) override {
@@ -33,19 +33,17 @@ public:
 			ShapeComponent,
 			TransformComponent>([&](ecs::Entity& e) {
 				e.Add<RenderComponent>([&]() {
-					auto shape_component = e.Get<ShapeComponent>();
+					ShapeComponent& shape_component = e.Get<ShapeComponent>();
 					auto vertices = GetVertices(shape_component.points, shape_component.color);
 
 					graph::VertexBuffer vb(
 						GetGame().GetRenderer(),
-						vertices.data(),
-						vertices.size());
+						vertices);
 					vb.Init();
 
 					graph::IndexBuffer ib(
 						GetGame().GetRenderer(),
-						shape_component.indexes.data(),
-						shape_component.indexes.size());
+						shape_component.indexes);
 					ib.Init();
 
 					graph::ConstantBuffer cb(GetGame().GetRenderer(), sizeof(ConstData));
@@ -72,6 +70,7 @@ public:
 				render_component.constant_buffer.SetBuffer();					
 				render_component.constant_buffer.Update(&data);
 
+				GetGame().GetRenderer().GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 				GetGame().GetRenderer().GetContext()->DrawIndexed(
 					render_component.index_buffer.GetSize(), 0, 0);
 			});
@@ -82,10 +81,11 @@ public:
 private:
 	graph::Shader shader_;
 
-	static std::vector<DirectX::XMFLOAT4> GetVertices(
-		const std::vector<DirectX::XMFLOAT4>& points,
-		const DirectX::XMFLOAT4 color) {
-		std::vector<DirectX::XMFLOAT4> vertices;
+	static std::vector<DirectX::SimpleMath::Vector4> GetVertices(
+		const std::vector<DirectX::SimpleMath::Vector4>& points,
+		const DirectX::SimpleMath::Vector4 color)
+	{
+		std::vector<DirectX::SimpleMath::Vector4> vertices;
 
 		for (auto p : points) {
 			vertices.push_back(p);

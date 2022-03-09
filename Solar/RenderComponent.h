@@ -1,6 +1,7 @@
 #pragma once
 
-#include "../ECS/IComponent.h"
+#include <SimpleMath.h>
+
 #include "../GraphicEngine/VertexBuffer.h"
 #include "../GraphicEngine/IndexBuffer.h"
 #include "../GraphicEngine/ConstantBuffer.h"
