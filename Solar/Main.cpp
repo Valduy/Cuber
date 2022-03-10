@@ -3,6 +3,7 @@
 #include "../Engine/Game.h"
 #include "../ECS/Entity.h"
 #include "RenderSystem.h"
+#include "RotationSystem.h"
 #include "ShapeComponent.h"
 #include "TransformComponent.h"
 
@@ -51,14 +52,16 @@ int main() {
 	engine::Game game;
 
 	RenderSystem render_system(game);
+	RotationSystem rotation_system;
 
 	game.PushSystem(render_system);
+	game.PushSystem(rotation_system);
 
 	ecs::Entity& cube = game.GetEntityManager().AddEntity();
 	CreateBox(cube);
-	TransformComponent& tc = cube.Add<TransformComponent>();
-	tc.rotation.y = 0;
-	tc.rotation.z = 0;
+	cube.Add<TransformComponent>();
+	RotationComponent& rotation_component = cube.Add<RotationComponent>();
+	rotation_component.speed = 2.0f;
 
 	game.Run();
 	return 0;

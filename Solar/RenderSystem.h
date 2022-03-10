@@ -96,15 +96,6 @@ public:
 		GetGame().GetRenderer().EndRender();
 	}
 
-	void Update(float dt) override {
-		GetGame().GetEntityManager().For<
-			TransformComponent>([&](ecs::Entity& e) {
-				TransformComponent& tc = e.Get<TransformComponent>();
-				tc.rotation.y += dt * 2.0f;
-				tc.rotation.z += dt * 2.0f;
-			});
-	}
-
 private:
 	graph::Shader shader_;
 

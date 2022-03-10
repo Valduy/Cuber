@@ -152,6 +152,8 @@
   <ItemGroup>
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="RotationComponent.h" />
+    <ClInclude Include="RotationSystem.h" />
     <ClInclude Include="ShapeComponent.h" />
     <ClInclude Include="TransformComponent.h" />
   </ItemGroup>

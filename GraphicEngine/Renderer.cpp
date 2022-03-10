@@ -29,6 +29,15 @@ HRESULT graph::Renderer::Init() {
 	if (result = GetBackTexture(); FAILED(result)) {
 		return result;
 	}
+	if (result = CreateDepthStencilBuffer(); FAILED(result)) {
+		return result;
+	}
+	if (result = CreateDepthStencilView(); FAILED(result)) {
+		return result;
+	}
+	if (result = CreateDepthStencilState(); FAILED(result)) {
+		return result;
+	}
 	if (result = CreateRenderTargetView(); FAILED(result)) {
 		return result;
 	}
@@ -40,8 +49,7 @@ HRESULT graph::Renderer::Init() {
 }
 
 void graph::Renderer::BeginRender() {
-	context_->ClearState();
-	context_->RSSetState(raster_state_.Get());
+	context_->ClearState();	
 
 	D3D11_VIEWPORT viewport = {};
 	viewport.Width = static_cast<float>(window_.GetWidth());
@@ -51,11 +59,14 @@ void graph::Renderer::BeginRender() {
 	viewport.MinDepth = 0;
 	viewport.MaxDepth = 1.0f;
 
-	constexpr float color[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	constexpr float color[] = { 0.0f, 0.0f, 0.0f, 1.0f };
 	context_->ClearRenderTargetView(render_target_view_.Get(), color);
+	context_->ClearDepthStencilView(depth_stencil_view_.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
+	context_->RSSetState(raster_state_.Get());
+	context_->OMSetDepthStencilState(depth_stencil_state_.Get(), 0);
 	context_->RSSetViewports(1, &viewport);
-	context_->OMSetRenderTargets(1, render_target_view_.GetAddressOf(), nullptr);
+	context_->OMSetRenderTargets(1, render_target_view_.GetAddressOf(), depth_stencil_view_.Get());
 }
 
 void graph::Renderer::EndRender() {
@@ -108,6 +119,36 @@ HRESULT graph::Renderer::GetBackTexture() {
 
 	back_texture_ = ptr;
 	return result;
+}
+
+HRESULT graph::Renderer::CreateDepthStencilBuffer() {
+	D3D11_TEXTURE2D_DESC depth_stencil_desc;
+	depth_stencil_desc.Width = window_.GetWidth();
+	depth_stencil_desc.Height = window_.GetHeight();
+	depth_stencil_desc.MipLevels = 1;
+	depth_stencil_desc.ArraySize = 1;
+	depth_stencil_desc.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
+	depth_stencil_desc.SampleDesc.Count = 1;
+	depth_stencil_desc.SampleDesc.Quality = 0;
+	depth_stencil_desc.Usage = D3D11_USAGE_DEFAULT;
+	depth_stencil_desc.BindFlags = D3D11_BIND_DEPTH_STENCIL;
+	depth_stencil_desc.CPUAccessFlags = 0;
+	depth_stencil_desc.MiscFlags = 0;
+
+	return device_->CreateTexture2D(&depth_stencil_desc, nullptr, depth_stencil_buffer_.GetAddressOf());
+}
+
+HRESULT graph::Renderer::CreateDepthStencilView() {
+	return device_->CreateDepthStencilView(depth_stencil_buffer_.Get(), nullptr, depth_stencil_view_.GetAddressOf());
+}
+
+HRESULT graph::Renderer::CreateDepthStencilState() {
+	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc = {};
+	depth_stencil_desc.DepthEnable = true;
+	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
+	depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+
+	return device_->CreateDepthStencilState(&depth_stencil_desc, depth_stencil_state_.GetAddressOf());
 }
 
 HRESULT graph::Renderer::CreateRenderTargetView() {
