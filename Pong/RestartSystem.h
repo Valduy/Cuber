@@ -7,10 +7,8 @@
 class RestartSystem : public engine::Game::SystemBase {
 public:
 	void Update(float dt) override {
-		GetGame().GetEntityManager().For<
-			RestartComponent,
-			VelocityComponent,
-			SpeedComponent>([&](ecs::Entity& e) {
+		For<RestartComponent, VelocityComponent, SpeedComponent>(
+			[&](ecs::Entity& e) {
 				RestartComponent& restart_system = e.Get<RestartComponent>();
 				VelocityComponent& velocity_component = e.Get<VelocityComponent>();
 				SpeedComponent& speed_component = e.Get<SpeedComponent>();

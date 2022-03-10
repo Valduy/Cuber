@@ -11,12 +11,8 @@
 class MoveSystem : public engine::Game::SystemBase {
 public:
 	void Update(float dt) override {
-		GetGame().GetEntityManager().For<
-			TransformComponent,
-			SpeedComponent,
-			InputComponent,
-			BoundingBoxComponent>([&](ecs::Entity& e) 
-			{
+		For<TransformComponent, SpeedComponent, InputComponent, BoundingBoxComponent>(
+			[&](ecs::Entity& e) {
 				TransformComponent& transform_component = e.Get<TransformComponent>();
 				SpeedComponent& speed_component = e.Get<SpeedComponent>();
 				InputComponent& input_component = e.Get<InputComponent>();

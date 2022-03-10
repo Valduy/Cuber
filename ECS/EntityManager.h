@@ -29,7 +29,7 @@ public:
 		}
 	}
 
-	Entity& AddEntity() {
+	Entity& CreateEntity() {
 		auto it = entities_.insert(new Entity());
 		return *(*it.first);
 	}

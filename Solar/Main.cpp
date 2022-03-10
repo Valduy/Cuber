@@ -4,8 +4,10 @@
 #include "../ECS/Entity.h"
 #include "RenderSystem.h"
 #include "RotationSystem.h"
+#include "CameraSystem.h"
 #include "ShapeComponent.h"
 #include "TransformComponent.h"
+#include "CameraComponent.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -53,15 +55,20 @@ int main() {
 
 	RenderSystem render_system(game);
 	RotationSystem rotation_system;
+	CameraSystem camera_system;
 
 	game.PushSystem(render_system);
 	game.PushSystem(rotation_system);
+	game.PushSystem(camera_system);
 
-	ecs::Entity& cube = game.GetEntityManager().AddEntity();
+	ecs::Entity& cube = game.GetEntityManager().CreateEntity();
 	CreateBox(cube);
 	cube.Add<TransformComponent>();
 	RotationComponent& rotation_component = cube.Add<RotationComponent>();
 	rotation_component.speed = 2.0f;
+
+	ecs::Entity& camera = game.GetEntityManager().CreateEntity();
+	camera.Add<CameraComponent>();
 
 	game.Run();
 	return 0;

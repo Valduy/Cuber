@@ -1,8 +1,10 @@
 #pragma once
 
 #include <Windows.h>
+#include <Windowsx.h>
 
 #include "KeyboardState.h"
+#include "MouseState.h"
 
 namespace graph {
 
@@ -12,12 +14,14 @@ namespace graph {
         unsigned int GetWidth();
         unsigned int GetHeight();
         KeyboardState& GetKeyboardState();
+        MouseState& GetMouseState();
 
         Window(HINSTANCE instance, LPCWSTR window_name, unsigned int width, unsigned int height);
         void Show();
 
     private:
         KeyboardState keyboard_state_;
+        MouseState mouse_state_;
         HINSTANCE instance_;
         LPCWSTR window_name_;
         unsigned int width_;

@@ -28,6 +28,27 @@ public:
 		virtual void Render();
 		virtual void Delete();
 
+		template<typename First, typename... Rest>
+		void For(ecs::EntityManager::Action action) const {
+			game_->GetEntityManager().For<First, Rest...>(action);
+		}
+
+		graph::Window& GetWindow() {
+			return game_->GetWindow();
+		}
+
+		graph::Renderer& GetRenderer() {
+			return game_->GetRenderer();
+		}
+
+		graph::KeyboardState& GetKeyboardState() {
+			return game_->GetWindow().GetKeyboardState();
+		}
+
+		graph::MouseState& GetMouseState() {
+			return game_->GetWindow().GetMouseState();
+		}
+
 	private:
 		Game* game_;
 	};

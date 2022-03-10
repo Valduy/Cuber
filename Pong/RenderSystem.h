@@ -29,9 +29,8 @@ public:
 		engine::Game::SystemBase::Init(game);
 		shader_.Init();
 
-		GetGame().GetEntityManager().For<
-			ShapeComponent,
-			TransformComponent>([&](ecs::Entity& e) {
+		For<ShapeComponent, TransformComponent>(
+			[&](ecs::Entity& e) {
 				e.Add<RenderComponent>([&]() {
 					ShapeComponent& shape_component = e.Get<ShapeComponent>();
 					auto vertices = GetVertices(shape_component.points, shape_component.color);
@@ -55,12 +54,11 @@ public:
 	}
 
 	void Render() override {
-		GetGame().GetRenderer().BeginRender();
+		GetRenderer().BeginRender();
 		shader_.SetShader();
 
-		GetGame().GetEntityManager().For<
-			RenderComponent,
-			TransformComponent>([&](ecs::Entity& e) {
+		For<RenderComponent, TransformComponent>(
+			[&](ecs::Entity& e) {
 				RenderComponent& render_component = e.Get<RenderComponent>();
 				TransformComponent& transform_component = e.Get<TransformComponent>();
 				ConstData data{ transform_component.x, transform_component.y };
@@ -75,7 +73,7 @@ public:
 					render_component.index_buffer.GetSize(), 0, 0);
 			});
 
-		GetGame().GetRenderer().EndRender();
+		GetRenderer().EndRender();
 	}
 
 private:

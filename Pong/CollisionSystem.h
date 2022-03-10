@@ -11,20 +11,16 @@
 class CollisionSystem : public engine::Game::SystemBase {
 public:
 	void Update(float dt) override {
-		GetGame().GetEntityManager().For<
-			TransformComponent,
-			BoundingBoxComponent,
-			SpeedComponent,
-			VelocityComponent>([&] (ecs::Entity& ball) {
+		For<TransformComponent, BoundingBoxComponent, SpeedComponent, VelocityComponent>(
+			[&] (ecs::Entity& ball) {
 				VelocityComponent& ball_velocity_component = ball.Get<VelocityComponent>();
 				TransformComponent& ball_transform_component = ball.Get<TransformComponent>();
 				BoundingBoxComponent& ball_bb_component = ball.Get<BoundingBoxComponent>();
 				SpeedComponent& speed = ball.Get<SpeedComponent>();
 
-				GetGame().GetEntityManager().For<
-					TransformComponent,
-					BoundingBoxComponent,
-					InputComponent>([&](ecs::Entity& paddle) {
+				// I use InputComponent as static physics flag.
+				For<TransformComponent, BoundingBoxComponent, InputComponent>(
+					[&](ecs::Entity& paddle) {
 						TransformComponent& paddle_transform_component = paddle.Get<TransformComponent>();
 						BoundingBoxComponent& paddle_bb_component = paddle.Get<BoundingBoxComponent>();
 

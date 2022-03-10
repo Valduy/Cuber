@@ -4,17 +4,27 @@
 
 namespace graph {
 
-class KeyboardState {
+enum class Keys {	
+	kA = 0x41,
+	kD = 0x44,
+	kS = 0x53,
+	kW = 0x57,		
+	kLeft = VK_LEFT,
+	kUp = VK_UP,
+	kRight = VK_RIGHT,
+	kDown = VK_DOWN,	
+};
 
+class KeyboardState {
 friend class Window;
 
 public:
-	KeyboardState() {
-		
-	}
-
 	bool IsKeyDown(unsigned int key) const {
 		return keys_.count(key);
+	}
+
+	bool IsKeyDown(Keys key) const {
+		return IsKeyDown(static_cast<unsigned int>(key));
 	}
 
 private:

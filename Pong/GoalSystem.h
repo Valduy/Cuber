@@ -11,23 +11,18 @@ public:
 	const float kDelay = 2;
 
 	void Update(float dt) override {
-		GetGame().GetEntityManager().For<
-			TransformComponent,
-			BoundingBoxComponent,
-			VelocityComponent>([&](ecs::Entity& e) {
+		For<TransformComponent, BoundingBoxComponent, VelocityComponent>(
+			[&](ecs::Entity& e) {
 				TransformComponent& transform_component = e.Get<TransformComponent>();
 				BoundingBoxComponent& bounding_box_component = e.Get<BoundingBoxComponent>();
-				VelocityComponent& velocity_component = e.Get<VelocityComponent>();
 
 				if (transform_component.x + bounding_box_component.width / 2 <= 0.0f) {
 					right_score += 1;
 					Restart(e, -1, 0);
-					return;
 				}
-				if (transform_component.x - bounding_box_component.width / 2 >= 2.0f) {
+				else if (transform_component.x - bounding_box_component.width / 2 >= 2.0f) {
 					left_score += 1;
 					Restart(e, 1, 0);
-					return;
 				}
 			});
 	}

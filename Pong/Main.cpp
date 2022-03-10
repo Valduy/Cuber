@@ -73,7 +73,7 @@ ecs::Entity& CreatePaddle(
 	float speed,
 	PlayerType player_type)
 {
-	ecs::Entity& paddle = game.GetEntityManager().AddEntity();
+	ecs::Entity& paddle = game.GetEntityManager().CreateEntity();
 
 	ShapeComponent& shape_component = AddRectangleShape(paddle, width, height);
 	shape_component.color = DirectX::SimpleMath::Vector4{ 1, 1, 1, 1 };
@@ -104,7 +104,7 @@ ecs::Entity& CreateBall(
 	float radius,
 	float speed)
 {
-	ecs::Entity& ball = game.GetEntityManager().AddEntity();
+	ecs::Entity& ball = game.GetEntityManager().CreateEntity();
 	
 	ShapeComponent& shape_component = AddCircleShape(ball, radius);
 	shape_component.color = DirectX::SimpleMath::Vector4{ 1, 1, 1, 1 };

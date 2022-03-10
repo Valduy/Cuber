@@ -3,6 +3,7 @@
 #include <directxmath.h>
 #include <SimpleMath.h>
 
+#include "CameraComponent.h"
 #include "../Engine/Game.h"
 #include "../GraphicEngine/Shader.h"
 #include "RenderComponent.h"
@@ -51,37 +52,24 @@ public:
 	}
 
 	void Render() override {
-		GetGame().GetRenderer().BeginRender();
+		GetRenderer().BeginRender();
 		shader_.SetShader();
 
-		GetGame().GetEntityManager().For<
-			RenderComponent,
-			TransformComponent>([&](ecs::Entity& e) {
+		For<CameraComponent>([&](ecs::Entity& camera) {
+			CameraComponent& camera_component = camera.Get<CameraComponent>();
+
+			For<RenderComponent, TransformComponent>([&](ecs::Entity& e) {
 				RenderComponent& render_component = e.Get<RenderComponent>();
 				TransformComponent& transform_component = e.Get<TransformComponent>();
 
 				using namespace DirectX::SimpleMath;
 
-				DirectX::XMMATRIX model = DirectX::XMMatrixIdentity();
+				Matrix model = Matrix::Identity;
 				//model *= DirectX::XMMatrixScaling(1.0, 1.0, 1.0);
-				model *= DirectX::XMMatrixRotationY(transform_component.rotation.y);
-				model *= DirectX::XMMatrixRotationZ(transform_component.rotation.z);
-				//model *= DirectX::XMMatrixTranslation(0.0, 0.0, 2.0);
+				model *= Matrix::CreateRotationY(transform_component.rotation.y);
+				model *= DirectX::XMMatrixTranslation(0.0, -1.0, 2.0);
 
-				DirectX::XMVECTOR eye = DirectX::XMVectorSet(0.0f, 0.0f, -3.0f, 0.0f);
-				DirectX::XMVECTOR at = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 0.0f);
-				DirectX::XMVECTOR up = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
-				DirectX::XMMATRIX view = DirectX::XMMatrixLookAtLH(eye, at, up);
-
-				//Matrix view = Matrix::Identity;
-
-				DirectX::XMMATRIX projection = DirectX::XMMatrixPerspectiveFovLH(
-					DirectX::XM_PIDIV2, 1.0, 0.1, 100);
-				//Matrix projection = Matrix::Identity;
-
-				DirectX::XMMATRIX mat =  model * view * projection;
-
-				ConstData data {DirectX::XMMatrixTranspose(mat)};
+				ConstData data{ (model * camera_component.GetCameraMatrix()).Transpose() };
 
 				render_component.vertex_buffer.SetBuffer();
 				render_component.index_buffer.SetBuffer();
@@ -92,8 +80,9 @@ public:
 				GetGame().GetRenderer().GetContext()->DrawIndexed(
 					render_component.index_buffer.GetSize(), 0, 0);
 			});
+		});
 
-		GetGame().GetRenderer().EndRender();
+		GetRenderer().EndRender();
 	}
 
 private:
