@@ -53,13 +53,15 @@ ShapeComponent& CreateBox(ecs::Entity& e) {
 int main() {
 	engine::Game game;
 
+	CameraSystem camera_system;
 	RenderSystem render_system(game);
 	RotationSystem rotation_system;
-	CameraSystem camera_system;
 
-	game.PushSystem(render_system);
-	game.PushSystem(rotation_system);
+	camera_system.camera_position.z = -3.0f;
+
 	game.PushSystem(camera_system);
+	game.PushSystem(render_system);
+	game.PushSystem(rotation_system);	
 
 	ecs::Entity& cube = game.GetEntityManager().CreateEntity();
 	CreateBox(cube);
