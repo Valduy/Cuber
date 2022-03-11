@@ -7,9 +7,6 @@
 
 class TransformComponent : public ecs::IComponent {
 public:
-	DirectX::SimpleMath::Vector3 position;
-	DirectX::SimpleMath::Vector3 rotation;
-
 	DirectX::SimpleMath::Vector3 GetLocalRotation() {
 		return local_rotation_;
 	}
@@ -70,22 +67,39 @@ public:
 		if (relative_ == nullptr) return local_position_;
 		using namespace DirectX::SimpleMath;		
 		Vector4 offset(local_position_.x, local_position_.y, local_position_.z, 1.0);
+
 		Vector3 euler = relative_->GetRotation() * DirectX::XM_PI / 180;
 		Quaternion rotation = Quaternion::CreateFromYawPitchRoll(euler);
-		Matrix transform = Matrix::CreateFromQuaternion(rotation);
+
+		Matrix transform = Matrix::Identity;
+		transform *= Matrix::CreateFromQuaternion(rotation);
 		transform *= Matrix::CreateTranslation(relative_->GetPosition());
+
 		offset = Vector4::Transform(offset, transform);
 		return { offset.x, offset.y, offset.z };
 	}
 
 	void SetPosition(DirectX::SimpleMath::Vector3 position) {
-		
+		if (relative_ != nullptr) {
+			using namespace DirectX::SimpleMath;
+			Vector4 offset(position.x, position.y, position.z, 1.0f);
+
+			Vector3 euler = -relative_->GetRotation() * DirectX::XM_PI / 180;
+			Quaternion rotation = Quaternion::CreateFromYawPitchRoll(euler);
+
+			Matrix transform = Matrix::Identity;
+			transform *= Matrix::CreateTranslation(-relative_->GetPosition());
+			transform *= Matrix::CreateFromQuaternion(rotation);
+
+			offset = Vector4::Transform(offset, transform);
+			local_position_ = Vector3(offset.x, offset.y, offset.z);
+		} else {
+			local_position_ = position;
+		}
 	}
 
 	TransformComponent(ecs::Entity& owner)
-		: position(DirectX::SimpleMath::Vector3::Zero)
-		, rotation(DirectX::SimpleMath::Vector3::Zero)
-		, owner_(&owner)
+		: owner_(&owner)
 		, relative_(nullptr)
 		, local_rotation_(0.0f, 0.0f, 0.0f)
 		, local_scale_(1.0f, 1.0f, 1.0f)
