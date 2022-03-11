@@ -102,6 +102,9 @@ private:
 			last_position_.y = GetMouseState().GetY();
 			yaw_ -= weight * dx * mouse_sensitivity;
 			pitch_ -= weight * dy * mouse_sensitivity;
+			pitch_ = pitch_ < -DirectX::XM_PIDIV2
+				? -DirectX::XM_PIDIV2
+				: DirectX::XM_PIDIV2 < pitch_ ? DirectX::XM_PIDIV2 : pitch_;
 		}
 	}
 }; 

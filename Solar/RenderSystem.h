@@ -64,8 +64,10 @@ public:
 
 				using namespace DirectX::SimpleMath;
 				Matrix model = transform_component.GetModelMatrix();
+				Matrix camera = camera_component.GetCameraMatrix();
+				Matrix transform = model * camera;
 
-				ConstData data{ (model * camera_component.GetCameraMatrix()).Transpose() };
+				ConstData data{ transform.Transpose() };
 
 				render_component.vertex_buffer.SetBuffer();
 				render_component.index_buffer.SetBuffer();
