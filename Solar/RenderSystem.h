@@ -63,13 +63,7 @@ public:
 				TransformComponent& transform_component = e.Get<TransformComponent>();
 
 				using namespace DirectX::SimpleMath;
-
-				Matrix model = Matrix::Identity;
-				Vector3 euler = transform_component.GetRotation() * DirectX::XM_PI / 180;
-				Quaternion rotation = Quaternion::CreateFromYawPitchRoll(euler);
-				model *= Matrix::CreateScale(transform_component.GetScale());
-				model *= Matrix::CreateFromQuaternion(rotation);
-				model *= Matrix::CreateTranslation(transform_component.GetPosition());
+				Matrix model = transform_component.GetModelMatrix();
 
 				ConstData data{ (model * camera_component.GetCameraMatrix()).Transpose() };
 

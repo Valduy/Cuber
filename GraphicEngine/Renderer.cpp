@@ -71,7 +71,7 @@ void graph::Renderer::BeginRender() {
 
 void graph::Renderer::EndRender() {
 	context_->OMSetRenderTargets(0, nullptr, nullptr);
-	swap_chain_->Present(0, /*DXGI_PRESENT_DO_NOT_WAIT*/ 0);
+	swap_chain_->Present(1, 0);
 }
 
 HRESULT graph::Renderer::CreateDeviceAndSwapChain() {
