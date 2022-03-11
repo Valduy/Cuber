@@ -51,21 +51,21 @@ LRESULT graph::Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 	case WM_SIZE: {
 		window->width_ = LOWORD(lparam);
 		window->height_ = HIWORD(lparam);
-		break;
+		return 0;
 	}		
 	case WM_KEYDOWN: {
 		const auto key = static_cast<unsigned int>(wparam);
 		window->keyboard_state_.AddPressedKey(key);
 		return 0;
 	}
-	case WM_MOUSEMOVE: {
-		window->mouse_state_.SetX(GET_X_LPARAM(lparam));
-		window->mouse_state_.SetY(GET_Y_LPARAM(lparam));
-		return 0;
-	}
 	case WM_KEYUP: {
 		const auto key = static_cast<unsigned int>(wparam);
 		window->keyboard_state_.RemovePressedKey(key);
+		return 0;
+	}
+	case WM_MOUSEMOVE: {
+		window->mouse_state_.SetX(GET_X_LPARAM(lparam));
+		window->mouse_state_.SetY(GET_Y_LPARAM(lparam));
 		return 0;
 	}
 	case WM_DESTROY: {

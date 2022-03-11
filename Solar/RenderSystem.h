@@ -65,9 +65,11 @@ public:
 				using namespace DirectX::SimpleMath;
 
 				Matrix model = Matrix::Identity;
-				//model *= DirectX::XMMatrixScaling(1.0, 1.0, 1.0);
-				model *= Matrix::CreateRotationY(transform_component.rotation.y);
-				model *= DirectX::XMMatrixTranslation(0.0, -1.0, 2.0);
+				Vector3 euler = transform_component.GetRotation() * DirectX::XM_PI / 180;
+				Quaternion rotation = Quaternion::CreateFromYawPitchRoll(euler);
+				model *= Matrix::CreateScale(transform_component.GetScale());
+				model *= Matrix::CreateFromQuaternion(rotation);
+				model *= Matrix::CreateTranslation(transform_component.GetPosition());
 
 				ConstData data{ (model * camera_component.GetCameraMatrix()).Transpose() };
 
