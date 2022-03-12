@@ -11,8 +11,9 @@ namespace graph {
     class Window {
     public:
         HWND GetHandler();
-        unsigned int GetWidth();
-        unsigned int GetHeight();
+        unsigned int GetWidth() const;
+        unsigned int GetHeight() const;
+        float GetAspectRatio() const;
         KeyboardState& GetKeyboardState();
         MouseState& GetMouseState();
 

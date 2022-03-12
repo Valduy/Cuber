@@ -5,12 +5,18 @@ HWND graph::Window::GetHandler() {
 	return handle_;
 }
 
-unsigned graph::Window::GetWidth() {
+unsigned graph::Window::GetWidth() const {
 	return width_;
 }
 
-unsigned graph::Window::GetHeight() {
+unsigned graph::Window::GetHeight() const {
 	return height_;
+}
+
+float graph::Window::GetAspectRatio() const {
+	const auto width = static_cast<float>(width_);
+	const auto height = static_cast<float>(height_);
+	return width / height;
 }
 
 graph::KeyboardState& graph::Window::GetKeyboardState() {
