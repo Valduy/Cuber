@@ -18,7 +18,7 @@ public:
 	{}
 
 	~Entity() {
-		for (const auto it : components_map_) {
+		for (const auto& it : components_map_) {
 			delete it.second;
 		}
 

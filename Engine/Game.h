@@ -33,6 +33,15 @@ public:
 			game_->GetEntityManager().For<First, Rest...>(action);
 		}
 
+		template<typename First, typename... Rest>
+		ecs::EntityManager::Iterator GetIterator() {
+			return game_->GetEntityManager().GetIterator<First, Rest...>();
+		}
+
+		ecs::EntityManager::Iterator GetIterator(ecs::Signer::Signature signature) {
+			return game_->GetEntityManager().GetIterator(signature);
+		}
+
 		graph::Window& GetWindow() {
 			return game_->GetWindow();
 		}

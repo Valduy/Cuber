@@ -24,61 +24,62 @@ public:
 		engine::Game::SystemBase::Init(game);
 		shader_.Init();
 
-		GetGame().GetEntityManager().For<
-			ShapeComponent>([&](ecs::Entity& e) {
-				e.Add<RenderComponent>([&]() {
-					ShapeComponent& shape_component = e.Get<ShapeComponent>();
-					auto vertices = GetVertices(shape_component.points);
+		using namespace ecs;
+		using namespace graph;
+		static const Signer::Signature signature = Signer::GetSignature<ShapeComponent>();
 
-					graph::VertexBuffer vb(
-						GetGame().GetRenderer(),
-						vertices);
-					vb.Init();
+		for (auto it = GetIterator(signature); it.HasCurrent(); it.Next()) {
+			Entity& entity = it.Get();
+			ShapeComponent& shape_component = entity.Get<ShapeComponent>();
+			auto vertices = GetVertices(shape_component.points);
 
-					graph::IndexBuffer ib(
-						GetGame().GetRenderer(),
-						shape_component.indexes);
-					ib.Init();
+			VertexBuffer vb(GetRenderer(), vertices);
+			vb.Init();
 
-					graph::ConstantBuffer cb(
-						GetGame().GetRenderer(),
-						sizeof(ConstData)
-					);
-					cb.Init();
+			IndexBuffer ib(GetRenderer(), shape_component.indexes);
+			ib.Init();
 
-					return new RenderComponent(vertices, vb, ib, cb);
-				});				
+			ConstantBuffer cb(GetRenderer(), sizeof(ConstData));
+			cb.Init();
+
+			entity.Add<RenderComponent>([&] {
+				return new RenderComponent(vertices, vb, ib, cb);
 			});
+		}
 	}
 
 	void Render() override {
 		GetRenderer().BeginRender();
 		shader_.SetShader();
 
-		For<CameraComponent>([&](ecs::Entity& camera) {
+		auto camera_it = GetIterator<CameraComponent>();
+		for (; camera_it.HasCurrent(); camera_it.Next()) {
+			ecs::Entity& camera = camera_it.Get();
 			CameraComponent& camera_component = camera.Get<CameraComponent>();
 
-			For<RenderComponent, TransformComponent>([&](ecs::Entity& e) {
-				RenderComponent& render_component = e.Get<RenderComponent>();
-				TransformComponent& transform_component = e.Get<TransformComponent>();
+			auto mesh_it = GetIterator<RenderComponent, TransformComponent>();
+			for (; mesh_it.HasCurrent(); mesh_it.Next()) {
+				ecs::Entity& mesh = mesh_it.Get();
+				RenderComponent& render_component = mesh.Get<RenderComponent>();
+				TransformComponent& transform_component = mesh.Get<TransformComponent>();
 
 				using namespace DirectX::SimpleMath;
-				Matrix model = transform_component.GetModelMatrix();
-				Matrix camera = camera_component.GetCameraMatrix();
-				Matrix transform = model * camera;
+				Matrix model_matrix = transform_component.GetModelMatrix();
+				Matrix camera_matrix = camera_component.GetCameraMatrix();
+				Matrix transform_matrix = model_matrix * camera_matrix;
 
-				ConstData data{ transform.Transpose() };
+				ConstData data{ transform_matrix.Transpose() };
 
 				render_component.vertex_buffer.SetBuffer();
 				render_component.index_buffer.SetBuffer();
 				render_component.constant_buffer.SetBuffer();
 				render_component.constant_buffer.Update(&data);
 
-				GetGame().GetRenderer().GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				GetGame().GetRenderer().GetContext()->DrawIndexed(
+				GetRenderer().GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				GetRenderer().GetContext()->DrawIndexed(
 					render_component.index_buffer.GetSize(), 0, 0);
-			});
-		});
+			}
+		}
 
 		GetRenderer().EndRender();
 	}

@@ -19,13 +19,15 @@ public:
 	{}
 
 	void Update(float dt) override {
-		For<CameraComponent>([&](ecs::Entity& e) {
-			CameraComponent& camera_component = e.Get<CameraComponent>();
+		auto it = GetIterator<CameraComponent>();
+		for (; it.HasCurrent(); it.Next()) {
+			ecs::Entity& entity = it.Get();
+			CameraComponent& camera_component = entity.Get<CameraComponent>();
 			UpdateKeyboard();
 			UpdateMouse();
 			SetLookAtMatrix(&camera_component, dt);
 			SetProjectionMatrix(&camera_component);
-		});
+		}
 	}
 
 private:
