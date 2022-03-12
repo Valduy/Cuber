@@ -100,11 +100,11 @@ private:
 				color += 1;
 			}
 			else if (color == 1) {
-				result.push_back({ 0.0f, 1.0f, 0.0f, 1.0f });
+				result.push_back({ 1.0f, 1.0f, 0.0f, 1.0f });
 				color += 1;
 			}
 			else {
-				result.push_back({ 0.0f, 0.0f, 1.0f, 1.0f });
+				result.push_back({ 1.0f, 0.0f, 1.0f, 1.0f });
 				color = 0;
 			}
 		}

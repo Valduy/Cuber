@@ -206,7 +206,7 @@ int main() {
 
 	ecs::Entity& planet3 = CreatePlanet(
 		game,
-		Vector3(5.0f, 0.0f, 0.0f),
+		Vector3(5.0f, 0.0f, -5.0f),
 		Vector3(0.75f, 0.75f, 0.75f),
 		45.0f);
 	SetParent(planet2, planet3);
@@ -227,7 +227,7 @@ int main() {
 
 	ecs::Entity& planet6 = CreatePlanet(
 		game,
-		Vector3(30.0f, 0.0f, 0.0f),
+		Vector3(30.0f, 0.0f, 10.0f),
 		Vector3(0.75f, 0.75f, 0.75f),
 		85.0f);
 	SetParent(planet1, planet6);
