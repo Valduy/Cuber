@@ -179,7 +179,7 @@ int main() {
 	engine::Game game;
 
 	CameraSystem camera_system;
-	RenderSystem render_system(game);
+	RenderSystem render_system;
 	RotationSystem rotation_system;
 
 	game.PushSystem(camera_system);
@@ -231,7 +231,7 @@ int main() {
 		Vector3(0.75f, 0.75f, 0.75f),
 		85.0f);
 	SetParent(planet1, planet6);
-
+	
 	ecs::Entity& planet7 = CreatePlanet(
 		game,
 		Vector3(2.0f, 0.0f, 0.0f),

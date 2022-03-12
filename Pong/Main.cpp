@@ -41,8 +41,8 @@ std::vector<DirectX::SimpleMath::Vector4> GetCircleDots(float radius) {
 	std::vector<DirectX::SimpleMath::Vector4> result;
 
 	for (int angle = 0; angle <= 360; angle += 10) {		
-		float dot_x = -1.0f + cos(angle * 3.14159265358979323846f / 180)  * radius;
-		float dot_y = -1.0f + sin(angle * 3.14159265358979323846f / 180) * radius;
+		float dot_x = -1.0f + cos(angle * DirectX::XM_PI / 180)  * radius;
+		float dot_y = -1.0f + sin(angle * DirectX::XM_PI / 180) * radius;
 		result.push_back(DirectX::XMFLOAT4(dot_x, dot_y, 0.5f, 1.0f));
 		result.push_back(DirectX::XMFLOAT4(-1.0f, -1.0f, 0.5f, 1.0f));
 	}
@@ -129,7 +129,7 @@ ecs::Entity& CreateBall(
 
 int main() {
 	engine::Game game;
-	RenderSystem render_system(game);
+	RenderSystem render_system;
 	CollisionSystem collision_system;
 	BorderSystem border_system;
 	VelocitySystem velocity_system;	

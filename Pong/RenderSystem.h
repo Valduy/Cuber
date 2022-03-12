@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SimpleMath.h>
+
 #include "RenderComponent.h"
 #include "ShapeComponent.h"
 #include "TransformComponent.h"
@@ -21,57 +23,52 @@ struct ConstData {
 
 class RenderSystem : public engine::Game::SystemBase {
 public:
-	RenderSystem(engine::Game& game)
-		: shader_(game.GetRenderer(), L"../Shaders/PongShader.hlsl")
-	{}
-
 	void Init(engine::Game& game) override {
 		engine::Game::SystemBase::Init(game);
-		shader_.Init();
+		shader_.Init(&GetRenderer(), L"../Shaders/PongShader.hlsl");
 
-		For<ShapeComponent, TransformComponent>(
-			[&](ecs::Entity& e) {
-				e.Add<RenderComponent>([&]() {
-					ShapeComponent& shape_component = e.Get<ShapeComponent>();
-					auto vertices = GetVertices(shape_component.points, shape_component.color);
+		using namespace DirectX::SimpleMath;
+		auto it = GetIterator<ShapeComponent, TransformComponent>();
+		for (; it.HasCurrent(); it.Next()) {
+			ecs::Entity& entity = it.Get();
+			ShapeComponent& shape_component = entity.Get<ShapeComponent>();
+			auto vertices = GetVertices(shape_component.points, shape_component.color);
 
-					graph::VertexBuffer vb(
-						GetGame().GetRenderer(),
-						vertices);
-					vb.Init();
+			graph::VertexBuffer vb(vertices.data(), sizeof(Vector4) * vertices.size());
+			vb.Init(&GetRenderer());
 
-					graph::IndexBuffer ib(
-						GetGame().GetRenderer(),
-						shape_component.indexes);
-					ib.Init();
+			graph::IndexBuffer ib(shape_component.indexes.data(), shape_component.indexes.size());
+			ib.Init(&GetRenderer());
 
-					graph::ConstantBuffer cb(GetGame().GetRenderer(), sizeof(ConstData));
-					cb.Init();
+			graph::ConstantBuffer cb(sizeof(ConstData));
+			cb.Init(&GetRenderer());
 
-					return new RenderComponent(vertices, vb, ib, cb);
-				});
+			entity.Add<RenderComponent>([&] {
+				return new RenderComponent(vertices, vb, ib, cb);
 			});
+		}
 	}
 
 	void Render() override {
 		GetRenderer().BeginRender();
 		shader_.SetShader();
 
-		For<RenderComponent, TransformComponent>(
-			[&](ecs::Entity& e) {
-				RenderComponent& render_component = e.Get<RenderComponent>();
-				TransformComponent& transform_component = e.Get<TransformComponent>();
-				ConstData data{ transform_component.x, transform_component.y };
-				
-				render_component.vertex_buffer.SetBuffer();
-				render_component.index_buffer.SetBuffer();
-				render_component.constant_buffer.SetBuffer();					
-				render_component.constant_buffer.Update(&data);
+		auto it = GetIterator<RenderComponent, TransformComponent>();
+		for (; it.HasCurrent(); it.Next()) {
+			ecs::Entity& entity = it.Get();
+			RenderComponent& render_component = entity.Get<RenderComponent>();
+			TransformComponent& transform_component = entity.Get<TransformComponent>();
+			ConstData data{ transform_component.x, transform_component.y };
 
-				GetGame().GetRenderer().GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				GetGame().GetRenderer().GetContext()->DrawIndexed(
-					render_component.index_buffer.GetSize(), 0, 0);
-			});
+			render_component.vertex_buffer.SetBuffer();
+			render_component.index_buffer.SetBuffer();
+			render_component.constant_buffer.SetBuffer();
+			render_component.constant_buffer.Update(&data);
+
+			GetGame().GetRenderer().GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			GetGame().GetRenderer().GetContext()->DrawIndexed(
+				render_component.index_buffer.GetSize(), 0, 0);
+		}
 
 		GetRenderer().EndRender();
 	}

@@ -109,6 +109,15 @@ public:
 		return model;
 	}
 
+	ecs::Entity& GetParent() {
+		assert(owner_ != nullptr && "Entity has not parent.");
+		return *owner_;
+	}
+
+	size_t GetChildrenCount() {
+		return children_.size();
+	}
+
 	TransformComponent(ecs::Entity& owner)
 		: owner_(&owner)
 		, parent_(nullptr)
@@ -116,7 +125,11 @@ public:
 		, local_scale_(1.0f, 1.0f, 1.0f)
 		, local_position_(0.0f, 0.0f, 0.0f)
 	{}
-	
+
+	bool IsHasParent() const {
+		return parent_ != nullptr;
+	}
+
 	void AddChild(ecs::Entity& child) {
 		assert(&child != owner_ && "Entity can't contain itself.");
 		assert(child.Contain<TransformComponent>() && "Child don't contain transform component.");
@@ -124,24 +137,34 @@ public:
 
 		TransformComponent& transform_component = child.Get<TransformComponent>();
 		transform_component.parent_ = this;
-		children_.insert(&child);
+		children_.push_back(&child);
 	}
 
-	void RemoveChild(ecs::Entity& child) {
+	bool RemoveChild(ecs::Entity& child) {
 		assert(child.Contain<TransformComponent>() && "Child don't contain transform component.");
-
 		TransformComponent& transform_component = child.Get<TransformComponent>();
 
 		if (transform_component.parent_ == this) {
-			children_.erase(&child);
-			transform_component.parent_ = nullptr;
+			for (auto it = children_.begin(); it != children_.end(); ++it) {
+				if (*it == &child) {
+					children_.erase(it);
+					transform_component.parent_ = nullptr;
+					return true;
+				}
+			}			
 		}
+
+		return false;
+	}
+
+	ecs::Entity& operator[](size_t index) {
+		return *children_[index];
 	}
 
 private:
 	ecs::Entity* owner_;
 	TransformComponent* parent_;
-	std::unordered_set<ecs::Entity*> children_;
+	std::vector<ecs::Entity*> children_{};
 
 	DirectX::SimpleMath::Vector3 local_rotation_;
 	DirectX::SimpleMath::Vector3 local_scale_;

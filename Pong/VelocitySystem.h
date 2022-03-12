@@ -8,14 +8,15 @@
 class VelocitySystem : public engine::Game::SystemBase {
 public:
 	void Update(float dt) override {
-		For<SpeedComponent, VelocityComponent, TransformComponent>(
-			[&](ecs::Entity& e) {
-				SpeedComponent& speed_component = e.Get<SpeedComponent>();
-				VelocityComponent& velocity_component = e.Get<VelocityComponent>();
-				TransformComponent& transform_component = e.Get<TransformComponent>();
+		auto it = GetIterator<SpeedComponent, VelocityComponent, TransformComponent>();
+		for (; it.HasCurrent(); it.Next()) {
+			ecs::Entity& entity = it.Get();
+			SpeedComponent& speed_component = entity.Get<SpeedComponent>();
+			VelocityComponent& velocity_component = entity.Get<VelocityComponent>();
+			TransformComponent& transform_component = entity.Get<TransformComponent>();
 
-				transform_component.x += speed_component.speed * velocity_component.x * dt;
-				transform_component.y += speed_component.speed * velocity_component.y * dt;
-			});
+			transform_component.x += speed_component.speed * velocity_component.x * dt;
+			transform_component.y += speed_component.speed * velocity_component.y * dt;
+		}
 	}
 };

@@ -6,8 +6,10 @@
 class InputSystem : public engine::Game::SystemBase {
 public:
 	void Update(float dt) override {
-		For<InputComponent>([&](ecs::Entity& e) {
-			InputComponent& input_component = e.Get<InputComponent>();
+		auto it = GetIterator<InputComponent>();
+		for (; it.HasCurrent(); it.Next()) {
+			ecs::Entity& entity = it.Get();
+			InputComponent& input_component = entity.Get<InputComponent>();
 			input_component.up = false;
 			input_component.down = false;
 
@@ -31,6 +33,6 @@ public:
 				break;
 			}
 			}
-		});
+		}
 	}
 };

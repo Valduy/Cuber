@@ -9,15 +9,16 @@ namespace graph {
 
 class IndexBuffer {
 public:
-	size_t GetSize();
+	size_t GetSize() const;
 
-	IndexBuffer(Renderer& renderer, std::vector<int> indices);
-	HRESULT Init();
+	IndexBuffer(int* indices, size_t size);
+	HRESULT Init(Renderer* renderer);
 	void SetBuffer();
 
 private:
-	Renderer& renderer_;
-	std::vector<int> indices_;
+	Renderer* renderer_;
+	int* indices_;
+	size_t size_;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer_;
 };

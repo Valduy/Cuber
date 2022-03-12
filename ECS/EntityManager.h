@@ -29,13 +29,13 @@ public:
 		}
 
 	private:
-		std::unordered_set<Entity*>::iterator begin_;
-		std::unordered_set<Entity*>::iterator end_;
+		std::vector<Entity*>::iterator begin_;
+		std::vector<Entity*>::iterator end_;
 		Signer::Signature signature_;
 
 		Iterator(
-			std::unordered_set<Entity*>::iterator begin, 
-			std::unordered_set<Entity*>::iterator end,
+			std::vector<Entity*>::iterator begin, 
+			std::vector<Entity*>::iterator end,
 			Signer::Signature signature)
 			: begin_(std::move(begin))
 			, end_(std::move(end))
@@ -83,23 +83,24 @@ public:
 	}
 
 	Entity& CreateEntity() {
-		auto it = entities_.insert(new Entity());
-		return *(*it.first);
+		Entity* entity = new Entity();
+		entities_.push_back(entity);
+		return *entity;
 	}
 	
 	bool RemoveEntity(Entity& entity) {
-		const auto it = entities_.find(&entity);
-
-		if (it != entities_.end()) {
-			delete *it;
-			entities_.erase(it);
+		for (auto it = entities_.begin(); it != entities_.end(); ++it) {
+			if (*it == &entity) {
+				entities_.erase(it);
+				return true;
+			}
 		}
 
 		return false;
 	}
 
 private:
-	std::unordered_set<Entity*> entities_;
+	std::vector<Entity*> entities_;
 };
 
 } // namespace ecs

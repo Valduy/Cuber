@@ -13,9 +13,8 @@ public:
 			TransformComponent& transform_component = entity.Get<TransformComponent>();
 			RotationComponent& rotation_component = entity.Get<RotationComponent>();
 
-			using namespace DirectX::SimpleMath;
 			const float amount = rotation_component.speed * dt;
-			const Vector3 new_rotation = 
+			const DirectX::SimpleMath::Vector3 new_rotation =
 				transform_component.GetLocalRotation() + rotation_component.axis * amount;
 			transform_component.SetLocalRotation(new_rotation);
 		}

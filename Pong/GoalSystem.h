@@ -11,20 +11,21 @@ public:
 	const float kDelay = 2;
 
 	void Update(float dt) override {
-		For<TransformComponent, BoundingBoxComponent, VelocityComponent>(
-			[&](ecs::Entity& e) {
-				TransformComponent& transform_component = e.Get<TransformComponent>();
-				BoundingBoxComponent& bounding_box_component = e.Get<BoundingBoxComponent>();
+		auto it = GetIterator<TransformComponent, BoundingBoxComponent, VelocityComponent>();
+		for (; it.HasCurrent(); it.Next()) {
+			ecs::Entity& entity = it.Get();
+			TransformComponent& transform_component = entity.Get<TransformComponent>();
+			BoundingBoxComponent& bounding_box_component = entity.Get<BoundingBoxComponent>();
 
-				if (transform_component.x + bounding_box_component.width / 2 <= 0.0f) {
-					right_score += 1;
-					Restart(e, -1, 0);
-				}
-				else if (transform_component.x - bounding_box_component.width / 2 >= 2.0f) {
-					left_score += 1;
-					Restart(e, 1, 0);
-				}
-			});
+			if (transform_component.x + bounding_box_component.width / 2 <= 0.0f) {
+				right_score += 1;
+				Restart(entity, -1, 0);
+			}
+			else if (transform_component.x - bounding_box_component.width / 2 >= 2.0f) {
+				left_score += 1;
+				Restart(entity, 1, 0);
+			}
+		}
 	}
 
 private:

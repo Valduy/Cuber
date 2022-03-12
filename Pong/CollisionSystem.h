@@ -11,34 +11,38 @@
 class CollisionSystem : public engine::Game::SystemBase {
 public:
 	void Update(float dt) override {
-		For<TransformComponent, BoundingBoxComponent, SpeedComponent, VelocityComponent>(
-			[&] (ecs::Entity& ball) {
-				VelocityComponent& ball_velocity_component = ball.Get<VelocityComponent>();
-				TransformComponent& ball_transform_component = ball.Get<TransformComponent>();
-				BoundingBoxComponent& ball_bb_component = ball.Get<BoundingBoxComponent>();
-				SpeedComponent& speed = ball.Get<SpeedComponent>();
+		static const auto ball_sign = 
+			ecs::Signer::GetSignature<TransformComponent, BoundingBoxComponent, SpeedComponent, VelocityComponent>();
+		static const auto paddle_sign = 
+			ecs::Signer::GetSignature<TransformComponent, BoundingBoxComponent, InputComponent>();
 
-				// I use InputComponent as static physics flag.
-				For<TransformComponent, BoundingBoxComponent, InputComponent>(
-					[&](ecs::Entity& paddle) {
-						TransformComponent& paddle_transform_component = paddle.Get<TransformComponent>();
-						BoundingBoxComponent& paddle_bb_component = paddle.Get<BoundingBoxComponent>();
+		for (auto ball_it = GetIterator(ball_sign); ball_it.HasCurrent(); ball_it.Next()) {
+			ecs::Entity& ball = ball_it.Get();
+			VelocityComponent& ball_velocity_component = ball.Get<VelocityComponent>();
+			TransformComponent& ball_transform_component = ball.Get<TransformComponent>();
+			BoundingBoxComponent& ball_bb_component = ball.Get<BoundingBoxComponent>();
+			SpeedComponent& speed = ball.Get<SpeedComponent>();
 
-						if (IsBoundingBoxesIntersected(
-							ball_transform_component, 
-							ball_bb_component,
-							paddle_transform_component,
-							paddle_bb_component)) 
-						{
-							float x = ball_transform_component.x - paddle_transform_component.x;
-							float y = ball_transform_component.y - paddle_transform_component.y;
-							float magnitude = sqrt(x * x + y * y);
-							ball_velocity_component.x = x / magnitude;
-							ball_velocity_component.y = y / magnitude;
-							speed.speed *= 1.1f;
-						}
-					});
-			});
+			for (auto paddle_it = GetIterator(paddle_sign); paddle_it.HasCurrent(); paddle_it.Next()) {
+				ecs::Entity& paddle = paddle_it.Get();
+				TransformComponent& paddle_transform_component = paddle.Get<TransformComponent>();
+				BoundingBoxComponent& paddle_bb_component = paddle.Get<BoundingBoxComponent>();
+
+				if (IsBoundingBoxesIntersected(
+					ball_transform_component,
+					ball_bb_component,
+					paddle_transform_component,
+					paddle_bb_component))
+				{
+					float x = ball_transform_component.x - paddle_transform_component.x;
+					float y = ball_transform_component.y - paddle_transform_component.y;
+					float magnitude = sqrt(x * x + y * y);
+					ball_velocity_component.x = x / magnitude;
+					ball_velocity_component.y = y / magnitude;
+					speed.speed *= 1.1f;
+				}
+			}
+		}
 	}
 
 private:

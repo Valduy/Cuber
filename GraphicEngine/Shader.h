@@ -10,14 +10,13 @@ namespace graph {
 
 	class Shader {
 	public:
-		Shader(Renderer& renderer, LPCWSTR path);
+		Shader();
 
-		HRESULT Init();
+		HRESULT Init(Renderer* renderer, LPCWSTR path);
 		void SetShader();
 
 	private:
-		Renderer& renderer_;
-		LPCWSTR path_;
+		Renderer* renderer_;
 
 		Microsoft::WRL::ComPtr<ID3DBlob> vertex_byte_code_;
 		Microsoft::WRL::ComPtr<ID3DBlob> pixel_byte_code_;
@@ -25,8 +24,8 @@ namespace graph {
 		Microsoft::WRL::ComPtr<ID3D11PixelShader> pixel_shader_;
 		Microsoft::WRL::ComPtr<ID3D11InputLayout> layout_;
 
-		HRESULT CompileVertexByteCode();
-		HRESULT CompilePixelByteCode();
+		HRESULT CompileVertexByteCode(LPCWSTR path);
+		HRESULT CompilePixelByteCode(LPCWSTR path);
 		HRESULT CompileByteCode(LPCWSTR path, LPCSTR entry_point, LPCSTR target, ID3DBlob** byte_code);
 		HRESULT CreateVertexShader();
 		HRESULT CreatePixelShader();

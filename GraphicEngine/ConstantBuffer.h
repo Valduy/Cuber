@@ -6,15 +6,15 @@ namespace graph {
 
 class ConstantBuffer {
 public:
-	ConstantBuffer(Renderer& renderer, size_t size);
+	ConstantBuffer(size_t sizemem);
 
-	HRESULT Init();
+	HRESULT Init(Renderer* renderer);
 	void SetBuffer();
 	void Update(void* data);
 
 private:
-	Renderer& renderer_;
-	size_t size_;
+	Renderer* renderer_;
+	size_t sizemem_;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> constant_buffer_;
 };

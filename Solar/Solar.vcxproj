@@ -152,6 +152,8 @@
   <ItemGroup>
     <ClInclude Include="CameraComponent.h" />
     <ClInclude Include="CameraSystem.h" />
+    <ClInclude Include="LinesRenderSystem.h" />
+    <ClInclude Include="LinesComponent.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="RotationComponent.h" />

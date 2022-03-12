@@ -16,31 +16,24 @@ struct ConstData {
 
 class RenderSystem : public engine::Game::SystemBase {
 public:
-	RenderSystem(engine::Game& game)
-		: shader_(game.GetRenderer(), L"../Shaders/SolarShader.hlsl")
-	{}
-
 	void Init(engine::Game& game) override {
 		engine::Game::SystemBase::Init(game);
-		shader_.Init();
+		shader_.Init(&GetRenderer(), L"../Shaders/SolarShader.hlsl");
 
-		using namespace ecs;
-		using namespace graph;
-		static const Signer::Signature signature = Signer::GetSignature<ShapeComponent>();
-
-		for (auto it = GetIterator(signature); it.HasCurrent(); it.Next()) {
-			Entity& entity = it.Get();
+		auto it = GetIterator<ShapeComponent>();
+		for (; it.HasCurrent(); it.Next()) {
+			ecs::Entity& entity = it.Get();
 			ShapeComponent& shape_component = entity.Get<ShapeComponent>();
 			auto vertices = GetVertices(shape_component.points);
 
-			VertexBuffer vb(GetRenderer(), vertices);
-			vb.Init();
+			graph::VertexBuffer vb(vertices.data(), sizeof(DirectX::SimpleMath::Vector4) * vertices.size());
+			vb.Init(&GetRenderer());
 
-			IndexBuffer ib(GetRenderer(), shape_component.indexes);
-			ib.Init();
+			graph::IndexBuffer ib(shape_component.indexes.data(), shape_component.indexes.size());
+			ib.Init(&GetRenderer());
 
-			ConstantBuffer cb(GetRenderer(), sizeof(ConstData));
-			cb.Init();
+			graph::ConstantBuffer cb(sizeof(ConstData));
+			cb.Init(&GetRenderer());
 
 			entity.Add<RenderComponent>([&] {
 				return new RenderComponent(vertices, vb, ib, cb);
@@ -63,11 +56,9 @@ public:
 				RenderComponent& render_component = mesh.Get<RenderComponent>();
 				TransformComponent& transform_component = mesh.Get<TransformComponent>();
 
-				using namespace DirectX::SimpleMath;
-				Matrix model_matrix = transform_component.GetModelMatrix();
-				Matrix camera_matrix = camera_component.GetCameraMatrix();
-				Matrix transform_matrix = model_matrix * camera_matrix;
-
+				DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
+				DirectX::SimpleMath::Matrix camera_matrix = camera_component.GetCameraMatrix();
+				DirectX::SimpleMath::Matrix transform_matrix = model_matrix * camera_matrix;
 				ConstData data{ transform_matrix.Transpose() };
 
 				render_component.vertex_buffer.SetBuffer();
@@ -75,7 +66,8 @@ public:
 				render_component.constant_buffer.SetBuffer();
 				render_component.constant_buffer.Update(&data);
 
-				GetRenderer().GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				//GetRenderer().GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+				GetRenderer().GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
 				GetRenderer().GetContext()->DrawIndexed(
 					render_component.index_buffer.GetSize(), 0, 0);
 			}
