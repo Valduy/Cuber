@@ -156,6 +156,7 @@
     <ClInclude Include="framework.h" />
     <ClInclude Include="IndexBuffer.h" />
     <ClInclude Include="KeyboardState.h" />
+    <ClInclude Include="LayoutDescriptor.h" />
     <ClInclude Include="MouseState.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Renderer.h" />
@@ -167,6 +168,7 @@
     <ClCompile Include="ConstantBuffer.cpp" />
     <ClCompile Include="GraphicEngine.cpp" />
     <ClCompile Include="IndexBuffer.cpp" />
+    <ClCompile Include="LayoutDescriptor.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>

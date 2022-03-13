@@ -4,6 +4,7 @@
 #include <d3d11.h>
 #include <d3dcompiler.h>
 
+#include "LayoutDescriptor.h"
 #include "Renderer.h"
 
 namespace graph {
@@ -12,7 +13,10 @@ namespace graph {
 	public:
 		Shader();
 
-		HRESULT Init(Renderer* renderer, LPCWSTR path);
+		HRESULT Init(
+			Renderer* renderer, 
+			const LayoutDescriptor& layout_desc, 
+			LPCWSTR path);
 		void SetShader();
 
 	private:
@@ -29,7 +33,7 @@ namespace graph {
 		HRESULT CompileByteCode(LPCWSTR path, LPCSTR entry_point, LPCSTR target, ID3DBlob** byte_code);
 		HRESULT CreateVertexShader();
 		HRESULT CreatePixelShader();
-		HRESULT CreateInputLayout();
+		HRESULT CreateInputLayout(const LayoutDescriptor& layout_desc);
 	};
 
 } // namespace engine

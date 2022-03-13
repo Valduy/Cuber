@@ -30,9 +30,9 @@ HRESULT graph::VertexBuffer::Init(Renderer* renderer) {
 		&vertex_buf_desc, &vertex_data, &vertex_buffer_);
 }
 
-void graph::VertexBuffer::SetBuffer() {
+void graph::VertexBuffer::SetBuffer(unsigned int stribes) {
 	assert(renderer_ != nullptr && "Vertex buffer isn't initialized");
-	const UINT strides[] = { 32 };
+	const UINT strides[] = { stribes };
 	const UINT offsets[] = { 0 };
 
 	renderer_->GetContext()->IASetVertexBuffers(0, 1, vertex_buffer_.GetAddressOf(), strides, offsets);

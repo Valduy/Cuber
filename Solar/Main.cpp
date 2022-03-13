@@ -4,6 +4,7 @@
 #include "../Engine/Game.h"
 #include "../ECS/Entity.h"
 #include "RenderSystem.h"
+#include "LinesRenderSystem.h"
 #include "RotationSystem.h"
 #include "ShapeComponent.h"
 #include "TransformComponent.h"
@@ -170,6 +171,33 @@ ecs::Entity& CreatePlanet(
 	return planet;
 }
 
+ecs::Entity& CreatePlane(engine::Game& game, float size, int subdivisions) {
+	ecs::Entity& plane = game.GetEntityManager().CreateEntity();
+	plane.Add<TransformComponent>([&] {
+		return new TransformComponent(plane);
+	});
+	LinesComponent& lines_component = plane.Add<LinesComponent>();
+
+	float cell_size = size / static_cast<float>(subdivisions);
+	float pivot_x = -size / 2;
+	float pivot_z = -size / 2;
+
+	using namespace DirectX::SimpleMath;
+	for (int i = 0; i <= subdivisions; ++i) {
+		const float x = pivot_x + cell_size * static_cast<float>(i);
+		lines_component.points.push_back(Vector3(x, 0.0f, pivot_z));
+		lines_component.points.push_back(Vector3(x, 0.0f, -pivot_z));
+	}
+
+	for (int i = 0; i <= subdivisions; ++i) {
+		const float z = pivot_z + cell_size * static_cast<float>(i);
+		lines_component.points.push_back(Vector3(pivot_x, 0.0f, z));
+		lines_component.points.push_back(Vector3(-pivot_x, 0.0f, z));
+	}
+
+	return plane;
+}
+
 void SetParent(ecs::Entity& parent, ecs::Entity& child) {
 	TransformComponent& parent_transform = parent.Get<TransformComponent>();
 	parent_transform.AddChild(child);
@@ -180,10 +208,12 @@ int main() {
 
 	CameraSystem camera_system;
 	RenderSystem render_system;
+	LinesRendererSystem lines_renderer_system;
 	RotationSystem rotation_system;
 
 	game.PushSystem(camera_system);
 	game.PushSystem(render_system);
+	game.PushSystem(lines_renderer_system);
 	game.PushSystem(rotation_system);	
 
 	ecs::Entity& camera = game.GetEntityManager().CreateEntity();
@@ -238,6 +268,8 @@ int main() {
 		Vector3(0.75f, 0.75f, 0.75f),
 		45.0f);
 	SetParent(planet6, planet7);
+
+	ecs::Entity& plane = CreatePlane(game, 100, 100);
 
 	game.Run();
 	return 0;

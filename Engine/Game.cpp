@@ -98,9 +98,13 @@ void engine::Game::Update() {
 }
 
 void engine::Game::Render() {
+	renderer_.BeginRender();
+
 	for (SystemBase* system : systems_) {
 		system->Render();
 	}
+
+	renderer_.EndRender();
 }
 
 void engine::Game::Delete() {

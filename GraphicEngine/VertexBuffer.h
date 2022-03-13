@@ -10,7 +10,7 @@ class VertexBuffer {
 public:
 	VertexBuffer(void* vertexes, size_t sizemem);
 	HRESULT Init(Renderer* renderer);
-	void SetBuffer();
+	void SetBuffer(unsigned int stribes);
 
 private:
 	Renderer* renderer_;

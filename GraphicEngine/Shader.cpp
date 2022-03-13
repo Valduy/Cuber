@@ -3,6 +3,8 @@
 
 #include <cassert>
 
+#include "LayoutDescriptor.h"
+
 graph::Shader::Shader()
 	: vertex_byte_code_(nullptr)
 	, pixel_byte_code_(nullptr)
@@ -11,7 +13,11 @@ graph::Shader::Shader()
 	, layout_(nullptr) 
 {}
 
-HRESULT graph::Shader::Init(Renderer* renderer, LPCWSTR path) {
+HRESULT graph::Shader::Init(
+	Renderer* renderer, 
+	const LayoutDescriptor& layout_desc, 
+	LPCWSTR path)
+{
 	renderer_ = renderer;
 	HRESULT result;
 
@@ -27,7 +33,7 @@ HRESULT graph::Shader::Init(Renderer* renderer, LPCWSTR path) {
 	if (result = CreatePixelShader(); FAILED(result)) {
 		return result;
 	}
-	if (result = CreateInputLayout(); FAILED(result)) {
+	if (result = CreateInputLayout(layout_desc); FAILED(result)) {
 		return result;
 	}
 
@@ -103,31 +109,10 @@ HRESULT graph::Shader::CreatePixelShader() {
 		&pixel_shader_);
 }
 
-HRESULT graph::Shader::CreateInputLayout() {
-	D3D11_INPUT_ELEMENT_DESC input_elements[] = {
-		D3D11_INPUT_ELEMENT_DESC {
-			"POSITION",
-			0,
-			DXGI_FORMAT_R32G32B32A32_FLOAT,
-			0,
-			0,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0,
-		},
-		D3D11_INPUT_ELEMENT_DESC {
-			"COLOR",
-			0,
-			DXGI_FORMAT_R32G32B32A32_FLOAT,
-			0,
-			D3D11_APPEND_ALIGNED_ELEMENT,
-			D3D11_INPUT_PER_VERTEX_DATA,
-			0,
-		},
-	};
-
+HRESULT graph::Shader::CreateInputLayout(const LayoutDescriptor& layout_desc) {
 	return renderer_->GetDevice()->CreateInputLayout(
-		input_elements,
-		2,
+		layout_desc.GetData(),
+		layout_desc.GetSize(),
 		vertex_byte_code_->GetBufferPointer(),
 		vertex_byte_code_->GetBufferSize(),
 		&layout_);

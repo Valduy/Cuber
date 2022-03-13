@@ -7,6 +7,7 @@
 #include "TransformComponent.h"
 #include "../ECS/EntityManager.h"
 #include "../GraphicEngine/Shader.h"
+#include "../GraphicEngine/LayoutDescriptor.h"
 #include "../GraphicEngine/VertexBuffer.h"
 #include "../GraphicEngine/IndexBuffer.h"
 #include "../Engine/Game.h"
@@ -25,7 +26,9 @@ class RenderSystem : public engine::Game::SystemBase {
 public:
 	void Init(engine::Game& game) override {
 		engine::Game::SystemBase::Init(game);
-		shader_.Init(&GetRenderer(), L"../Shaders/PongShader.hlsl");
+
+		using namespace graph;
+		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition4Color4, L"../Shaders/PongShader.hlsl");
 
 		using namespace DirectX::SimpleMath;
 		auto it = GetIterator<ShapeComponent, TransformComponent>();
@@ -34,13 +37,13 @@ public:
 			ShapeComponent& shape_component = entity.Get<ShapeComponent>();
 			auto vertices = GetVertices(shape_component.points, shape_component.color);
 
-			graph::VertexBuffer vb(vertices.data(), sizeof(Vector4) * vertices.size());
+			VertexBuffer vb(vertices.data(), sizeof(Vector4) * vertices.size());
 			vb.Init(&GetRenderer());
 
-			graph::IndexBuffer ib(shape_component.indexes.data(), shape_component.indexes.size());
+			IndexBuffer ib(shape_component.indexes.data(), shape_component.indexes.size());
 			ib.Init(&GetRenderer());
 
-			graph::ConstantBuffer cb(sizeof(ConstData));
+			ConstantBuffer cb(sizeof(ConstData));
 			cb.Init(&GetRenderer());
 
 			entity.Add<RenderComponent>([&] {
@@ -50,7 +53,6 @@ public:
 	}
 
 	void Render() override {
-		GetRenderer().BeginRender();
 		shader_.SetShader();
 
 		auto it = GetIterator<RenderComponent, TransformComponent>();
@@ -60,7 +62,7 @@ public:
 			TransformComponent& transform_component = entity.Get<TransformComponent>();
 			ConstData data{ transform_component.x, transform_component.y };
 
-			render_component.vertex_buffer.SetBuffer();
+			render_component.vertex_buffer.SetBuffer(32);
 			render_component.index_buffer.SetBuffer();
 			render_component.constant_buffer.SetBuffer();
 			render_component.constant_buffer.Update(&data);
@@ -69,8 +71,6 @@ public:
 			GetGame().GetRenderer().GetContext()->DrawIndexed(
 				render_component.index_buffer.GetSize(), 0, 0);
 		}
-
-		GetRenderer().EndRender();
 	}
 
 private:

@@ -17,6 +17,8 @@ public:
 		: signature_(0)
 	{}
 
+	Entity(const Entity&) = delete;
+
 	~Entity() {
 		for (const auto& it : components_map_) {
 			delete it.second;
