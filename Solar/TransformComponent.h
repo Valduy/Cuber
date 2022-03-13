@@ -109,6 +109,7 @@ public:
 		return model;
 	}
 
+	// TODO: fix this madness...
 	ecs::Entity& GetParent() {
 		assert(owner_ != nullptr && "Entity has not parent.");
 		return *owner_;

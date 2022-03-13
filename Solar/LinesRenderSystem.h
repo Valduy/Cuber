@@ -12,8 +12,12 @@
 
 class LinesRendererSystem : public engine::Game::SystemBase {
 public:
-	struct ConstData {
+	struct MatrixData {
 		DirectX::SimpleMath::Matrix mat;
+	};
+
+	struct ColorData {
+		DirectX::SimpleMath::Vector4 color;
 	};
 
 	void Init(engine::Game& game) override {
@@ -29,11 +33,14 @@ public:
 				sizeof(DirectX::SimpleMath::Vector3) * lines_component.points.size());
 			vb.Init(&GetRenderer());
 
-			graph::ConstantBuffer cb(sizeof(ConstData));
-			cb.Init(&GetRenderer());
+			graph::ConstantBuffer matrix_cb(sizeof(MatrixData));
+			matrix_cb.Init(&GetRenderer());
+
+			graph::ConstantBuffer color_cb(sizeof(MatrixData));
+			color_cb.Init(&GetRenderer());
 
 			entity.Add<LinesRenderComponent>([&] {
-				return new LinesRenderComponent(vb, cb);
+				return new LinesRenderComponent(vb, matrix_cb, color_cb);
 			});
 		}
 	}
@@ -55,14 +62,17 @@ public:
 				DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
 				DirectX::SimpleMath::Matrix camera_matrix = camera_component.GetCameraMatrix();
 				DirectX::SimpleMath::Matrix transform_matrix = model_matrix * camera_matrix;
-				ConstData data{ transform_matrix.Transpose() };
+				MatrixData matrix_data { transform_matrix.Transpose() };
+				ColorData color_data{ lines_component.color };
 
 				lines_render_component.vertex_buffer.SetBuffer(sizeof(DirectX::SimpleMath::Vector3));
-				lines_render_component.constant_buffer.SetBuffer();
-				lines_render_component.constant_buffer.Update(&data);
+				lines_render_component.matrix_const_buffer.SetBuffer(0);
+				lines_render_component.matrix_const_buffer.Update(&matrix_data);
+				lines_render_component.color_const_buffer.SetBuffer(1);
+				lines_render_component.color_const_buffer.Update(&color_data);
 
-				GetRenderer().GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
-				GetRenderer().GetContext()->Draw(lines_component.points.size(), 0);
+				GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_LINELIST);
+				GetRenderer().GetContext().Draw(lines_component.points.size(), 0);
 			}
 		}
 	}

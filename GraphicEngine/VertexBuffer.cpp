@@ -26,7 +26,7 @@ HRESULT graph::VertexBuffer::Init(Renderer* renderer) {
 	vertex_data.SysMemPitch = 0;
 	vertex_data.SysMemSlicePitch = 0;
 
-	return renderer_->GetDevice()->CreateBuffer(
+	return renderer_->GetDevice().CreateBuffer(
 		&vertex_buf_desc, &vertex_data, &vertex_buffer_);
 }
 
@@ -35,5 +35,5 @@ void graph::VertexBuffer::SetBuffer(unsigned int stribes) {
 	const UINT strides[] = { stribes };
 	const UINT offsets[] = { 0 };
 
-	renderer_->GetContext()->IASetVertexBuffers(0, 1, vertex_buffer_.GetAddressOf(), strides, offsets);
+	renderer_->GetContext().IASetVertexBuffers(0, 1, vertex_buffer_.GetAddressOf(), strides, offsets);
 }

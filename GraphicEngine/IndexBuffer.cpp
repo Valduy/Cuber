@@ -30,10 +30,10 @@ HRESULT graph::IndexBuffer::Init(Renderer* renderer) {
 	index_data.SysMemPitch = 0;
 	index_data.SysMemSlicePitch = 0;
 
-	return renderer_->GetDevice()->CreateBuffer(&index_buf_desc, &index_data, &index_buffer_);
+	return renderer_->GetDevice().CreateBuffer(&index_buf_desc, &index_data, &index_buffer_);
 }
 
 void graph::IndexBuffer::SetBuffer() {
 	assert(renderer_ != nullptr && "Index buffer isn't initialized");
-	renderer_->GetContext()->IASetIndexBuffer(index_buffer_.Get(), DXGI_FORMAT_R32_UINT, 0);
+	renderer_->GetContext().IASetIndexBuffer(index_buffer_.Get(), DXGI_FORMAT_R32_UINT, 0);
 }

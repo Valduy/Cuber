@@ -3,6 +3,11 @@
 
 #include <cassert>
 
+ID3D11Buffer& graph::ConstantBuffer::GetBuffer() {
+	assert(constant_buffer_ != nullptr && "Constant buffer isn't initialized.");
+	return *constant_buffer_.Get();
+}
+
 graph::ConstantBuffer::ConstantBuffer(size_t sizemem)
 	: renderer_(nullptr)
     , sizemem_(sizemem)
@@ -20,15 +25,15 @@ HRESULT graph::ConstantBuffer::Init(Renderer* renderer) {
 	const_buf_desc.StructureByteStride = 0;
 	const_buf_desc.ByteWidth = sizemem_;
 
-	return renderer_->GetDevice()->CreateBuffer(&const_buf_desc, nullptr, &constant_buffer_);
+	return renderer_->GetDevice().CreateBuffer(&const_buf_desc, nullptr, &constant_buffer_);
 }
 
-void graph::ConstantBuffer::SetBuffer() {
+void graph::ConstantBuffer::SetBuffer(unsigned int slot) {
 	assert(renderer_ != nullptr && "Constant buffer isn't initialized");
-	renderer_->GetContext()->VSSetConstantBuffers(0, 1, constant_buffer_.GetAddressOf());
+	renderer_->GetContext().VSSetConstantBuffers(slot, 1, constant_buffer_.GetAddressOf());
 }
 
 void graph::ConstantBuffer::Update(void* data) {
 	assert(renderer_ != nullptr && "Constant buffer isn't initialized");
-	renderer_->GetContext()->UpdateSubresource(constant_buffer_.Get(), 0, nullptr, data, 0, 0);
+	renderer_->GetContext().UpdateSubresource(constant_buffer_.Get(), 0, nullptr, data, 0, 0);
 }

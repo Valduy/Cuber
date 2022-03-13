@@ -42,9 +42,9 @@ HRESULT graph::Shader::Init(
 
 void graph::Shader::SetShader() {
 	assert(renderer_ != nullptr && "Shader isn't initialized.");
-	renderer_->GetContext()->IASetInputLayout(layout_.Get());	
-	renderer_->GetContext()->VSSetShader(vertex_shader_.Get(), nullptr, 0);
-	renderer_->GetContext()->PSSetShader(pixel_shader_.Get(), nullptr, 0);
+	renderer_->GetContext().IASetInputLayout(layout_.Get());	
+	renderer_->GetContext().VSSetShader(vertex_shader_.Get(), nullptr, 0);
+	renderer_->GetContext().PSSetShader(pixel_shader_.Get(), nullptr, 0);
 }
 
 HRESULT graph::Shader::CompileVertexByteCode(LPCWSTR path) {
@@ -94,7 +94,7 @@ HRESULT graph::Shader::CompileByteCode(LPCWSTR path, LPCSTR entry_point, LPCSTR 
 }
 
 HRESULT graph::Shader::CreateVertexShader() {
-	return renderer_->GetDevice()->CreateVertexShader(
+	return renderer_->GetDevice().CreateVertexShader(
 		vertex_byte_code_->GetBufferPointer(),
 		vertex_byte_code_->GetBufferSize(),
 		nullptr,
@@ -102,7 +102,7 @@ HRESULT graph::Shader::CreateVertexShader() {
 }
 
 HRESULT graph::Shader::CreatePixelShader() {
-	return renderer_->GetDevice()->CreatePixelShader(
+	return renderer_->GetDevice().CreatePixelShader(
 		pixel_byte_code_->GetBufferPointer(),
 		pixel_byte_code_->GetBufferSize(),
 		nullptr,
@@ -110,7 +110,7 @@ HRESULT graph::Shader::CreatePixelShader() {
 }
 
 HRESULT graph::Shader::CreateInputLayout(const LayoutDescriptor& layout_desc) {
-	return renderer_->GetDevice()->CreateInputLayout(
+	return renderer_->GetDevice().CreateInputLayout(
 		layout_desc.GetData(),
 		layout_desc.GetSize(),
 		vertex_byte_code_->GetBufferPointer(),

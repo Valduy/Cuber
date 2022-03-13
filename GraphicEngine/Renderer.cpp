@@ -1,12 +1,16 @@
 #include "pch.h"
 #include "Renderer.h"
 
-ID3D11Device* graph::Renderer::GetDevice() {
-	return device_.Get();
+#include <cassert>
+
+ID3D11Device& graph::Renderer::GetDevice() {
+	assert(device_ != nullptr && "Renderer isn't initialized.");
+	return *device_.Get();
 }
 
-ID3D11DeviceContext* graph::Renderer::GetContext() {
-	return context_.Get();
+ID3D11DeviceContext& graph::Renderer::GetContext() {
+	assert(context_ != nullptr && "Renderer isn't initialized.");
+	return *context_.Get();
 }
 
 graph::Renderer::Renderer(Window& window)

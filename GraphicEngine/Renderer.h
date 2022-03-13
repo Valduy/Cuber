@@ -9,8 +9,8 @@ namespace graph {
 
 	class Renderer {
 	public:
-		ID3D11Device* GetDevice();
-		ID3D11DeviceContext* GetContext();
+		ID3D11Device& GetDevice();
+		ID3D11DeviceContext& GetContext();
 
 		Renderer(Window& window);
 		HRESULT Init();

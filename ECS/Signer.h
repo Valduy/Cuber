@@ -15,8 +15,7 @@ public:
 
 	template<typename First, typename Second, typename... Rest>
 	static Signature GetSignature() {
-		Signature signature = BitIdentifier::GetId<First>();
-		signature |= GetSignature<Second, Rest...>();
+		static Signature signature = BitIdentifier::GetId<First>() | GetSignature<Second, Rest...>();
 		return signature;
 	}
 

@@ -198,6 +198,54 @@ ecs::Entity& CreatePlane(engine::Game& game, float size, int subdivisions) {
 	return plane;
 }
 
+ecs::Entity& CreateLine(
+	engine::Game& game, 
+	DirectX::SimpleMath::Vector3 a, 
+	DirectX::SimpleMath::Vector3 b,
+	DirectX::SimpleMath::Vector4 color)
+{
+	using namespace DirectX::SimpleMath;
+	ecs::Entity& line = game.GetEntityManager().CreateEntity();
+	line.Add<TransformComponent>([&] {
+		return new TransformComponent(line);
+	});
+	LinesComponent& lines_component = line.Add<LinesComponent>();
+	lines_component.color = color;
+	lines_component.points = { a, b };
+
+	return line;
+}
+
+ecs::Entity& CreateAxis(engine::Game& game, float length) {
+	ecs::Entity& axis = game.GetEntityManager().CreateEntity();
+	TransformComponent& transform = axis.Add<TransformComponent>([&] {
+		return new TransformComponent(axis);
+	});
+
+	ecs::Entity& x = CreateLine(
+		game,
+		{ 0.0f, 0.0f, 0.0f },
+		{ length, 0.0f, 0.0f },
+		{ 1.0f, 0.0f, 0.0f, 1.0f });
+	transform.AddChild(x);
+
+	ecs::Entity& y = CreateLine(
+		game,
+		{ 0.0f, 0.0f, 0.0f },
+		{ 0.0f, length, 0.0f },
+		{ 0.0f, 1.0f, 0.0f, 1.0f });
+	transform.AddChild(y);
+
+	ecs::Entity& z = CreateLine(
+		game,
+		{ 0.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, length },
+		{ 0.0f, 0.0f, 1.0f, 1.0f });
+	transform.AddChild(z);
+
+	return axis;
+}
+
 void SetParent(ecs::Entity& parent, ecs::Entity& child) {
 	TransformComponent& parent_transform = parent.Get<TransformComponent>();
 	parent_transform.AddChild(child);
@@ -270,6 +318,7 @@ int main() {
 	SetParent(planet6, planet7);
 
 	ecs::Entity& plane = CreatePlane(game, 100, 100);
+	ecs::Entity& axis = CreateAxis(game, 3.0f);
 
 	game.Run();
 	return 0;

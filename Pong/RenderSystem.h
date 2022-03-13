@@ -67,8 +67,8 @@ public:
 			render_component.constant_buffer.SetBuffer();
 			render_component.constant_buffer.Update(&data);
 
-			GetGame().GetRenderer().GetContext()->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			GetGame().GetRenderer().GetContext()->DrawIndexed(
+			GetGame().GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			GetGame().GetRenderer().GetContext().DrawIndexed(
 				render_component.index_buffer.GetSize(), 0, 0);
 		}
 	}

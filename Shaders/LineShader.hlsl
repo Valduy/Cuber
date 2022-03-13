@@ -1,6 +1,11 @@
-cbuffer	Matrixes : register(b0)
+cbuffer	Matrix : register(b0)
 {
 	matrix mat;
+};
+
+cbuffer	Color : register(b1)
+{
+	float4 color;
 };
 
 struct VS_IN
@@ -11,6 +16,7 @@ struct VS_IN
 struct PS_IN
 {
 	float4 pos : SV_POSITION;
+	float4 col : COLOR;
 };
 
 PS_IN VSMain(VS_IN input)
@@ -19,12 +25,13 @@ PS_IN VSMain(VS_IN input)
 
 	float4 pos = float4(input.pos, 1.0);
 	output.pos = mul(pos, mat);
+	output.col = color;
 
 	return output;
 }
 
 float4 PSMain(PS_IN input) : SV_Target
 {
-	float4 col = float4(1.0, 1.0, 1.0, 1.0);
+	float4 col = input.col;
 	return col;
 }
