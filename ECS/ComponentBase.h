@@ -2,9 +2,9 @@
 
 namespace ecs {
 
-class IComponent {
+class ComponentBase {
 public:
-	virtual ~IComponent() = default;
+	virtual ~ComponentBase() = default;
 };
 
 } // namespace ecs

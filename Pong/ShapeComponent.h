@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../ECS/IComponent.h"
+#include "../ECS/ComponentBase.h"
 #include <vector>
 
-class ShapeComponent : public ecs::IComponent {
+class ShapeComponent : public ecs::ComponentBase {
 public:
 	std::vector<DirectX::SimpleMath::Vector4> points;
 	std::vector<int> indexes;

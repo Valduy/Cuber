@@ -3,7 +3,7 @@
 #include <cassert>
 #include <map>
 #include "BitIdentifier.h"
-#include "IComponent.h"
+#include "ComponentBase.h"
 #include "Signer.h"
 
 namespace ecs {
@@ -88,7 +88,7 @@ public:
 
 private:
 	Signer::Signature signature_;
-	std::map<BitIdentifier::Id, IComponent*> components_map_;
+	std::map<BitIdentifier::Id, ComponentBase*> components_map_;
 };
 
 } // namespace ecs

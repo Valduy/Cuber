@@ -2,9 +2,9 @@
 
 #include <SimpleMath.h>
 
-#include "../ECS/IComponent.h"
+#include "../ECS/ComponentBase.h"
 
-class CameraComponent : public ecs::IComponent {
+class CameraComponent : public ecs::ComponentBase {
 public:
 	DirectX::SimpleMath::Matrix view_matrix;
 	DirectX::SimpleMath::Matrix projection_matrix;

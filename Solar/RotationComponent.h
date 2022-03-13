@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../ECS/IComponent.h"
+#include "../ECS/ComponentBase.h"
 
-class RotationComponent : public ecs::IComponent {
+class RotationComponent : public ecs::ComponentBase {
 public:
 	float speed;
 	DirectX::SimpleMath::Vector3 axis;

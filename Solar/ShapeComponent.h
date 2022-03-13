@@ -3,9 +3,9 @@
 #include <vector>
 #include <SimpleMath.h>
 
-#include "../ECS/IComponent.h"
+#include "../ECS/ComponentBase.h"
 
-class ShapeComponent : public ecs::IComponent {
+class ShapeComponent : public ecs::ComponentBase {
 public:
 	std::vector<DirectX::SimpleMath::Vector3> points;
 	std::vector<int> indexes;

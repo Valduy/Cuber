@@ -33,7 +33,7 @@
     <ClInclude Include="EntityManager.h">
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
-    <ClInclude Include="IComponent.h">
+    <ClInclude Include="ComponentBase.h">
       <Filter>Header Files\ECS</Filter>
     </ClInclude>
     <ClInclude Include="BitIdentifier.h">

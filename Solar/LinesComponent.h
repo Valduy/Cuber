@@ -3,9 +3,9 @@
 #include <vector>
 #include <SimpleMath.h>
 
-#include "../ECS/IComponent.h"
+#include "../ECS/ComponentBase.h"
 
-class LinesComponent : public ecs::IComponent {
+class LinesComponent : public ecs::ComponentBase {
 public:
 	DirectX::SimpleMath::Vector4 color { 1.0f, 1.0f, 1.0f, 1.0f };
 	std::vector<DirectX::SimpleMath::Vector3> points;
