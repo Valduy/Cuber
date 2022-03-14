@@ -7,7 +7,7 @@
 
 class TransformComponent : public ecs::ComponentBase {
 public:
-	DirectX::SimpleMath::Vector3 GetLocalRotation() {
+	DirectX::SimpleMath::Vector3 GetLocalRotation() const {
 		return local_rotation_;
 	}
 
@@ -15,7 +15,7 @@ public:
 		local_rotation_ = local_rotation;
 	}
 
-	DirectX::SimpleMath::Vector3 GetLocalScale() {
+	DirectX::SimpleMath::Vector3 GetLocalScale() const {
 		return local_scale_;
 	}
 
@@ -23,7 +23,7 @@ public:
 		local_scale_ = local_scale;
 	}
 
-	DirectX::SimpleMath::Vector3 GetLocalPosition() {
+	DirectX::SimpleMath::Vector3 GetLocalPosition() const {
 		return local_position_;
 	}
 
@@ -31,7 +31,7 @@ public:
 		local_position_ = local_position;
 	}
 
-	DirectX::SimpleMath::Vector3 GetRotation() {
+	DirectX::SimpleMath::Vector3 GetRotation() const {
 		return parent_ != nullptr
 			? parent_->Get<TransformComponent>().GetRotation() + local_rotation_
 			: local_rotation_;
@@ -43,7 +43,7 @@ public:
 			: local_rotation_ = rotation;
 	}
 
-	DirectX::SimpleMath::Vector3 GetScale() {
+	DirectX::SimpleMath::Vector3 GetScale() const {
 		return parent_ != nullptr
 			? parent_->Get<TransformComponent>().GetScale() * local_scale_
 			: local_scale_;
@@ -55,7 +55,7 @@ public:
 			: local_scale_ = scale;
 	}
 
-	DirectX::SimpleMath::Vector3 GetPosition() {
+	DirectX::SimpleMath::Vector3 GetPosition() const {
 		if (parent_ == nullptr) return local_position_;
 
 		using namespace DirectX::SimpleMath;
@@ -105,7 +105,7 @@ public:
 	}
 
 	ecs::Entity& GetParent() {
-		assert(parent_ != nullptr && "Entity has not parent.");
+		assert(parent_ != nullptr && "Entity hasn't parent.");
 		return *parent_;
 	}
 

@@ -46,29 +46,30 @@ public:
 	void Render() override {		
 		shader_.SetShader();
 
-		for (auto camera_it = GetIterator<CameraComponent>(); camera_it.HasCurrent(); camera_it.Next()) {
-			ecs::Entity& camera = camera_it.Get();
-			CameraComponent& camera_component = camera.Get<CameraComponent>();
+		auto camera_it = GetIterator<CameraComponent>();
+		if (!camera_it.HasCurrent()) return;
 
-			for (auto it = GetIterator<RenderComponent, TransformComponent>(); it.HasCurrent(); it.Next()) {
-				ecs::Entity& mesh = it.Get();
-				RenderComponent& render_component = mesh.Get<RenderComponent>();
-				TransformComponent& transform_component = mesh.Get<TransformComponent>();
+		ecs::Entity& camera = camera_it.Get();
+		CameraComponent& camera_component = camera.Get<CameraComponent>();
 
-				DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
-				DirectX::SimpleMath::Matrix camera_matrix = camera_component.GetCameraMatrix();
-				DirectX::SimpleMath::Matrix transform_matrix = model_matrix * camera_matrix;
-				ConstData data{ transform_matrix.Transpose() };
+		for (auto it = GetIterator<RenderComponent, TransformComponent>(); it.HasCurrent(); it.Next()) {
+			ecs::Entity& mesh = it.Get();
+			RenderComponent& render_component = mesh.Get<RenderComponent>();
+			TransformComponent& transform_component = mesh.Get<TransformComponent>();
 
-				render_component.vertex_buffer.SetBuffer(32);
-				render_component.index_buffer.SetBuffer();
-				render_component.constant_buffer.SetBuffer();
-				render_component.constant_buffer.Update(&data);
+			DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
+			DirectX::SimpleMath::Matrix camera_matrix = camera_component.GetCameraMatrix();
+			DirectX::SimpleMath::Matrix transform_matrix = model_matrix * camera_matrix;
+			ConstData data{ transform_matrix.Transpose() };
 
-				GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-				GetRenderer().GetContext().DrawIndexed(
-					render_component.index_buffer.GetSize(), 0, 0);
-			}
+			render_component.vertex_buffer.SetBuffer(32);
+			render_component.index_buffer.SetBuffer();
+			render_component.constant_buffer.SetBuffer();
+			render_component.constant_buffer.Update(&data);
+
+			GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			GetRenderer().GetContext().DrawIndexed(
+				render_component.index_buffer.GetSize(), 0, 0);
 		}
 	}
 
