@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../ECS/ComponentBase.h"
+#include "../ECS/Entity.h"
 
-class RestartComponent : public ecs::ComponentBase{
+class RestartComponent : public ecs::Entity::ComponentBase {
 public:
 	float x;
 	float y;

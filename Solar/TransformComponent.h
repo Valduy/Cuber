@@ -2,10 +2,9 @@
 
 #include <SimpleMath.h>
 
-#include "../ECS/ComponentBase.h"
 #include "../ECS/Entity.h"
 
-class TransformComponent : public ecs::ComponentBase {
+class TransformComponent : public ecs::Entity::ComponentBase {
 public:
 	DirectX::SimpleMath::Vector3 GetLocalRotation() const {
 		return local_rotation_;
@@ -113,43 +112,53 @@ public:
 		return children_.size();
 	}
 
-	TransformComponent(ecs::Entity& owner)
-		: owner_(&owner)
-		, parent_(nullptr)
+	TransformComponent()
+		: parent_(nullptr)
 		, local_rotation_(0.0f, 0.0f, 0.0f)
 		, local_scale_(1.0f, 1.0f, 1.0f)
 		, local_position_(0.0f, 0.0f, 0.0f)
 	{}
+
+	void Delete() override {
+		if (IsHasParent()) {
+			parent_->Get<TransformComponent>().RemoveChild(GetOwner());
+
+			for (auto child : children_) {
+				child->Get<TransformComponent>().parent_ = nullptr;
+			}
+
+			children_.clear();
+		}
+	}
 
 	bool IsHasParent() const {
 		return parent_ != nullptr;
 	}
 
 	void AddChild(ecs::Entity& child) {
-		assert(&child != owner_ && "Entity can't contain itself.");
+		assert(&child != &GetOwner() && "Entity can't contain itself.");
 		assert(child.Contain<TransformComponent>() && "Child don't contain transform component.");
 		assert(!IsChildOf(child) && "Child shouldn't be parent.");
 
 		TransformComponent& transform_component = child.Get<TransformComponent>();
-		transform_component.parent_ = owner_;
+		transform_component.parent_ = &GetOwner();
 		children_.push_back(&child);
 	}
 
 	bool RemoveChild(ecs::Entity& child) {
 		assert(child.Contain<TransformComponent>() && "Child don't contain transform component.");
 		TransformComponent& transform_component = child.Get<TransformComponent>();
+		if (transform_component.parent_ != &GetOwner()) return false;
 
-		if (transform_component.parent_ == owner_) {
-			for (auto it = children_.begin(); it != children_.end(); ++it) {
-				if (*it == &child) {
-					children_.erase(it);
-					transform_component.parent_ = nullptr;
-					return true;
-				}
-			}			
+		for (auto it = children_.begin(); it != children_.end(); ++it) {
+			if (*it == &child) {
+				children_.erase(it);
+				transform_component.parent_ = nullptr;
+				break;
+			}
 		}
 
-		return false;
+		return true;
 	}
 
 	bool IsChildOf(ecs::Entity& entity) const {
@@ -173,7 +182,6 @@ public:
 	}
 
 private:
-	ecs::Entity* owner_;
 	ecs::Entity* parent_;
 	std::vector<ecs::Entity*> children_{};
 

@@ -156,7 +156,6 @@
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Entity.h" />
     <ClInclude Include="framework.h" />
-    <ClInclude Include="ComponentBase.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="Signer.h" />
   </ItemGroup>

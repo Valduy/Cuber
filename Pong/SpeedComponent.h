@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../ECS/ComponentBase.h"
+#include "../ECS/Entity.h"
 
-class SpeedComponent : public ecs::ComponentBase {
+class SpeedComponent : public ecs::Entity::ComponentBase {
 public:
 	float speed;
 };

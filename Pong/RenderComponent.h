@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../ECS/ComponentBase.h"
+#include "../ECS/Entity.h"
 #include "../GraphicEngine/VertexBuffer.h"
 #include "../GraphicEngine/IndexBuffer.h"
 #include "../GraphicEngine/ConstantBuffer.h"
 
-class RenderComponent : public ecs::ComponentBase {
+class RenderComponent : public ecs::Entity::ComponentBase {
 public:
 	std::vector<DirectX::SimpleMath::Vector4> vertices;
 	graph::VertexBuffer vertex_buffer;

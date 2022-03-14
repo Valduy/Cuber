@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../ECS/ComponentBase.h"
+#include "../ECS/Entity.h"
 
-class BoundingBoxComponent : public ecs::ComponentBase {
+class BoundingBoxComponent : public ecs::Entity::ComponentBase {
 public:
 	float width;
 	float height;

@@ -1,8 +1,8 @@
 #pragma once
 
-#include "../ECS/ComponentBase.h"
+#include "../ECS/Entity.h"
 
-class TransformComponent : public ecs::ComponentBase {
+class TransformComponent : public ecs::Entity::ComponentBase {
 public:
 	float x;
 	float y;

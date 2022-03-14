@@ -2,14 +2,37 @@
 
 #include <cassert>
 #include <map>
+#include <functional>
 #include "BitIdentifier.h"
-#include "ComponentBase.h"
 #include "Signer.h"
 
 namespace ecs {
 
 class Entity {
 public:
+	class ComponentBase {
+	public:
+		Entity& GetOwner() {
+			assert(owner_ != nullptr && "Component isn't initialized.");
+			return *owner_;
+		}
+
+		ComponentBase()
+			: owner_(nullptr)
+		{}
+
+		virtual ~ComponentBase() = default;
+
+		virtual void Init(Entity& owner) {
+			owner_ = &owner;
+		}
+
+		virtual void Delete() {}
+
+	private:
+		Entity* owner_;
+	};
+
 	template<typename TComponent>
 	using Factory = std::function<TComponent* ()>;
 
@@ -43,8 +66,10 @@ public:
 		const auto component_id = BitIdentifier::GetId<TComponent>();
 		const auto it = components_map_.find(component_id);
 		TComponent* component = factory();
+		component->Init(*this);
 
 		if (it != components_map_.end()) {
+			it->second->Delete();
 			delete it->second;			
 			it->second = component;
 		}
@@ -62,6 +87,7 @@ public:
 		const auto it = components_map_.find(component_id);
 
 		if (it != components_map_.end()) {
+			it->second->Delete();
 			delete it->second;
 			components_map_.erase(it);			
 			signature_ &= ~component_id;

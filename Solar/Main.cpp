@@ -80,7 +80,7 @@ int VertexForEdge(Lookup& lookup, VertexList& vertices, int first, int second)
 	return inserted.first->second;
 }
 
-TriangleList subdivide(VertexList& vertices, TriangleList triangles)
+TriangleList Subdivide(VertexList& vertices, TriangleList triangles)
 {
 	Lookup lookup;
 	TriangleList result;
@@ -144,7 +144,7 @@ ShapeComponent& CreateSphere(ecs::Entity& e, int subdivisions) {
 
 	for (int i = 0; i < subdivisions; ++i)
 	{
-		shape_component.indexes = subdivide(shape_component.points, shape_component.indexes);
+		shape_component.indexes = Subdivide(shape_component.points, shape_component.indexes);
 	}
 
 	return shape_component;
@@ -160,9 +160,7 @@ ecs::Entity& CreatePlanet(
 	ecs::Entity& planet = game.GetEntityManager().CreateEntity();
 	CreateSphere(planet, 5);
 
-	TransformComponent& transform = planet.Add<TransformComponent>([&] {
-		return new TransformComponent(planet);
-	});
+	TransformComponent& transform = planet.Add<TransformComponent>();
 	transform.SetLocalPosition(local_position);
 	transform.SetLocalScale(local_scale);
 
@@ -175,9 +173,7 @@ ecs::Entity& CreatePlanet(
 
 ecs::Entity& CreatePlane(engine::Game& game, float size, int subdivisions) {
 	ecs::Entity& plane = game.GetEntityManager().CreateEntity();
-	plane.Add<TransformComponent>([&] {
-		return new TransformComponent(plane);
-	});
+	plane.Add<TransformComponent>();
 	LinesComponent& lines_component = plane.Add<LinesComponent>();
 
 	float cell_size = size / static_cast<float>(subdivisions);
@@ -208,9 +204,7 @@ ecs::Entity& CreateLine(
 {
 	using namespace DirectX::SimpleMath;
 	ecs::Entity& line = game.GetEntityManager().CreateEntity();
-	line.Add<TransformComponent>([&] {
-		return new TransformComponent(line);
-	});
+	line.Add<TransformComponent>();
 	LinesComponent& lines_component = line.Add<LinesComponent>();
 	lines_component.color = color;
 	lines_component.points = { a, b };
@@ -220,9 +214,7 @@ ecs::Entity& CreateLine(
 
 ecs::Entity& CreateAxis(engine::Game& game, float length) {
 	ecs::Entity& axis = game.GetEntityManager().CreateEntity();
-	TransformComponent& transform = axis.Add<TransformComponent>([&] {
-		return new TransformComponent(axis);
-	});
+	TransformComponent& transform = axis.Add<TransformComponent>();
 
 	ecs::Entity& x = CreateLine(
 		game,
