@@ -6,6 +6,7 @@
 #include "RenderSystem.h"
 #include "LinesRenderSystem.h"
 #include "RotationSystem.h"
+#include "SinSystem.h"
 #include "ShapeComponent.h"
 #include "TransformComponent.h"
 #include "CameraComponent.h"
@@ -252,11 +253,13 @@ int main() {
 	RenderSystem render_system;
 	LinesRendererSystem lines_renderer_system;
 	RotationSystem rotation_system;
+	SinSystem sin_system;
 
 	game.PushSystem(camera_system);
 	game.PushSystem(render_system);
 	game.PushSystem(lines_renderer_system);
-	game.PushSystem(rotation_system);	
+	game.PushSystem(rotation_system);
+	game.PushSystem(sin_system);
 
 	ecs::Entity& camera = game.GetEntityManager().CreateEntity();
 	CameraComponent& camera_component = camera.Add<CameraComponent>();
@@ -287,12 +290,13 @@ int main() {
 		game,
 		Vector3(3.0f, 0.0f, 0.0f),
 		Vector3(0.75f, 0.75f, 0.75f),
-		45.0f);
+		120.0f,
+		Vector3(1.0f, 0.0f, 0.0f));
 	SetParent(planet3, planet4);
 
 	ecs::Entity& planet5 = CreatePlanet(
 		game,
-		Vector3(2.0f, 0.0f, 0.0f),
+		Vector3(0.0f, 2.0f, 0.0f),
 		Vector3(0.75f, 0.75f, 0.75f),
 		45.0f);
 	SetParent(planet4, planet5);

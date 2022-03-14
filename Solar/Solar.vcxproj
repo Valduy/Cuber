@@ -161,6 +161,7 @@
     <ClInclude Include="RotationComponent.h" />
     <ClInclude Include="RotationSystem.h" />
     <ClInclude Include="ShapeComponent.h" />
+    <ClInclude Include="SinSystem.h" />
     <ClInclude Include="TransformComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
