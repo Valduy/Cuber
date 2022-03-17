@@ -54,6 +54,9 @@
     <ClInclude Include="LinesRenderSystem.h">
       <Filter>Systems</Filter>
     </ClInclude>
+    <ClInclude Include="DebugUtils.h">
+      <Filter>Header Files\engine</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp">
