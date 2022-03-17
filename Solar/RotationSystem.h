@@ -15,8 +15,8 @@ public:
 
 			const float amount = rotation_component.speed * dt;
 			const DirectX::SimpleMath::Vector3 new_rotation =
-				transform_component.GetLocalRotation() + rotation_component.axis * amount;
-			transform_component.SetLocalRotation(new_rotation);
+				transform_component.GetLocalEuler() + rotation_component.axis * amount;
+			transform_component.SetLocalEuler(new_rotation);
 		}
 	}
 };

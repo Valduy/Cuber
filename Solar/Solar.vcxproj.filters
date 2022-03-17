@@ -63,7 +63,7 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="SinSystem.h">
-      <Filter>Header Files\Components</Filter>
+      <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

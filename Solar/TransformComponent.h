@@ -6,12 +6,12 @@
 
 class TransformComponent : public ecs::Entity::ComponentBase {
 public:
-	DirectX::SimpleMath::Vector3 GetLocalRotation() const {
-		return local_rotation_;
+	DirectX::SimpleMath::Vector3 GetLocalEuler() const {
+		return local_euler_;
 	}
 
-	void SetLocalRotation(DirectX::SimpleMath::Vector3 local_rotation) {
-		local_rotation_ = local_rotation;
+	void SetLocalEuler(DirectX::SimpleMath::Vector3 local_euler) {
+		local_euler_ = local_euler;
 	}
 
 	DirectX::SimpleMath::Vector3 GetLocalScale() const {
@@ -30,16 +30,16 @@ public:
 		local_position_ = local_position;
 	}
 
-	DirectX::SimpleMath::Vector3 GetRotation() const {
+	DirectX::SimpleMath::Vector3 GetEuler() const {
 		return parent_ != nullptr
-			? parent_->Get<TransformComponent>().GetRotation() + local_rotation_
-			: local_rotation_;
+			? parent_->Get<TransformComponent>().GetEuler() + local_euler_
+			: local_euler_;
 	}
 
-	void SetRotation(DirectX::SimpleMath::Vector3 rotation) {
+	void SetEuler(DirectX::SimpleMath::Vector3 rotation) {
 		parent_ != nullptr
-			? local_rotation_ = rotation - parent_->Get<TransformComponent>().GetRotation()
-			: local_rotation_ = rotation;
+			? local_euler_ = rotation - parent_->Get<TransformComponent>().GetEuler()
+			: local_euler_ = rotation;
 	}
 
 	DirectX::SimpleMath::Vector3 GetScale() const {
@@ -58,9 +58,9 @@ public:
 		if (parent_ == nullptr) return local_position_;
 
 		using namespace DirectX::SimpleMath;
-		TransformComponent& parent_transform = parent_->Get<TransformComponent>();
+		const TransformComponent& parent_transform = parent_->Get<TransformComponent>();
 		Vector4 offset(local_position_.x, local_position_.y, local_position_.z, 1.0);
-		Vector3 euler = parent_transform.GetRotation() * DirectX::XM_PI / 180;
+		const Vector3 euler = parent_transform.GetEuler() * DirectX::XM_PI / 180;
 
 		Matrix transform = Matrix::Identity;
 		transform *= Matrix::CreateFromYawPitchRoll(euler);
@@ -73,9 +73,9 @@ public:
 	void SetPosition(DirectX::SimpleMath::Vector3 position) {
 		if (parent_ != nullptr) {
 			using namespace DirectX::SimpleMath;
-			TransformComponent& parent_transform = parent_->Get<TransformComponent>();
+			const TransformComponent& parent_transform = parent_->Get<TransformComponent>();
 			Vector4 offset(position.x, position.y, position.z, 1.0f);
-			Vector3 euler = parent_transform.GetRotation() * DirectX::XM_PI / 180;
+			const Vector3 euler = parent_transform.GetEuler() * DirectX::XM_PI / 180;
 
 			Matrix transform = Matrix::Identity;
 			transform *= Matrix::CreateTranslation(-parent_transform.GetPosition());
@@ -93,7 +93,7 @@ public:
 		
 		Matrix model = Matrix::Identity;
 		model *= Matrix::CreateScale(local_scale_);
-		model *= Matrix::CreateFromYawPitchRoll(local_rotation_ * DirectX::XM_PI / 180);
+		model *= Matrix::CreateFromYawPitchRoll(local_euler_ * DirectX::XM_PI / 180);
 		model *= Matrix::CreateTranslation(local_position_);
 
 		if (parent_ != nullptr) {
@@ -103,18 +103,18 @@ public:
 		return model;
 	}
 
-	ecs::Entity& GetParent() {
+	ecs::Entity& GetParent() const {
 		assert(parent_ != nullptr && "Entity hasn't parent.");
 		return *parent_;
 	}
 
-	size_t GetChildrenCount() {
+	size_t GetChildrenCount() const {
 		return children_.size();
 	}
 
 	TransformComponent()
 		: parent_(nullptr)
-		, local_rotation_(0.0f, 0.0f, 0.0f)
+		, local_euler_(0.0f, 0.0f, 0.0f)
 		, local_scale_(1.0f, 1.0f, 1.0f)
 		, local_position_(0.0f, 0.0f, 0.0f)
 	{}
@@ -122,13 +122,13 @@ public:
 	void Delete() override {
 		if (IsHasParent()) {
 			parent_->Get<TransformComponent>().RemoveChild(GetOwner());
-
-			for (auto child : children_) {
-				child->Get<TransformComponent>().parent_ = nullptr;
-			}
-
-			children_.clear();
 		}
+
+		for (auto child : children_) {
+			child->Get<TransformComponent>().parent_ = nullptr;
+		}
+
+		children_.clear();
 	}
 
 	bool IsHasParent() const {
@@ -177,7 +177,7 @@ public:
 		} while (true);
 	}
 
-	ecs::Entity& operator[](size_t index) {
+	ecs::Entity& operator[](size_t index) const {
 		return *children_[index];
 	}
 
@@ -185,7 +185,7 @@ private:
 	ecs::Entity* parent_;
 	std::vector<ecs::Entity*> children_{};
 
-	DirectX::SimpleMath::Vector3 local_rotation_;
+	DirectX::SimpleMath::Vector3 local_euler_;
 	DirectX::SimpleMath::Vector3 local_scale_;
 	DirectX::SimpleMath::Vector3 local_position_;
 };
