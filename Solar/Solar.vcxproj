@@ -151,18 +151,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CameraComponent.h" />
-    <ClInclude Include="CameraSystem.h" />
-    <ClInclude Include="LinesRenderComponent.h" />
-    <ClInclude Include="LinesRenderSystem.h" />
-    <ClInclude Include="LinesComponent.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="RotationComponent.h" />
     <ClInclude Include="RotationSystem.h" />
     <ClInclude Include="ShapeComponent.h" />
     <ClInclude Include="SinSystem.h" />
-    <ClInclude Include="TransformComponent.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

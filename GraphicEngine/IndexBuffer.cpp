@@ -7,7 +7,7 @@ size_t graph::IndexBuffer::GetSize() const {
 	return size_;
 }
 
-graph::IndexBuffer::IndexBuffer(int* indices, size_t size)
+graph::IndexBuffer::IndexBuffer(const int* indices, size_t size)
 	: renderer_(nullptr)
 	, indices_(indices)
 	, size_(size)

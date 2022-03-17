@@ -11,13 +11,13 @@ class IndexBuffer {
 public:
 	size_t GetSize() const;
 
-	IndexBuffer(int* indices, size_t size);
+	IndexBuffer(const int* indices, size_t size);
 	HRESULT Init(Renderer* renderer);
 	void SetBuffer();
 
 private:
 	Renderer* renderer_;
-	int* indices_;
+	const int* indices_;
 	size_t size_;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> index_buffer_;

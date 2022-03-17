@@ -3,13 +3,13 @@
 #include <directxmath.h>
 #include <SimpleMath.h>
 
-#include "CameraComponent.h"
+#include "../Engine/TransformComponent.h"
+#include "../Engine/CameraComponent.h"
 #include "../Engine/Game.h"
 #include "../GraphicEngine/Shader.h"
 #include "../GraphicEngine/LayoutDescriptor.h"
 #include "RenderComponent.h"
 #include "ShapeComponent.h"
-#include "TransformComponent.h"
 
 class RenderSystem : public engine::Game::SystemBase {
 public:

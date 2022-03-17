@@ -2,9 +2,9 @@
 
 #include <cmath>
 
-#include "RotationComponent.h"
-#include "TransformComponent.h"
 #include "../Engine/Game.h"
+#include "../Engine/TransformComponent.h"
+#include "RotationComponent.h"
 
 class SinSystem : public engine::Game::SystemBase {
 public:

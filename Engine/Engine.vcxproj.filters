@@ -19,6 +19,12 @@
     <Filter Include="Source Files\engine">
       <UniqueIdentifier>{7954a9d0-6862-4daf-8d6a-5a8427ed7652}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Components">
+      <UniqueIdentifier>{c6af7ccc-06ff-4abc-a80c-2bbc45c8d1a9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Systems">
+      <UniqueIdentifier>{f545a7a7-a4ca-49c5-9e30-cb91b94c9f7e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -29,6 +35,24 @@
     </ClInclude>
     <ClInclude Include="Game.h">
       <Filter>Header Files\engine</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="LinesComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="LinesRenderComponent.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="CameraSystem.h">
+      <Filter>Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="LinesRenderSystem.h">
+      <Filter>Systems</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

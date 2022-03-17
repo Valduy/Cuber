@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../Engine/Game.h"
-#include "TransformComponent.h"
+#include "../Engine/TransformComponent.h"
 #include "RotationComponent.h"
 
 class RotationSystem : public engine::Game::SystemBase {

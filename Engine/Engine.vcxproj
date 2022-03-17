@@ -152,9 +152,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="CameraComponent.h" />
+    <ClInclude Include="CameraSystem.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="framework.h" />
+    <ClInclude Include="LinesComponent.h" />
+    <ClInclude Include="LinesRenderComponent.h" />
+    <ClInclude Include="LinesRenderSystem.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="TransformComponent.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Engine.cpp" />
