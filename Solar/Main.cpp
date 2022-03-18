@@ -44,11 +44,12 @@ void SetParent(ecs::Entity& parent, ecs::Entity& child) {
 }
 
 int main() {
-	engine::Game game;
+	using namespace engine;
+	Game game;
 
-	engine::CameraSystem camera_system;
+	CameraSystem camera_system;
 	RenderSystem render_system;
-	engine::LinesRendererSystem lines_renderer_system;
+	LinesRendererSystem lines_renderer_system;
 	RotationSystem rotation_system;
 	SinSystem sin_system;
 
@@ -59,8 +60,11 @@ int main() {
 	game.PushSystem(sin_system);
 
 	ecs::Entity& camera = game.GetEntityManager().CreateEntity();
-	engine::CameraComponent& camera_component = camera.Add<engine::CameraComponent>();
+	CameraComponent& camera_component = camera.Add<CameraComponent>();
 	camera_component.position.z = -3.0f;
+
+	ecs::Entity& plane = DebugUtils::CreatePlane(game, 100, 100);
+	ecs::Entity& axis = DebugUtils::CreateAxis(game, 3.0f);
 
 	using namespace DirectX::SimpleMath;
 	ecs::Entity& planet1 = CreatePlanet(
@@ -119,10 +123,7 @@ int main() {
 		Vector3(0.5f, 0.5f, 0.5f),
 		50.0f,
 		Vector3(0.0f, 1.0f, 0.0f));
-	SetParent(planet7, planet8);
-
-	ecs::Entity& plane = engine::DebugUtils::CreatePlane(game, 100, 100);
-	ecs::Entity& axis = engine::DebugUtils::CreateAxis(game, 3.0f);
+	SetParent(planet7, planet8);	
 
 	game.Run();
 	return 0;

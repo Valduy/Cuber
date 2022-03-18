@@ -129,6 +129,7 @@ ecs::Entity& CreateBall(
 
 int main() {
 	engine::Game game;
+
 	RenderSystem render_system;
 	CollisionSystem collision_system;
 	BorderSystem border_system;

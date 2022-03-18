@@ -39,9 +39,9 @@ public:
 	}
 
 	void SetEuler(DirectX::SimpleMath::Vector3 rotation) {
-		parent_ != nullptr
-			? local_euler_ = rotation - parent_->Get<TransformComponent>().GetEuler()
-			: local_euler_ = rotation;
+		local_euler_ = parent_ != nullptr
+			? rotation - parent_->Get<TransformComponent>().GetEuler()
+			: rotation;
 	}
 
 	DirectX::SimpleMath::Vector3 GetScale() const {
@@ -51,9 +51,9 @@ public:
 	}
 
 	void SetScale(DirectX::SimpleMath::Vector3 scale) {
-		parent_ != nullptr
-			? local_scale_ = scale / parent_->Get<TransformComponent>().GetScale()
-			: local_scale_ = scale;
+		local_scale_ = parent_ != nullptr
+			? scale / parent_->Get<TransformComponent>().GetScale()
+			: scale;
 	}
 
 	DirectX::SimpleMath::Vector3 GetPosition() const {
