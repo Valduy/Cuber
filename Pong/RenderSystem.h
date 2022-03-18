@@ -52,20 +52,28 @@ public:
 		}
 	}
 
-	void Render() override {
-		shader_.SetShader();
-
+	void Update(float dt) override {
 		auto it = GetIterator<RenderComponent, TransformComponent>();
 		for (; it.HasCurrent(); it.Next()) {
 			ecs::Entity& entity = it.Get();
 			RenderComponent& render_component = entity.Get<RenderComponent>();
-			TransformComponent& transform_component = entity.Get<TransformComponent>();
+			const TransformComponent& transform_component = entity.Get<TransformComponent>();
 			ConstData data{ transform_component.x, transform_component.y };
+			render_component.constant_buffer.Update(&data);
+		}
+	}
+
+	void Render() override {
+		shader_.SetShader();
+
+		auto it = GetIterator<RenderComponent>();
+		for (; it.HasCurrent(); it.Next()) {
+			ecs::Entity& entity = it.Get();
+			RenderComponent& render_component = entity.Get<RenderComponent>();
 
 			render_component.vertex_buffer.SetBuffer(32);
 			render_component.index_buffer.SetBuffer();
 			render_component.constant_buffer.SetBuffer();
-			render_component.constant_buffer.Update(&data);
 
 			GetGame().GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			GetGame().GetRenderer().GetContext().DrawIndexed(

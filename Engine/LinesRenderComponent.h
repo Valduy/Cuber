@@ -4,6 +4,8 @@
 #include "../GraphicEngine/VertexBuffer.h"
 #include "../GraphicEngine/ConstantBuffer.h"
 
+namespace engine {
+
 class LinesRenderComponent : public ecs::Entity::ComponentBase {
 public:
 	graph::VertexBuffer vertex_buffer;
@@ -19,3 +21,5 @@ public:
 		, color_const_buffer(color_const_buffer)
 	{}
 };
+
+} // namespace engine

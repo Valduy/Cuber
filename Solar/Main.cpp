@@ -27,7 +27,7 @@ ecs::Entity& CreatePlanet(
 		return ShapeComponent::CreateSphere(5);
 	});
 
-	TransformComponent& transform = planet.Add<TransformComponent>();
+	engine::TransformComponent& transform = planet.Add<engine::TransformComponent>();
 	transform.SetLocalPosition(local_position);
 	transform.SetLocalScale(local_scale);
 
@@ -39,16 +39,16 @@ ecs::Entity& CreatePlanet(
 }
 
 void SetParent(ecs::Entity& parent, ecs::Entity& child) {
-	TransformComponent& parent_transform = parent.Get<TransformComponent>();
+	engine::TransformComponent& parent_transform = parent.Get<engine::TransformComponent>();
 	parent_transform.AddChild(child);
 }
 
 int main() {
 	engine::Game game;
 
-	CameraSystem camera_system;
+	engine::CameraSystem camera_system;
 	RenderSystem render_system;
-	LinesRendererSystem lines_renderer_system;
+	engine::LinesRendererSystem lines_renderer_system;
 	RotationSystem rotation_system;
 	SinSystem sin_system;
 
@@ -59,7 +59,7 @@ int main() {
 	game.PushSystem(sin_system);
 
 	ecs::Entity& camera = game.GetEntityManager().CreateEntity();
-	CameraComponent& camera_component = camera.Add<CameraComponent>();
+	engine::CameraComponent& camera_component = camera.Add<engine::CameraComponent>();
 	camera_component.position.z = -3.0f;
 
 	using namespace DirectX::SimpleMath;

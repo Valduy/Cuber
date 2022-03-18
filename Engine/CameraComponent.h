@@ -4,12 +4,14 @@
 
 #include "../ECS/Entity.h"
 
+namespace engine {
+
 class CameraComponent : public ecs::Entity::ComponentBase {
 public:
 	DirectX::SimpleMath::Matrix view_matrix;
 	DirectX::SimpleMath::Matrix projection_matrix;
 	DirectX::SimpleMath::Vector3 position;
-	
+
 	DirectX::SimpleMath::Matrix GetCameraMatrix() const {
 		return view_matrix * projection_matrix;
 	}
@@ -38,3 +40,5 @@ public:
 		, position(DirectX::SimpleMath::Vector3(0.0f, 0.0f, 0.0f))
 	{}
 };
+
+} // namespace engine

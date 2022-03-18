@@ -23,6 +23,7 @@ public:
 		using namespace graph;
 		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition4Color4, L"../Shaders/SolarShader.hlsl");
 
+		using namespace engine;
 		for (auto it = GetIterator<TransformComponent, ShapeComponent>(); it.HasCurrent(); it.Next()) {
 			ecs::Entity& entity = it.Get();
 			ShapeComponent& shape_component = entity.Get<ShapeComponent>();
@@ -43,15 +44,14 @@ public:
 		}
 	}
 
-	void Render() override {		
-		shader_.SetShader();
-
-		auto camera_it = GetIterator<CameraComponent>();
+	void Update(float dt) override {
+		auto camera_it = GetIterator<engine::CameraComponent>();
 		if (!camera_it.HasCurrent()) return;
 
 		ecs::Entity& camera = camera_it.Get();
-		CameraComponent& camera_component = camera.Get<CameraComponent>();
+		engine::CameraComponent& camera_component = camera.Get<engine::CameraComponent>();
 
+		using namespace engine;
 		for (auto it = GetIterator<RenderComponent, TransformComponent>(); it.HasCurrent(); it.Next()) {
 			ecs::Entity& mesh = it.Get();
 			RenderComponent& render_component = mesh.Get<RenderComponent>();
@@ -62,10 +62,21 @@ public:
 			DirectX::SimpleMath::Matrix transform_matrix = model_matrix * camera_matrix;
 			ConstData data{ transform_matrix.Transpose() };
 
+			render_component.constant_buffer.Update(&data);
+		}
+	}
+
+	void Render() override {		
+		shader_.SetShader();
+
+		using namespace engine;
+		for (auto it = GetIterator<RenderComponent>(); it.HasCurrent(); it.Next()) {
+			ecs::Entity& mesh = it.Get();
+			RenderComponent& render_component = mesh.Get<RenderComponent>();
+
 			render_component.vertex_buffer.SetBuffer(32);
 			render_component.index_buffer.SetBuffer();
 			render_component.constant_buffer.SetBuffer();
-			render_component.constant_buffer.Update(&data);
 
 			GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 			GetRenderer().GetContext().DrawIndexed(

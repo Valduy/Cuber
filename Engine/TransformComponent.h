@@ -4,6 +4,8 @@
 
 #include "../ECS/Entity.h"
 
+namespace engine {
+
 class TransformComponent : public ecs::Entity::ComponentBase {
 public:
 	DirectX::SimpleMath::Vector3 GetLocalEuler() const {
@@ -83,14 +85,15 @@ public:
 
 			offset = Vector4::Transform(offset, transform);
 			local_position_ = Vector3(offset.x, offset.y, offset.z);
-		} else {
+		}
+		else {
 			local_position_ = position;
 		}
 	}
 
 	DirectX::SimpleMath::Matrix GetModelMatrix() const {
 		using namespace DirectX::SimpleMath;
-		
+
 		Matrix model = Matrix::Identity;
 		model *= Matrix::CreateScale(local_scale_);
 		model *= Matrix::CreateFromYawPitchRoll(local_euler_ * DirectX::XM_PI / 180);
@@ -189,3 +192,5 @@ private:
 	DirectX::SimpleMath::Vector3 local_scale_;
 	DirectX::SimpleMath::Vector3 local_position_;
 };
+	
+} // namespace engine

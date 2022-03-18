@@ -3,10 +3,12 @@
 #include "CameraComponent.h"
 #include "../Engine/Game.h"
 
-class CameraSystem : public engine::Game::SystemBase {
+namespace engine {
+
+class CameraSystem : public Game::SystemBase {
 public:
 	float velocity_magnitude;
-	float mouse_sensitivity;	
+	float mouse_sensitivity;
 
 	CameraSystem()
 		: velocity_magnitude(5.0f)
@@ -64,7 +66,7 @@ private:
 	}
 
 	void UpdateMouse() {
-		using namespace DirectX::SimpleMath;	
+		using namespace DirectX::SimpleMath;
 
 		if (first_move_) {
 			last_position_.x = GetMouseState().GetX();
@@ -87,7 +89,7 @@ private:
 
 	void SetLookAtMatrix(CameraComponent* camera_component, float dt) {
 		using namespace DirectX::SimpleMath;
-		Matrix rotation_matrix = Matrix::CreateFromYawPitchRoll(yaw_, pitch_, 0.0f);
+		const Matrix rotation_matrix = Matrix::CreateFromYawPitchRoll(yaw_, pitch_, 0.0f);
 
 		direction_ = rotation_matrix.Forward() * direction_.x +
 			Vector3::Up * direction_.y +
@@ -112,11 +114,7 @@ private:
 			GetWindow().GetAspectRatio(),
 			0.1f,
 			100.0f);
-
-		//camera_component->projection_matrix = Matrix::CreateOrthographic(
-		//	2.0,
-		//	2.0,
-		//	0.1f,
-		//	100.0f);
 	}
-}; 
+};
+
+} // namespace engine

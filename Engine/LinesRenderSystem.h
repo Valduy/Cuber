@@ -10,7 +10,9 @@
 #include "../GraphicEngine/Shader.h"
 #include "../GraphicEngine/VertexBuffer.h"
 
-class LinesRendererSystem : public engine::Game::SystemBase {
+namespace engine {
+
+class LinesRendererSystem : public Game::SystemBase {
 public:
 	struct MatrixData {
 		DirectX::SimpleMath::Matrix mat;
@@ -20,8 +22,8 @@ public:
 		DirectX::SimpleMath::Vector4 color;
 	};
 
-	void Init(engine::Game& game) override {
-		engine::Game::SystemBase::Init(game);
+	void Init(Game& game) override {
+		SystemBase::Init(game);
 		shader_.Init(&GetRenderer(), graph::LayoutDescriptor::kPosition3, L"../Shaders/LineShader.hlsl");
 
 		for (auto it = GetIterator<TransformComponent, LinesComponent>(); it.HasCurrent(); it.Next()) {
@@ -29,7 +31,7 @@ public:
 			LinesComponent& lines_component = entity.Get<LinesComponent>();
 
 			graph::VertexBuffer vb(
-				lines_component.points.data(), 
+				lines_component.points.data(),
 				sizeof(DirectX::SimpleMath::Vector3) * lines_component.points.size());
 			vb.Init(&GetRenderer());
 
@@ -62,7 +64,7 @@ public:
 				DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
 				DirectX::SimpleMath::Matrix camera_matrix = camera_component.GetCameraMatrix();
 				DirectX::SimpleMath::Matrix transform_matrix = model_matrix * camera_matrix;
-				MatrixData matrix_data { transform_matrix.Transpose() };
+				MatrixData matrix_data{ transform_matrix.Transpose() };
 				ColorData color_data{ lines_component.color };
 
 				lines_render_component.vertex_buffer.SetBuffer(sizeof(DirectX::SimpleMath::Vector3));
@@ -80,3 +82,5 @@ public:
 private:
 	graph::Shader shader_;
 };
+
+} // namespace engine

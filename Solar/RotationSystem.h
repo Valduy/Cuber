@@ -7,6 +7,7 @@
 class RotationSystem : public engine::Game::SystemBase {
 public:
 	void Update(float dt) override {
+		using namespace engine;
 		auto it = GetIterator<TransformComponent, RotationComponent>();
 		for (; it.HasCurrent(); it.Next()) {
 			ecs::Entity& entity = it.Get();
