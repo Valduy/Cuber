@@ -11,23 +11,23 @@ public:
 		, y_(0)
 	{}
 
-	float GetX() const {
+	int GetX() const {
 		return x_;
 	}
 
-	float GetY() const {
+	int GetY() const {
 		return y_;
 	}
 
 private:
-	float x_;
-	float y_;
+	int x_;
+	int y_;
 
-	void SetX(float x) {
+	void SetX(int x) {
 		x_ = x;
 	}
 
-	void SetY(float y) {
+	void SetY(int y) {
 		y_ = y;
 	}
 };

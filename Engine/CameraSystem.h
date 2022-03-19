@@ -16,7 +16,8 @@ public:
 		, first_move_(true)
 		, yaw_(0.0f)
 		, pitch_(0.0f)
-		, last_position_(0.0f, 0.0f)
+		, position_x_(0)
+		, position_y_(0)
 		, direction_(0.0f, 0.0f, 0.0f)
 	{}
 
@@ -36,7 +37,8 @@ private:
 	bool first_move_;
 	float yaw_;
 	float pitch_;
-	DirectX::SimpleMath::Vector2 last_position_;
+	int position_x_;
+	int position_y_;
 	DirectX::SimpleMath::Vector3 direction_;
 
 	void UpdateKeyboard() {
@@ -69,16 +71,16 @@ private:
 		using namespace DirectX::SimpleMath;
 
 		if (first_move_) {
-			last_position_.x = GetMouseState().GetX();
-			last_position_.y = GetMouseState().GetY();
+			position_x_ = GetMouseState().GetX();
+			position_y_ = GetMouseState().GetY();
 			first_move_ = false;
 		}
 		else {
 			static constexpr float weight = 0.03f;
-			float dx = GetMouseState().GetX() - last_position_.x;
-			float dy = GetMouseState().GetY() - last_position_.y;
-			last_position_.x = GetMouseState().GetX();
-			last_position_.y = GetMouseState().GetY();
+			const int dx = GetMouseState().GetX() - position_x_;
+			const int dy = GetMouseState().GetY() - position_y_;
+			position_x_ = GetMouseState().GetX();
+			position_y_ = GetMouseState().GetY();
 			yaw_ -= weight * dx * mouse_sensitivity;
 			pitch_ -= weight * dy * mouse_sensitivity;
 			pitch_ = pitch_ < -DirectX::XM_PIDIV2
