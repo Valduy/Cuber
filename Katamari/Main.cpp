@@ -1,3 +1,5 @@
+#include <DirectXTex.h>
+
 #include "../Engine/Game.h"
 #include "../Engine/Model.h"
 #include "../Engine/DebugUtils.h"
@@ -31,10 +33,10 @@ int main() {
 
 	Model model;
 	Model::Load(model, "C:/Users/Gleb/Desktop/Wooden Crate 01.obj");
-
+		
 	ecs::Entity& entity = game.GetEntityManager().CreateEntity();
-	entity.Add<ShapeComponent>([&] {
-		return new ShapeComponent(model);
+	entity.Add<ModelComponent>([&] {
+		return new ModelComponent(model);
 	});
 	entity.Add<TransformComponent>();
 

@@ -2,14 +2,16 @@
 
 #include <directxmath.h>
 #include <SimpleMath.h>
+#include <d3d11.h>
 
 #include "../Engine/TransformComponent.h"
 #include "../Engine/CameraComponent.h"
 #include "../Engine/Game.h"
 #include "../GraphicEngine/Shader.h"
+#include "../GraphicEngine/Sampler.h"
 #include "../GraphicEngine/LayoutDescriptor.h"
 #include "RenderComponent.h"
-#include "ShapeComponent.h"
+#include "ModelComponent.h"
 
 class RenderSystem : public engine::Game::SystemBase {
 public:
@@ -17,31 +19,82 @@ public:
 		DirectX::SimpleMath::Matrix mat;
 	};
 
+	RenderSystem()
+		: shader_()
+		, sampler_(D3D11_FILTER_MIN_MAG_MIP_LINEAR, 0)
+	{}
+
 	void Init(engine::Game& game) override {
 		engine::Game::SystemBase::Init(game);
 
 		using namespace graph;
-		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition4Color4, L"../Shaders/SolarShader.hlsl");
+		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition3Texture2, L"../Shaders/MaterialShader.hlsl");
+		sampler_.Init(&GetRenderer());
 
 		using namespace engine;
-		for (auto it = GetIterator<TransformComponent, ShapeComponent>(); it.HasCurrent(); it.Next()) {
+		for (auto it = GetIterator<TransformComponent, ModelComponent>(); it.HasCurrent(); it.Next()) {
 			ecs::Entity& entity = it.Get();
-			ShapeComponent& shape_component = entity.Get<ShapeComponent>();
-			auto vertices = GetVertices(shape_component.model.GetMeshes()[0].vertices);
+			ModelComponent& model_component = entity.Get<ModelComponent>();
+			std::vector<MeshBuffers> model_buffers;
 
-			VertexBuffer vb(vertices.data(), sizeof(DirectX::SimpleMath::Vector4) * vertices.size());
-			vb.Init(&GetRenderer());
+			for (const Mesh& mesh : model_component.model.GetMeshes()) {
+				VertexBuffer vb(mesh.vertices.data(), sizeof(Vertex) * mesh.vertices.size());
+				vb.Init(&GetRenderer());
 
-			IndexBuffer ib(shape_component.model.GetMeshes()[0].indices.data(), shape_component.model.GetMeshes()[0].indices.size());
-			ib.Init(&GetRenderer());
+				IndexBuffer ib(mesh.indices.data(), mesh.indices.size());
+				ib.Init(&GetRenderer());
+				model_buffers.push_back({ vb, ib });
+			}
 
-			ConstantBuffer cb(sizeof(ConstData));
-			cb.Init(&GetRenderer());
+			ConstantBuffer constant_buffer(sizeof(ConstData));
+			constant_buffer.Init(&GetRenderer());
 
 			entity.Add<RenderComponent>([&] {
-				return new RenderComponent(vertices, vb, ib, cb);
+				return new RenderComponent(model_buffers, constant_buffer);
 			});
 		}
+
+		CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
+		bool iswic2 = false;
+		auto pWIC = DirectX::GetWICFactory(iswic2);
+
+		DirectX::TexMetadata metadata{};
+		DirectX::ScratchImage image;
+		HRESULT res = LoadFromWICFile(
+			L"C:/Users/Gleb/Desktop/Diffuse.png",
+			DirectX::WIC_FLAGS_NONE,
+			&metadata,
+			image);
+
+		res = CreateTextureEx(
+			&GetRenderer().GetDevice(),
+			image.GetImages(),
+			image.GetImageCount(),
+			image.GetMetadata(),
+			D3D11_USAGE_DEFAULT,
+			D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
+			0, 0, false,
+			reinterpret_cast<ID3D11Resource**>(texture_.GetAddressOf()));
+
+		GetRenderer().GetDevice().CreateShaderResourceView(texture_.Get(), nullptr, &texture_view_);
+		image.Release();
+
+		//D3D11_TEXTURE2D_DESC desc = {};
+		//desc.Width = metadata.width;
+		//desc.Height = metadata.height;
+		//desc.ArraySize = 1;
+		//desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		//desc.Usage = D3D11_USAGE_DEFAULT;
+		//desc.CPUAccessFlags = 0;
+		//desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
+		//desc.MipLevels = 1;
+		//desc.MiscFlags = 0;
+		//desc.SampleDesc.Count = 1;
+		//desc.SampleDesc.Quality = 0;
+
+		//D3D11_SUBRESOURCE_DATA data = {};
+		//data.SysMemPitch = metadata.
+		//data.pSysMem = image.GetImage()
 	}
 
 	void Update(float dt) override {
@@ -53,9 +106,9 @@ public:
 
 		using namespace engine;
 		for (auto it = GetIterator<RenderComponent, TransformComponent>(); it.HasCurrent(); it.Next()) {
-			ecs::Entity& mesh = it.Get();
-			RenderComponent& render_component = mesh.Get<RenderComponent>();
-			TransformComponent& transform_component = mesh.Get<TransformComponent>();
+			ecs::Entity& model = it.Get();
+			RenderComponent& render_component = model.Get<RenderComponent>();
+			TransformComponent& transform_component = model.Get<TransformComponent>();
 
 			DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
 			DirectX::SimpleMath::Matrix camera_matrix = camera_component.GetCameraMatrix();
@@ -68,48 +121,30 @@ public:
 
 	void Render() override {
 		shader_.SetShader();
+		sampler_.SetSampler();
+		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		using namespace engine;
 		for (auto it = GetIterator<RenderComponent>(); it.HasCurrent(); it.Next()) {
-			ecs::Entity& mesh = it.Get();
-			RenderComponent& render_component = mesh.Get<RenderComponent>();
-
-			render_component.vertex_buffer.SetBuffer(32);
-			render_component.index_buffer.SetBuffer();
+			ecs::Entity& model = it.Get();
+			RenderComponent& render_component = model.Get<RenderComponent>();
 			render_component.constant_buffer.SetBuffer();
+			// TODO:
+			GetRenderer().GetContext().PSSetShaderResources(0, 1, texture_view_.GetAddressOf());
 
-			GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-			GetRenderer().GetContext().DrawIndexed(
-				render_component.index_buffer.GetSize(), 0, 0);
+			for (MeshBuffers& mesh_buffers : render_component.model_buffers) {
+				mesh_buffers.vertex_buffers.SetBuffer(sizeof(Vertex));
+				mesh_buffers.index_buffers.SetBuffer();
+				GetRenderer().GetContext().DrawIndexed(
+					mesh_buffers.index_buffers.GetSize(), 0, 0);
+			}			
 		}
 	}
 
 private:
 	graph::Shader shader_;
+	graph::Sampler sampler_;
 
-	std::vector<DirectX::SimpleMath::Vector4> GetVertices(
-		const std::vector<engine::Vertex>& vertices)
-	{
-		std::vector<DirectX::SimpleMath::Vector4> result;
-		int color = 0;
-
-		for (auto v : vertices) {
-			result.push_back({ v.position.x, v.position.y, v.position.z, 1.0f });
-
-			if (color == 0) {
-				result.push_back({ 1.0f, 0.0f, 0.0f, 1.0f });
-				color += 1;
-			}
-			else if (color == 1) {
-				result.push_back({ 1.0f, 1.0f, 0.0f, 1.0f });
-				color += 1;
-			}
-			else {
-				result.push_back({ 1.0f, 0.0f, 1.0f, 1.0f });
-				color = 0;
-			}
-		}
-
-		return result;
-	}
+	Microsoft::WRL::ComPtr<ID3D11Texture2D> texture_;
+	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture_view_;
 };

@@ -54,6 +54,9 @@
     <ClInclude Include="LayoutDescriptor.h">
       <Filter>Header Files\graph</Filter>
     </ClInclude>
+    <ClInclude Include="Sampler.h">
+      <Filter>Header Files\graph</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicEngine.cpp">
@@ -81,6 +84,9 @@
       <Filter>Source Files\graph</Filter>
     </ClCompile>
     <ClCompile Include="LayoutDescriptor.cpp">
+      <Filter>Source Files\graph</Filter>
+    </ClCompile>
+    <ClCompile Include="Samler.cpp">
       <Filter>Source Files\graph</Filter>
     </ClCompile>
   </ItemGroup>

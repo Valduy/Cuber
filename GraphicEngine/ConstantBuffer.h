@@ -12,7 +12,7 @@ public:
 
 	HRESULT Init(Renderer* renderer);
 	void SetBuffer(unsigned int slot = 0);
-	void Update(void* data);
+	void Update(const void* data) const;
 
 private:
 	Renderer* renderer_;

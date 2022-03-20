@@ -3,12 +3,12 @@
 
 #include <cassert>
 
-ID3D11Device& graph::Renderer::GetDevice() {
+ID3D11Device& graph::Renderer::GetDevice() const {
 	assert(device_ != nullptr && "Renderer isn't initialized.");
 	return *device_.Get();
 }
 
-ID3D11DeviceContext& graph::Renderer::GetContext() {
+ID3D11DeviceContext& graph::Renderer::GetContext() const {
 	assert(context_ != nullptr && "Renderer isn't initialized.");
 	return *context_.Get();
 }
@@ -20,7 +20,7 @@ graph::Renderer::Renderer(Window& window)
 	, context_(nullptr)
 	, back_texture_(nullptr)
 	, render_target_view_(nullptr)
-	, raster_state_(nullptr) 
+	, raster_state_(nullptr)
 {}
 
 HRESULT graph::Renderer::Init() {

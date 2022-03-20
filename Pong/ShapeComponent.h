@@ -1,5 +1,7 @@
 #pragma once
 
+#include <SimpleMath.h>
+
 #include "../ECS/Entity.h"
 #include <vector>
 

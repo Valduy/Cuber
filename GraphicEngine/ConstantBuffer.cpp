@@ -33,7 +33,7 @@ void graph::ConstantBuffer::SetBuffer(unsigned int slot) {
 	renderer_->GetContext().VSSetConstantBuffers(slot, 1, constant_buffer_.GetAddressOf());
 }
 
-void graph::ConstantBuffer::Update(void* data) {
+void graph::ConstantBuffer::Update(const void* data) const {
 	assert(renderer_ != nullptr && "Constant buffer isn't initialized");
 	renderer_->GetContext().UpdateSubresource(constant_buffer_.Get(), 0, nullptr, data, 0, 0);
 }

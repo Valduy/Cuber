@@ -68,6 +68,7 @@ public:
 
 	void Render() override {		
 		shader_.SetShader();
+		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		using namespace engine;
 		for (auto it = GetIterator<RenderComponent>(); it.HasCurrent(); it.Next()) {
@@ -77,8 +78,7 @@ public:
 			render_component.vertex_buffer.SetBuffer(32);
 			render_component.index_buffer.SetBuffer();
 			render_component.constant_buffer.SetBuffer();
-
-			GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+			
 			GetRenderer().GetContext().DrawIndexed(
 				render_component.index_buffer.GetSize(), 0, 0);
 		}

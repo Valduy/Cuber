@@ -3,7 +3,7 @@
 
 #include <cassert>
 
-graph::VertexBuffer::VertexBuffer(void* vertexes, size_t sizemem)
+graph::VertexBuffer::VertexBuffer(const void* vertexes, size_t sizemem)
 	: renderer_(nullptr)
 	, vertexes_(vertexes)
 	, sizemem_(sizemem)

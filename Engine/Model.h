@@ -45,7 +45,7 @@ private:
 	static void ProcessNode(Model& model, const aiScene* scene, const aiNode* node) {
 		for (size_t i = 0; i < node->mNumMeshes; i++)
 		{
-			aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+			const aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
 			model.meshes_.push_back(ProcessMesh(scene, mesh));
 		}
 		

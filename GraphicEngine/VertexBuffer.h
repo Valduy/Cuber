@@ -8,13 +8,13 @@ namespace graph {
 
 class VertexBuffer {
 public:
-	VertexBuffer(void* vertexes, size_t sizemem);
+	VertexBuffer(const void* vertexes, size_t sizemem);
 	HRESULT Init(Renderer* renderer);
 	void SetBuffer(unsigned int stribes);
 
 private:
 	Renderer* renderer_;
-	void* vertexes_;
+	const void* vertexes_;
 	size_t sizemem_;
 
 	Microsoft::WRL::ComPtr<ID3D11Buffer> vertex_buffer_;

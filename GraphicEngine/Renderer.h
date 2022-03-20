@@ -9,8 +9,8 @@ namespace graph {
 
 	class Renderer {
 	public:
-		ID3D11Device& GetDevice();
-		ID3D11DeviceContext& GetContext();
+		ID3D11Device& GetDevice() const;
+		ID3D11DeviceContext& GetContext() const;
 
 		Renderer(Window& window);
 		HRESULT Init();
@@ -27,7 +27,7 @@ namespace graph {
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depth_stencil_view_;
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depth_stencil_state_;
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target_view_;
-		Microsoft::WRL::ComPtr<ID3D11RasterizerState> raster_state_;
+		Microsoft::WRL::ComPtr<ID3D11RasterizerState> raster_state_;		
 
 		HRESULT CreateDeviceAndSwapChain();
 		HRESULT GetBackTexture();
@@ -35,7 +35,7 @@ namespace graph {
 		HRESULT CreateDepthStencilView();
 		HRESULT CreateDepthStencilState();
 		HRESULT CreateRenderTargetView();		
-		HRESULT CreateRasterState();
+		HRESULT CreateRasterState();		
 	};
 
 } // namespace engine
