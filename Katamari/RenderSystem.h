@@ -89,7 +89,7 @@ public:
 			ecs::Entity& model = it.Get();
 			RenderComponent& render_component = model.Get<RenderComponent>();
 			render_component.constant_buffer.SetBuffer();
-			render_component.texture.SetTexture(0);
+			render_component.texture.SetTexture();
 
 			for (MeshBuffers& mesh_buffers : render_component.model_buffers) {
 				mesh_buffers.vertex_buffers.SetBuffer(sizeof(Vertex));

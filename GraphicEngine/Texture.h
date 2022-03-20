@@ -36,7 +36,7 @@ public:
 		return renderer_->GetDevice().CreateShaderResourceView(texture_.Get(), nullptr, &texture_view_);
 	}
 
-	void SetTexture(int slot) {
+	void SetTexture(int slot = 0) {
 		assert(renderer_ != nullptr && "Texture isn't initialized.");
 		renderer_->GetContext().PSSetShaderResources(slot, 1, texture_view_.GetAddressOf());
 	}

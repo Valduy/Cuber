@@ -5,13 +5,14 @@
 
 class ModelComponent : public ecs::Entity::ComponentBase {
 public:
-	const engine::Model& model;
-	const DirectX::ScratchImage& texture;
+	engine::Model model;
+	DirectX::ScratchImage texture;
 
-	ModelComponent(
-		const engine::Model& model,
-		const DirectX::ScratchImage& texture)
-		: model(model)
-		, texture(texture)
-	{}
+	~ModelComponent() override {
+		texture.Release();
+	}
+
+	void Delete() override {
+		texture.Release();
+	}
 };
