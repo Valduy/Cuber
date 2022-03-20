@@ -1,6 +1,6 @@
 #pragma once
 
-//#include <winerror.h>
+#include <winerror.h>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
@@ -25,18 +25,18 @@ public:
 		: meshes_(meshes)
 	{}
 
-	static bool Load(Model& model, const std::string& path) {
+	static HRESULT Load(Model& model, const std::string& path) {
 		model.meshes_.clear();
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
 
 		if (scene == nullptr || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || scene->mRootNode == nullptr) {
 			std::cout << importer.GetErrorString() << std::endl;
-			return false;
+			return E_FAIL;
 		}
 
 		ProcessNode(model, scene, scene->mRootNode);
-		return true;
+		return S_OK;
 	}
 
 private:

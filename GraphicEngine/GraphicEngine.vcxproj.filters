@@ -57,6 +57,9 @@
     <ClInclude Include="Sampler.h">
       <Filter>Header Files\graph</Filter>
     </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>Header Files\graph</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GraphicEngine.cpp">

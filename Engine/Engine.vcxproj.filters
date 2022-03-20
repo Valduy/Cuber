@@ -28,6 +28,9 @@
     <Filter Include="Header Files\engine\Utils">
       <UniqueIdentifier>{d16ff02d-1a13-403e-8b9d-38ebe9b906e0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\engine\Model">
+      <UniqueIdentifier>{cb17dabd-e6e2-4702-91f4-4216e44972d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -58,15 +61,18 @@
       <Filter>Header Files\engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="DebugUtils.h">
-      <Filter>Header Files\engine</Filter>
-    </ClInclude>
-    <ClInclude Include="Vertex.h">
-      <Filter>Header Files\engine\Utils</Filter>
-    </ClInclude>
-    <ClInclude Include="Model.h">
       <Filter>Header Files\engine\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
+      <Filter>Header Files\engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Header Files\engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="Vertex.h">
+      <Filter>Header Files\engine\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureLoader.h">
       <Filter>Header Files\engine\Utils</Filter>
     </ClInclude>
   </ItemGroup>

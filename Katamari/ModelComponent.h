@@ -6,8 +6,12 @@
 class ModelComponent : public ecs::Entity::ComponentBase {
 public:
 	const engine::Model& model;
+	const DirectX::ScratchImage& texture;
 
-	ModelComponent(const engine::Model& model)
+	ModelComponent(
+		const engine::Model& model,
+		const DirectX::ScratchImage& texture)
 		: model(model)
+		, texture(texture)
 	{}
 };

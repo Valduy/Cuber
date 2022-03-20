@@ -1,6 +1,5 @@
 #pragma once
 
-#include <directxmath.h>
 #include <SimpleMath.h>
 #include <d3d11.h>
 
@@ -49,52 +48,13 @@ public:
 			ConstantBuffer constant_buffer(sizeof(ConstData));
 			constant_buffer.Init(&GetRenderer());
 
+			Texture texture;
+			texture.Init(&GetRenderer(), model_component.texture);
+
 			entity.Add<RenderComponent>([&] {
-				return new RenderComponent(model_buffers, constant_buffer);
+				return new RenderComponent(model_buffers, constant_buffer, texture);
 			});
-		}
-
-		CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
-		bool iswic2 = false;
-		auto pWIC = DirectX::GetWICFactory(iswic2);
-
-		DirectX::TexMetadata metadata{};
-		DirectX::ScratchImage image;
-		HRESULT res = LoadFromWICFile(
-			L"C:/Users/Gleb/Desktop/Diffuse.png",
-			DirectX::WIC_FLAGS_NONE,
-			&metadata,
-			image);
-
-		res = CreateTextureEx(
-			&GetRenderer().GetDevice(),
-			image.GetImages(),
-			image.GetImageCount(),
-			image.GetMetadata(),
-			D3D11_USAGE_DEFAULT,
-			D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
-			0, 0, false,
-			reinterpret_cast<ID3D11Resource**>(texture_.GetAddressOf()));
-
-		GetRenderer().GetDevice().CreateShaderResourceView(texture_.Get(), nullptr, &texture_view_);
-		image.Release();
-
-		//D3D11_TEXTURE2D_DESC desc = {};
-		//desc.Width = metadata.width;
-		//desc.Height = metadata.height;
-		//desc.ArraySize = 1;
-		//desc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		//desc.Usage = D3D11_USAGE_DEFAULT;
-		//desc.CPUAccessFlags = 0;
-		//desc.Format = DXGI_FORMAT_R8G8B8A8_UNORM_SRGB;
-		//desc.MipLevels = 1;
-		//desc.MiscFlags = 0;
-		//desc.SampleDesc.Count = 1;
-		//desc.SampleDesc.Quality = 0;
-
-		//D3D11_SUBRESOURCE_DATA data = {};
-		//data.SysMemPitch = metadata.
-		//data.pSysMem = image.GetImage()
+		}		
 	}
 
 	void Update(float dt) override {
@@ -129,8 +89,7 @@ public:
 			ecs::Entity& model = it.Get();
 			RenderComponent& render_component = model.Get<RenderComponent>();
 			render_component.constant_buffer.SetBuffer();
-			// TODO:
-			GetRenderer().GetContext().PSSetShaderResources(0, 1, texture_view_.GetAddressOf());
+			render_component.texture.SetTexture(0);
 
 			for (MeshBuffers& mesh_buffers : render_component.model_buffers) {
 				mesh_buffers.vertex_buffers.SetBuffer(sizeof(Vertex));
@@ -144,7 +103,4 @@ public:
 private:
 	graph::Shader shader_;
 	graph::Sampler sampler_;
-
-	Microsoft::WRL::ComPtr<ID3D11Texture2D> texture_;
-	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> texture_view_;
 };
