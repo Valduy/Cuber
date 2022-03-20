@@ -138,6 +138,7 @@ public:
 		return parent_ != nullptr;
 	}
 
+	// TODO: child of this or child check!!!
 	void AddChild(ecs::Entity& child) {
 		assert(&child != &GetOwner() && "Entity can't contain itself.");
 		assert(child.Contain<TransformComponent>() && "Child don't contain transform component.");

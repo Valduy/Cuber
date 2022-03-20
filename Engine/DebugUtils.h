@@ -13,6 +13,7 @@ public:
 		ecs::Entity& plane = game.GetEntityManager().CreateEntity();
 		plane.Add<TransformComponent>();
 		LinesComponent& lines_component = plane.Add<LinesComponent>();
+		lines_component.topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
 
 		const float cell_size = size / static_cast<float>(subdivisions);
 		const float pivot_x = -size / 2;
@@ -44,7 +45,7 @@ public:
 		LinesComponent& lines_component = line.Add<LinesComponent>();
 		lines_component.color = color;
 		lines_component.points = { a, b };
-
+		lines_component.topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
 		return line;
 	}
 
@@ -74,6 +75,58 @@ public:
 		transform.AddChild(z);
 
 		return axis;
+	}
+
+	static ecs::Entity& CreateCircle(
+		Game& game, 
+		float radius, 
+		DirectX::SimpleMath::Vector4 color)
+	{
+		ecs::Entity& circle = game.GetEntityManager().CreateEntity();
+		circle.Add<TransformComponent>();
+		LinesComponent& lines_component = circle.Add<LinesComponent>();
+		lines_component.points = GetCircleDots(radius);
+		lines_component.color = color;
+		lines_component.topology = D3D_PRIMITIVE_TOPOLOGY_LINESTRIP;
+		return circle;
+	}
+
+	static ecs::Entity& CreateSphere(
+		Game& game,
+		float radius,
+		DirectX::SimpleMath::Vector4 color)
+	{
+		ecs::Entity& sphere = game.GetEntityManager().CreateEntity();
+		TransformComponent& sphere_transform = sphere.Add<TransformComponent>();
+
+		ecs::Entity& yaw = CreateCircle(game, radius, color);
+		sphere_transform.AddChild(yaw);
+
+		ecs::Entity& pitch = CreateCircle(game, radius, color);
+		TransformComponent& pitch_transform = pitch.Get<TransformComponent>();
+		pitch_transform.SetEuler({ 0.0f, 90.0f, 0.0f });
+		sphere_transform.AddChild(pitch);
+
+		ecs::Entity& roll = CreateCircle(game, radius, color);
+		TransformComponent& roll_transform = roll.Get<TransformComponent>();
+		roll_transform.SetEuler({ 90.0f, 0.0f, 0.0f });
+		sphere_transform.AddChild(roll);
+
+		return sphere;
+	}
+
+private:
+	static std::vector<DirectX::SimpleMath::Vector3> GetCircleDots(float radius) {
+		std::vector<DirectX::SimpleMath::Vector3> dots;
+
+		for (int angle = 0; angle <= 360; angle += 10) {
+			float dot_x = cos(angle * DirectX::XM_PI / 180) * radius;
+			float dot_y = sin(angle * DirectX::XM_PI / 180) * radius;
+			dots.push_back({ dot_x, dot_y, 0.0f });
+		}
+
+		dots.pop_back();
+		return dots;
 	}
 };
 
