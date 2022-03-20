@@ -33,11 +33,11 @@ int main() {
 	ecs::Entity& axis = DebugUtils::CreateAxis(game, 3.0f);
 
 	Model model;
-	Model::Load(model, "C:/Users/Gleb/Desktop/Wooden Crate 01.obj");
+	Model::Load(model, "../Content/Wooden Crate 01.obj");
 
 	DirectX::ScratchImage texture;
 	TextureLoader::LoadWic(
-		L"C:/Users/Gleb/Desktop/Diffuse.png",
+		L"../Content/Wooden Crate 01 Diffuse.png",
 		&texture);
 
 	ecs::Entity& entity = game.GetEntityManager().CreateEntity();
