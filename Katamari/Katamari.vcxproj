@@ -156,6 +156,8 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="KatamariCameraSystem.h" />
+    <ClInclude Include="KatamariControllerComponent.h" />
     <ClInclude Include="KatamariControllerSystem.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />

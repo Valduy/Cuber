@@ -39,7 +39,7 @@ void graph::Window::Show() {
 	ShowWindow(handle_, SW_SHOW);
 	SetForegroundWindow(handle_);
 	SetFocus(handle_);
-	ShowCursor(true);
+	ShowCursor(false);
 }
 
 LRESULT graph::Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam) {

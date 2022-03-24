@@ -113,7 +113,7 @@ public:
 			parent_->Get<TransformComponent>().RemoveChild(GetOwner());
 		}
 
-		for (auto child : children_) {
+		for (const auto child : children_) {
 			child->Get<TransformComponent>().parent_ = nullptr;
 		}
 

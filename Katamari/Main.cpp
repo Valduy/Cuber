@@ -1,3 +1,5 @@
+#include "KatamariCameraSystem.h"
+#include "KatamariControllerSystem.h"
 #include "../Engine/Game.h"
 #include "../Engine/Model.h"
 #include "../Engine/DebugUtils.h"
@@ -53,27 +55,30 @@ int main() {
 	using namespace engine;
 	Game game;
 
-	CameraSystem camera_system;
+	//CameraSystem camera_system;
+	KatamariCameraSystem camera_system;
+	KatamariControllerSystem katamari_controller_system;
 	LinesRendererSystem lines_renderer_system;
 	RenderSystem render_system;
 
 	game.PushSystem(camera_system);
+	game.PushSystem(katamari_controller_system);
 	game.PushSystem(lines_renderer_system);
 	game.PushSystem(render_system);
-
-	ecs::Entity& camera = game.GetEntityManager().CreateEntity();
-	CameraComponent& camera_component = camera.Add<CameraComponent>();
-	camera_component.position.z = -3.0f;
 
 	ecs::Entity& plane = DebugUtils::CreatePlane(game, 100, 100);
 	ecs::Entity& axis = DebugUtils::CreateAxis(game, 3.0f);
 
+	ecs::Entity& camera = game.GetEntityManager().CreateEntity();
+	camera.Add<CameraComponent>();
+	camera.Add<TransformComponent>();
+	
 	ecs::Entity& crate = LoadModel(
 		game,
 		"../Content/WoodenCrate.obj",
 		L"../Content/WoodenCrate_Diffuse.png");
 	AttachSphere(game, crate, 1.0f, { 0.0f, 0.5f, 0.0f });
-
+	
 	ecs::Entity& mill = LoadModel(
 		game,
 		"../Content/WindMill.obj",
@@ -97,8 +102,17 @@ int main() {
 		game,
 		"../Content/SoccerBall.obj",
 		L"../Content/SoccerBall_Diffuse.bmp",
-		{ -9.0f, 0.0f, 0.0f },
+		{ 0.0f, 0.0f, 0.0f },
 		{ 0.2f, 0.2f, 0.2f });
+	AttachSphere(game, ball, 3);
+
+	ecs::Entity& katamari = game.GetEntityManager().CreateEntity();
+	katamari.Add<KatamariControllerComponent>();
+	TransformComponent& katamari_transform = katamari.Add<TransformComponent>();
+	katamari_transform.SetPosition({ -9.0f, 0.0f, 0.0f });
+	katamari_transform.AddChild(ball);
+	katamari_transform.AddChild(camera);
+	camera.Get<TransformComponent>().SetLocalPosition({ 0.0, 5.0, -10.0 });
 
 	game.Run();
 	return 0;
