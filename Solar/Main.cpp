@@ -20,20 +20,23 @@ ecs::Entity& CreatePlanet(
 	DirectX::SimpleMath::Vector3 local_position, 
 	DirectX::SimpleMath::Vector3 local_scale,
 	float speed,
-	DirectX::SimpleMath::Vector3 axis = { 0.0f, 1.0f, 0.0f })
+	DirectX::SimpleMath::Vector3 rotation_axis = { 0.0f, 1.0f, 0.0f })
 {
 	ecs::Entity& planet = game.GetEntityManager().CreateEntity();
 	planet.Add<ShapeComponent>([&] {
 		return ShapeComponent::CreateSphere(5);
 	});
-
+	
 	engine::TransformComponent& transform = planet.Add<engine::TransformComponent>();
 	transform.SetLocalPosition(local_position);
 	transform.SetLocalScale(local_scale);
 
+	ecs::Entity& axis = engine::DebugUtils::CreateAxis(game, 3.0f);
+	planet.Get<engine::TransformComponent>().AddChild(axis);
+
 	RotationComponent& rotation = planet.Add<RotationComponent>();
-	if (axis.Length() != 0) axis.Normalize();
-	rotation.axis = axis;
+	if (rotation_axis.Length() != 0) rotation_axis.Normalize();
+	rotation.axis = rotation_axis;
 	rotation.speed = speed;
 	return planet;
 }
@@ -77,7 +80,7 @@ int main() {
 		game, 
 		Vector3(10.0f, 0.0f, 0.0f), 
 		Vector3(0.75f, 0.75f, 0.75f), 
-		45.0f);
+		100.0f);
 	SetParent(planet1, planet2);
 
 	ecs::Entity& planet3 = CreatePlanet(

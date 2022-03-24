@@ -58,32 +58,19 @@ public:
 
 	DirectX::SimpleMath::Vector3 GetPosition() const {
 		if (parent_ == nullptr) return local_position_;
-
 		using namespace DirectX::SimpleMath;
-		const TransformComponent& parent_transform = parent_->Get<TransformComponent>();
 		Vector4 offset(local_position_.x, local_position_.y, local_position_.z, 1.0);
-		const Vector3 euler = parent_transform.GetEuler() * DirectX::XM_PI / 180;
-
-		Matrix transform = Matrix::Identity;
-		transform *= Matrix::CreateFromYawPitchRoll(euler);
-		transform *= Matrix::CreateTranslation(parent_transform.GetPosition());
-
-		offset = Vector4::Transform(offset, transform);
+		const Matrix to_world = parent_->Get<TransformComponent>().GetModelMatrix();
+		offset = Vector4::Transform(offset, to_world);
 		return { offset.x, offset.y, offset.z };
 	}
 
 	void SetPosition(DirectX::SimpleMath::Vector3 position) {
 		if (parent_ != nullptr) {
 			using namespace DirectX::SimpleMath;
-			const TransformComponent& parent_transform = parent_->Get<TransformComponent>();
+			const Matrix to_local = parent_->Get<TransformComponent>().GetModelMatrix().Invert();
 			Vector4 offset(position.x, position.y, position.z, 1.0f);
-			const Vector3 euler = parent_transform.GetEuler() * DirectX::XM_PI / 180;
-
-			Matrix transform = Matrix::Identity;
-			transform *= Matrix::CreateTranslation(-parent_transform.GetPosition());
-			transform *= Matrix::CreateFromYawPitchRoll(-euler);
-
-			offset = Vector4::Transform(offset, transform);
+			offset *= Vector4::Transform(offset, to_local);
 			local_position_ = Vector3(offset.x, offset.y, offset.z);
 		}
 		else {
@@ -93,7 +80,6 @@ public:
 
 	DirectX::SimpleMath::Matrix GetModelMatrix() const {
 		using namespace DirectX::SimpleMath;
-
 		Matrix model = Matrix::Identity;
 		model *= Matrix::CreateScale(local_scale_);
 		model *= Matrix::CreateFromYawPitchRoll(local_euler_ * DirectX::XM_PI / 180);

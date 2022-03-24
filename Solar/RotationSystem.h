@@ -14,7 +14,7 @@ public:
 			TransformComponent& transform_component = entity.Get<TransformComponent>();
 			RotationComponent& rotation_component = entity.Get<RotationComponent>();
 
-			const float amount = rotation_component.speed * dt;
+			const float amount = rotation_component.speed * dt * 0.1;
 			const DirectX::SimpleMath::Vector3 new_rotation =
 				transform_component.GetLocalEuler() + rotation_component.axis * amount;
 			transform_component.SetLocalEuler(new_rotation);

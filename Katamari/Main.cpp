@@ -47,7 +47,8 @@ ecs::Entity& AttachSphere(
 }
 
 int main() {
-	CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
+	HRESULT result = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
+	if (FAILED(result)) return result;
 
 	using namespace engine;
 	Game game;
