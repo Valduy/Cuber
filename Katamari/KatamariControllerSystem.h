@@ -60,13 +60,13 @@ private:
 		
 		direction.Normalize();
 		const Vector3 velocity = direction * katamari_component->speed;
-		Vector3 movement = velocity * dt;		
+		const Vector3 movement = velocity * dt;		
 		transform->SetPosition(transform->GetPosition() + movement);
 
 		using namespace engine;
 		input_axis.Normalize();
 		input_axis = input_axis.Cross(Vector3::UnitY) * dt * 10;
-		auto quat = Quaternion::CreateFromYawPitchRoll(0, input_axis.z, -input_axis.x);
+		const Quaternion quat = Quaternion::CreateFromYawPitchRoll(0, input_axis.z, -input_axis.x);
 
 		auto& katamari_transform = katamari_component->body.Get<TransformComponent>();
 		katamari_transform.SetLocalRotation(

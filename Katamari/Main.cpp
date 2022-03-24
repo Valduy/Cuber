@@ -1,12 +1,12 @@
 #include "KatamariCameraSystem.h"
 #include "KatamariControllerSystem.h"
+#include "RenderSystem.h"
+#include "CollisionComponent.h"
 #include "../Engine/Game.h"
 #include "../Engine/Model.h"
 #include "../Engine/DebugUtils.h"
-#include "../Engine/CameraSystem.h"
 #include "../Engine/LinesRenderSystem.h"
 #include "../Engine/TextureLoader.h"
-#include "RenderSystem.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -40,11 +40,18 @@ ecs::Entity& AttachSphere(
 	float radius,
 	DirectX::SimpleMath::Vector3 local_position = { 0.0f, 0.0f, 0.0f })
 {
-	engine::TransformComponent& entity_transform = entity.Get<engine::TransformComponent>();
-	ecs::Entity& sphere = engine::DebugUtils::CreateSphere(game, radius, { 0.0f, 1.0f, 0.0f, 1.0f });
-	engine::TransformComponent& sphere_transform = sphere.Get<engine::TransformComponent>();
+	using namespace engine;
+	TransformComponent& entity_transform = entity.Get<TransformComponent>();
+	ecs::Entity& sphere = DebugUtils::CreateSphere(game, radius, { 0.0f, 1.0f, 0.0f, 1.0f });
+
+	TransformComponent& sphere_transform = sphere.Get<TransformComponent>();
 	entity_transform.AddChild(sphere);
 	sphere_transform.SetLocalPosition(local_position);
+
+	CollisionComponent& collision_component = entity.Add<CollisionComponent>();
+	collision_component.offset = local_position;
+	collision_component.radius = radius;
+
 	return sphere;
 }
 
@@ -55,7 +62,6 @@ int main() {
 	using namespace engine;
 	Game game;
 
-	//CameraSystem camera_system;
 	KatamariCameraSystem camera_system;
 	KatamariControllerSystem katamari_controller_system;
 	LinesRendererSystem lines_renderer_system;
@@ -76,27 +82,33 @@ int main() {
 	ecs::Entity& crate = LoadModel(
 		game,
 		"../Content/WoodenCrate.obj",
-		L"../Content/WoodenCrate_Diffuse.png");
+		L"../Content/WoodenCrate_Diffuse.png",
+		{ 0.0f, 0.0f, 0.0f },
+		{ 0.5f, 0.5f, 0.5f });
 	AttachSphere(game, crate, 1.0f, { 0.0f, 0.5f, 0.0f });
 	
 	ecs::Entity& mill = LoadModel(
 		game,
 		"../Content/WindMill.obj",
 		L"../Content/WindMill_Diffuse.jpg",
-		{ 3.0f, 0.0f, 0.0f });
+		{ 3.0f, 0.0f, 0.0f },
+		{ 0.3f, 0.3f, 0.3f });
+	AttachSphere(game, mill, 4.0f, { 0.0f, 2.0f, 0.0f });
 
 	ecs::Entity& bag = LoadModel(
 		game,
 		"../Content/Bag.obj",
 		L"../Content/Bag_Diffuse.jpg",
 		{ -3.0f, 0.0f, 0.0f },
-		{ 0.1f, 0.1f, 0.1f });
+		{ 0.07f, 0.07f, 0.07f });
+	AttachSphere(game, bag, 6.0f, { 0.0f, -1.0f, 0.0f });
 
 	ecs::Entity& pumpkin = LoadModel(
 		game,
 		"../Content/Pumpkin.obj",
 		L"../Content/Pumpkin_Diffuse.png",
 		{ -6.0f, 0.0f, 0.0f });
+	AttachSphere(game, pumpkin, 0.4f, { 0.0f, 0.2f, 0.0f });
 	
 	ecs::Entity& ball = LoadModel(
 		game,
