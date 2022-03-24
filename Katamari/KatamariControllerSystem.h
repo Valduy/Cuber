@@ -38,33 +38,39 @@ private:
 	{
 		using namespace DirectX::SimpleMath;
 		const Matrix model = transform->GetModelMatrix();
+		Vector3 input_axis = Vector3::Zero;
 		Vector3 direction = Vector3::Zero;
-		Vector3 new_angles = Vector3::Zero;
 
 		if (GetKeyboardState().IsKeyDown(graph::Keys::kW)) {
 			direction -= model.Forward();
-			new_angles.x += 1;
+			input_axis.x += 1;
 		}
 		if (GetKeyboardState().IsKeyDown(graph::Keys::kS)) {
 			direction += model.Forward();
-			new_angles.x += 1;
+			input_axis.x -= 1;
 		}
 		if (GetKeyboardState().IsKeyDown(graph::Keys::kA)) {
 			direction += model.Right();
-			new_angles.x += 1;
+			input_axis.z -= 1;
 		}
 		if (GetKeyboardState().IsKeyDown(graph::Keys::kD)) {
 			direction -= model.Right();
-			new_angles.x += 1;
+			input_axis.z += 1;
 		}
 		
 		direction.Normalize();
 		const Vector3 velocity = direction * katamari_component->speed;
-		engine::TransformComponent& katamari_transform = katamari_component->body.Get<engine::TransformComponent>();
-		new_angles *= katamari_component->speed;
-		new_angles += katamari_transform.GetLocalEuler();
-		katamari_component->body.Get<engine::TransformComponent>().SetLocalEuler(new_angles);
-		transform->SetPosition(transform->GetPosition() + velocity * dt);
+		Vector3 movement = velocity * dt;		
+		transform->SetPosition(transform->GetPosition() + movement);
+
+		using namespace engine;
+		input_axis.Normalize();
+		input_axis = input_axis.Cross(Vector3::UnitY) * dt * 10;
+		auto quat = Quaternion::CreateFromYawPitchRoll(0, input_axis.z, -input_axis.x);
+
+		auto& katamari_transform = katamari_component->body.Get<TransformComponent>();
+		katamari_transform.SetLocalRotation(
+			katamari_transform.GetLocalRotation() * quat);
 	}
 
 	void UpdateRotation(engine::TransformComponent* transform) {

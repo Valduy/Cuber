@@ -23,6 +23,7 @@ public:
 		const TransformComponent& camera_transform = camera.Get<TransformComponent>();
 		const TransformComponent& karamari_transform = katamari.Get<TransformComponent>();
 		camera_component.position = camera_transform.GetPosition();
+
 		SetLookAtMatrix(
 			&camera_component,
 			camera_transform.GetPosition(),

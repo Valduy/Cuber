@@ -104,7 +104,7 @@ int main() {
 		L"../Content/SoccerBall_Diffuse.bmp",
 		{ 0.0f, 0.0f, 0.0f },
 		{ 0.2f, 0.2f, 0.2f });
-	AttachSphere(game, ball, 3);
+	AttachSphere(game, ball, 3.0f);
 
 	ecs::Entity& katamari = game.GetEntityManager().CreateEntity();
 	katamari.Add<KatamariControllerComponent>([&] {
