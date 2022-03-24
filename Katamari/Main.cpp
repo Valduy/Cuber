@@ -107,7 +107,9 @@ int main() {
 	AttachSphere(game, ball, 3);
 
 	ecs::Entity& katamari = game.GetEntityManager().CreateEntity();
-	katamari.Add<KatamariControllerComponent>();
+	katamari.Add<KatamariControllerComponent>([&] {
+		return new KatamariControllerComponent(ball, 10.0f);
+	});
 	TransformComponent& katamari_transform = katamari.Add<TransformComponent>();
 	katamari_transform.SetPosition({ -9.0f, 0.0f, 0.0f });
 	katamari_transform.AddChild(ball);

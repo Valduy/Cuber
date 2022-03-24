@@ -8,12 +8,21 @@ namespace engine {
 
 class TransformComponent : public ecs::Entity::ComponentBase {
 public:
+	DirectX::SimpleMath::Quaternion GetLocalRotation() const {
+		return local_rotation_;
+	}
+
+	void SetLocalRotation(DirectX::SimpleMath::Quaternion local_rotation) {
+		local_rotation_ = local_rotation;
+	}
+
 	DirectX::SimpleMath::Vector3 GetLocalEuler() const {
-		return local_euler_;
+		return local_rotation_.ToEuler() * 180 / DirectX::XM_PI;
 	}
 
 	void SetLocalEuler(DirectX::SimpleMath::Vector3 local_euler) {
-		local_euler_ = local_euler;
+		using namespace DirectX::SimpleMath;
+		local_rotation_ = Quaternion::CreateFromYawPitchRoll(local_euler * DirectX::XM_PI / 180);
 	}
 
 	DirectX::SimpleMath::Vector3 GetLocalScale() const {
@@ -32,16 +41,25 @@ public:
 		local_position_ = local_position;
 	}
 
-	DirectX::SimpleMath::Vector3 GetEuler() const {
+	DirectX::SimpleMath::Quaternion GetRotation() const {
 		return parent_ != nullptr
-			? parent_->Get<TransformComponent>().GetEuler() + local_euler_
-			: local_euler_;
+			? parent_->Get<TransformComponent>().GetRotation() * local_rotation_
+			: local_rotation_;
+	}
+
+	void SetRotation(DirectX::SimpleMath::Quaternion rotation) {
+		local_rotation_ = parent_ != nullptr
+			? rotation / parent_->Get<TransformComponent>().GetRotation()
+			: rotation;
+	}
+
+	DirectX::SimpleMath::Vector3 GetEuler() const {
+		return GetRotation().ToEuler() * 180 / DirectX::XM_PI;
 	}
 
 	void SetEuler(DirectX::SimpleMath::Vector3 rotation) {
-		local_euler_ = parent_ != nullptr
-			? rotation - parent_->Get<TransformComponent>().GetEuler()
-			: rotation;
+		using namespace DirectX::SimpleMath;
+		SetRotation(Quaternion::CreateFromYawPitchRoll(rotation * DirectX::XM_PI / 180));
 	}
 
 	DirectX::SimpleMath::Vector3 GetScale() const {
@@ -82,7 +100,7 @@ public:
 		using namespace DirectX::SimpleMath;
 		Matrix model = Matrix::Identity;
 		model *= Matrix::CreateScale(local_scale_);
-		model *= Matrix::CreateFromYawPitchRoll(local_euler_ * DirectX::XM_PI / 180);
+		model *= Matrix::CreateFromQuaternion(local_rotation_);
 		model *= Matrix::CreateTranslation(local_position_);
 
 		if (parent_ != nullptr) {
@@ -103,7 +121,7 @@ public:
 
 	TransformComponent()
 		: parent_(nullptr)
-		, local_euler_(0.0f, 0.0f, 0.0f)
+		, local_rotation_(DirectX::SimpleMath::Quaternion::Identity)
 		, local_scale_(1.0f, 1.0f, 1.0f)
 		, local_position_(0.0f, 0.0f, 0.0f)
 	{}
@@ -175,7 +193,7 @@ private:
 	ecs::Entity* parent_;
 	std::vector<ecs::Entity*> children_{};
 
-	DirectX::SimpleMath::Vector3 local_euler_;
+	DirectX::SimpleMath::Quaternion local_rotation_;
 	DirectX::SimpleMath::Vector3 local_scale_;
 	DirectX::SimpleMath::Vector3 local_position_;
 };

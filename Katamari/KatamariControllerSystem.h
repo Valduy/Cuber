@@ -22,7 +22,8 @@ public:
 		ecs::Entity& katamari = it.Get();
 
 		TransformComponent& transform_component = katamari.Get<TransformComponent>();
-		UpdatePosition(&transform_component, dt);
+		KatamariControllerComponent& katamari_component = katamari.Get<KatamariControllerComponent>();
+		UpdatePosition(&transform_component, &katamari_component, dt);
 		UpdateRotation(&transform_component);
 	}
 
@@ -30,26 +31,39 @@ private:
 	bool first_move_;
 	int position_x_;
 
-	void UpdatePosition(engine::TransformComponent* transform, float dt) {
+	void UpdatePosition(
+		engine::TransformComponent* transform, 
+		KatamariControllerComponent* katamari_component, 
+		float dt)
+	{
 		using namespace DirectX::SimpleMath;
 		const Matrix model = transform->GetModelMatrix();
 		Vector3 direction = Vector3::Zero;
-		
+		Vector3 new_angles = Vector3::Zero;
+
 		if (GetKeyboardState().IsKeyDown(graph::Keys::kW)) {
 			direction -= model.Forward();
+			new_angles.x += 1;
 		}
 		if (GetKeyboardState().IsKeyDown(graph::Keys::kS)) {
 			direction += model.Forward();
+			new_angles.x += 1;
 		}
 		if (GetKeyboardState().IsKeyDown(graph::Keys::kA)) {
 			direction += model.Right();
+			new_angles.x += 1;
 		}
 		if (GetKeyboardState().IsKeyDown(graph::Keys::kD)) {
 			direction -= model.Right();
+			new_angles.x += 1;
 		}
-
+		
 		direction.Normalize();
-		const Vector3 velocity = direction * 10.0f;
+		const Vector3 velocity = direction * katamari_component->speed;
+		engine::TransformComponent& katamari_transform = katamari_component->body.Get<engine::TransformComponent>();
+		new_angles *= katamari_component->speed;
+		new_angles += katamari_transform.GetLocalEuler();
+		katamari_component->body.Get<engine::TransformComponent>().SetLocalEuler(new_angles);
 		transform->SetPosition(transform->GetPosition() + velocity * dt);
 	}
 
