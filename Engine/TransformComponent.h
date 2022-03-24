@@ -79,17 +79,14 @@ public:
 		using namespace DirectX::SimpleMath;
 		Vector4 offset(local_position_.x, local_position_.y, local_position_.z, 1.0);
 		const Matrix to_world = parent_->Get<TransformComponent>().GetModelMatrix();
-		offset = Vector4::Transform(offset, to_world);
-		return { offset.x, offset.y, offset.z };
+		return Vector3::Transform(local_position_, to_world);
 	}
 
 	void SetPosition(DirectX::SimpleMath::Vector3 position) {
 		if (parent_ != nullptr) {
 			using namespace DirectX::SimpleMath;
 			const Matrix to_local = parent_->Get<TransformComponent>().GetModelMatrix().Invert();
-			Vector4 offset(position.x, position.y, position.z, 1.0f);
-			offset *= Vector4::Transform(offset, to_local);
-			local_position_ = Vector3(offset.x, offset.y, offset.z);
+			local_position_ = Vector3::Transform(position, to_local);
 		}
 		else {
 			local_position_ = position;

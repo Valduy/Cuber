@@ -2,6 +2,8 @@
 #include "KatamariControllerSystem.h"
 #include "RenderSystem.h"
 #include "CollisionComponent.h"
+#include "ItemComponent.h"
+#include "StickingSystem.h"
 #include "../Engine/Game.h"
 #include "../Engine/Model.h"
 #include "../Engine/DebugUtils.h"
@@ -64,11 +66,13 @@ int main() {
 
 	KatamariCameraSystem camera_system;
 	KatamariControllerSystem katamari_controller_system;
+	StickingSystem sticking_system;
 	LinesRendererSystem lines_renderer_system;
 	RenderSystem render_system;
 
 	game.PushSystem(camera_system);
 	game.PushSystem(katamari_controller_system);
+	game.PushSystem(sticking_system);
 	game.PushSystem(lines_renderer_system);
 	game.PushSystem(render_system);
 
@@ -85,6 +89,7 @@ int main() {
 		L"../Content/WoodenCrate_Diffuse.png",
 		{ 0.0f, 0.0f, 0.0f },
 		{ 0.5f, 0.5f, 0.5f });
+	crate.Add<ItemComponent>();
 	AttachSphere(game, crate, 1.0f, { 0.0f, 0.5f, 0.0f });
 	
 	ecs::Entity& mill = LoadModel(
@@ -93,6 +98,7 @@ int main() {
 		L"../Content/WindMill_Diffuse.jpg",
 		{ 3.0f, 0.0f, 0.0f },
 		{ 0.3f, 0.3f, 0.3f });
+	mill.Add<ItemComponent>();
 	AttachSphere(game, mill, 4.0f, { 0.0f, 2.0f, 0.0f });
 
 	ecs::Entity& bag = LoadModel(
@@ -101,6 +107,7 @@ int main() {
 		L"../Content/Bag_Diffuse.jpg",
 		{ -3.0f, 0.0f, 0.0f },
 		{ 0.07f, 0.07f, 0.07f });
+	bag.Add<ItemComponent>();
 	AttachSphere(game, bag, 6.0f, { 0.0f, -1.0f, 0.0f });
 
 	ecs::Entity& pumpkin = LoadModel(
@@ -108,6 +115,7 @@ int main() {
 		"../Content/Pumpkin.obj",
 		L"../Content/Pumpkin_Diffuse.png",
 		{ -6.0f, 0.0f, 0.0f });
+	pumpkin.Add<ItemComponent>();
 	AttachSphere(game, pumpkin, 0.4f, { 0.0f, 0.2f, 0.0f });
 	
 	ecs::Entity& ball = LoadModel(
@@ -122,6 +130,7 @@ int main() {
 	katamari.Add<KatamariControllerComponent>([&] {
 		return new KatamariControllerComponent(ball, 10.0f);
 	});
+	ball.Add<KatamariComponent>();
 	TransformComponent& katamari_transform = katamari.Add<TransformComponent>();
 	katamari_transform.SetPosition({ -9.0f, 0.0f, 0.0f });
 	katamari_transform.AddChild(ball);

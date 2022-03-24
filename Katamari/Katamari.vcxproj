@@ -157,12 +157,15 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CollisionComponent.h" />
+    <ClInclude Include="ItemComponent.h" />
     <ClInclude Include="KatamariCameraSystem.h" />
+    <ClInclude Include="KatamariComponent.h" />
     <ClInclude Include="KatamariControllerComponent.h" />
     <ClInclude Include="KatamariControllerSystem.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="ModelComponent.h" />
+    <ClInclude Include="StickingSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
