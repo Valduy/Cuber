@@ -24,11 +24,11 @@ ecs::Entity& LoadModel(
 	DirectX::SimpleMath::Vector3 euler = { 0.0f, 0.0f, 0.0f })
 {
 	ecs::Entity& entity = game.GetEntityManager().CreateEntity();
-	ModelComponent& model_component = entity.Add<ModelComponent>();
+	auto& model_component = entity.Add<ModelComponent>();
 	engine::Model::Load(model_component.model, model_path);
 	engine::TextureLoader::LoadWic(	texture_path, &model_component.texture);
 
-	engine::TransformComponent& transform = entity.Add<engine::TransformComponent>();
+	auto& transform = entity.Add<engine::TransformComponent>();
 	transform.SetPosition(position);
 	transform.SetScale(scale);
 	transform.SetEuler(euler);
@@ -43,16 +43,17 @@ ecs::Entity& AttachSphere(
 	DirectX::SimpleMath::Vector3 local_position = { 0.0f, 0.0f, 0.0f })
 {
 	using namespace engine;
-	TransformComponent& entity_transform = entity.Get<TransformComponent>();
-	ecs::Entity& sphere = DebugUtils::CreateSphere(game, radius, { 0.0f, 1.0f, 0.0f, 1.0f });
+	auto& entity_transform = entity.Get<TransformComponent>();
 
-	TransformComponent& sphere_transform = sphere.Get<TransformComponent>();
+	ecs::Entity& sphere = DebugUtils::CreateSphere(game, 1.0f, { 0.0f, 1.0f, 0.0f, 1.0f });
+	auto& sphere_transform = sphere.Get<TransformComponent>();
 	entity_transform.AddChild(sphere);
 	sphere_transform.SetLocalPosition(local_position);
+	sphere_transform.SetLocalScale({ radius, radius, radius });
 
-	CollisionComponent& collision_component = entity.Add<CollisionComponent>();
-	collision_component.offset = local_position;
-	collision_component.radius = radius;
+	auto& collision_component = entity.Add<CollisionComponent>([&] {
+		return new CollisionComponent(sphere, local_position, radius);
+	});
 
 	return sphere;
 }

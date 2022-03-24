@@ -30,9 +30,8 @@ public:
 			Entity& item = it.Get();
 			auto& item_transform = item.Get<TransformComponent>();
 			auto& item_collision = item.Get<CollisionComponent>();
-
-			// TODO: scale katamari size
-			if (IsNearEnough(katamari_collision, item_collision) &&
+			
+			if (IsNearEnough(katamari_transform, katamari_collision, item_transform, item_collision) &&
 				IsCollide(katamari_transform, katamari_collision, item_transform, item_collision)) 
 			{
 				item.Remove<ItemComponent>();
@@ -44,16 +43,21 @@ public:
 				item_transform.SetPosition(position);
 				item_transform.SetScale(scale);
 				item_transform.SetRotation(rotation);
+				ScaleUp(katamari_transform, katamari_collision, item_transform, item_collision);
 			}
 		}
 	}
 
 private:
 	static bool IsNearEnough(
-		const CollisionComponent& katamari_collision, 
+		const engine::TransformComponent& katamari_transform,
+		const CollisionComponent& katamari_collision,
+		const engine::TransformComponent& item_transform,
 		const CollisionComponent& item_collision)
 	{
-		return katamari_collision.radius >= item_collision.radius;
+		const float katamari_radius = katamari_collision.radius * GetMaxComponent(katamari_transform.GetScale());
+		const float item_radius = item_collision.radius * GetMaxComponent(item_transform.GetScale());
+		return katamari_radius >= item_radius;
 	}
 
 	static bool IsCollide(
@@ -63,18 +67,36 @@ private:
 		const CollisionComponent& item_collision)
 	{
 		using namespace DirectX::SimpleMath;
-		Vector3 katamari_offset = Vector3::Transform(
+		const Vector3 katamari_offset = Vector3::Transform(
 			katamari_collision.offset, 
 			katamari_transform.GetModelMatrix());
-		float katamari_radius = katamari_collision.radius * GetMaxComponent(katamari_transform.GetScale());
+		const float katamari_radius = katamari_collision.radius * GetMaxComponent(katamari_transform.GetScale());
 
-		Vector3 item_offset = Vector3::Transform(
+		const Vector3 item_offset = Vector3::Transform(
 			item_collision.offset,
 			item_transform.GetModelMatrix());
-		float item_radius = item_collision.radius * GetMaxComponent(item_transform.GetScale());
+		const float item_radius = item_collision.radius * GetMaxComponent(item_transform.GetScale());
 
 		const Vector3 difference = item_offset - katamari_offset;
 		return difference.Length() < katamari_radius + item_radius;
+	}
+
+	static void ScaleUp(
+		const engine::TransformComponent& katamari_transform,
+		CollisionComponent& katamari_collision,
+		const engine::TransformComponent& item_transform,
+		const CollisionComponent& item_collision)
+	{
+		using namespace DirectX::SimpleMath;
+		constexpr float scale_factor = 0.1f;
+		const float katamari_radius = katamari_collision.radius * GetMaxComponent(katamari_transform.GetScale());
+		const float item_radius = item_collision.radius * GetMaxComponent(item_transform.GetScale());
+		const float ratio = katamari_radius / item_radius * scale_factor;
+		const float scale = 1 + ratio;
+
+		auto& sphere_transform = katamari_collision.sphere.Get<engine::TransformComponent>();
+		katamari_collision.radius *= scale;
+		sphere_transform.SetLocalScale(sphere_transform.GetLocalScale() * scale);
 	}
 
 	static float GetMaxComponent(const DirectX::SimpleMath::Vector3& vector) {
