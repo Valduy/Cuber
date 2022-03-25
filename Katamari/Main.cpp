@@ -205,7 +205,7 @@ int main() {
 	ecs::Entity& katamari = game.GetEntityManager().CreateEntity();
 	TransformComponent& katamari_transform = katamari.Add<TransformComponent>();
 	katamari.Add<KatamariControllerComponent>([&] {
-		return new KatamariControllerComponent(ball, 3.0f);
+		return new KatamariControllerComponent(ball, 3.0f, 3.0f);
 	});
 	katamari_transform.SetPosition({ -9.0f, 0.0f, 0.0f });
 	katamari_transform.AddChild(ball);

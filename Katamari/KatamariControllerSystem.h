@@ -65,7 +65,7 @@ private:
 
 		using namespace engine;
 		input_axis.Normalize();
-		input_axis = input_axis.Cross(Vector3::UnitY) * dt * 2;
+		input_axis = input_axis.Cross(Vector3::UnitY) * dt * katamari_component->angle_speed;
 		const Quaternion quat = Quaternion::CreateFromYawPitchRoll(0, input_axis.z, -input_axis.x);
 
 		auto& katamari_transform = katamari_component->body.Get<TransformComponent>();
