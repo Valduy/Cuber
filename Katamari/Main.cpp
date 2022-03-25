@@ -1,3 +1,5 @@
+#include <random>
+
 #include "KatamariCameraSystem.h"
 #include "KatamariControllerSystem.h"
 #include "RenderSystem.h"
@@ -58,6 +60,111 @@ ecs::Entity& AttachSphere(
 	return sphere;
 }
 
+ecs::Entity& SpawnCrate(
+	engine::Game& game,
+	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
+	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
+{
+	ecs::Entity& crate = LoadModel(
+		game,
+		"../Content/WoodenCrate.obj",
+		L"../Content/WoodenCrate_Diffuse.png",
+		position,
+		{ 0.7f, 0.7f, 0.7f },
+		rotation);
+	crate.Add<ItemComponent>();
+	AttachSphere(game, crate, 1.0f, { 0.0f, 0.5f, 0.0f });
+	return crate;
+}
+
+ecs::Entity& SpawnMill(
+	engine::Game& game,
+	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
+	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
+{
+	ecs::Entity& mill = LoadModel(
+		game,
+		"../Content/WindMill.obj",
+		L"../Content/WindMill_Diffuse.jpg",
+		position,
+		{ 0.3f, 0.3f, 0.3f },
+		rotation);
+	mill.Add<ItemComponent>();
+	AttachSphere(game, mill, 4.0f, { 0.0f, 2.0f, 0.0f });
+	return mill;
+}
+
+ecs::Entity& SpawnBag(
+	engine::Game& game,
+	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
+	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
+{
+	ecs::Entity& bag = LoadModel(
+		game,
+		"../Content/Bag.obj",
+		L"../Content/Bag_Diffuse.jpg",
+		position,
+		{ 0.07f, 0.07f, 0.07f },
+		rotation);
+	bag.Add<ItemComponent>();
+	AttachSphere(game, bag, 6.0f, { 0.0f, -1.0f, 0.0f });
+	return bag;
+}
+
+ecs::Entity& SpawnPumpkin(
+	engine::Game& game,
+	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
+	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
+{
+	ecs::Entity& pumpkin = LoadModel(
+		game,
+		"../Content/Pumpkin.obj",
+		L"../Content/Pumpkin_Diffuse.png",
+		position,
+		{ 1.0f, 1.0f, 1.0f },
+		rotation);
+	pumpkin.Add<ItemComponent>();
+	AttachSphere(game, pumpkin, 0.4f, { 0.0f, 0.2f, 0.0f });
+	return pumpkin;
+}
+
+void SpawnItems(engine::Game& game) {
+	constexpr int radius = 10;
+	constexpr int min = -radius;
+	constexpr int max = 2 * radius;
+	std::random_device dev;
+	std::mt19937 rng(dev());
+	std::uniform_int_distribution<std::mt19937::result_type> dist(1, max);
+
+	constexpr int pumpkin_count = 5;
+	for (int i = 0; i < pumpkin_count; ++i) {
+		int x = min + dist(rng);
+		int y = min + dist(rng);
+		SpawnPumpkin(game, { static_cast<float>(x), 0.0f, static_cast<float>(y) });
+	}
+
+	constexpr int bag_count = 5;
+	for (int i = 0; i < bag_count; ++i) {
+		int x = min + dist(rng);
+		int y = min + dist(rng);
+		SpawnBag(game, { static_cast<float>(x), 0.0f, static_cast<float>(y) });
+	}
+
+	constexpr int crate_count = 5;
+	for (int i = 0; i < crate_count; ++i) {
+		int x = min + dist(rng);
+		int y = min + dist(rng);
+		SpawnCrate(game, { static_cast<float>(x), 0.0f, static_cast<float>(y) });
+	}
+
+	constexpr int mill_count = 5;
+	for (int i = 0; i < mill_count; ++i) {
+		int x = min + dist(rng);
+		int y = min + dist(rng);
+		SpawnMill(game, { static_cast<float>(x), 0.0f, static_cast<float>(y) });
+	}
+}
+
 int main() {
 	HRESULT result = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
 	if (FAILED(result)) return result;
@@ -83,42 +190,9 @@ int main() {
 	ecs::Entity& camera = game.GetEntityManager().CreateEntity();
 	camera.Add<CameraComponent>();
 	camera.Add<TransformComponent>();
-	
-	ecs::Entity& crate = LoadModel(
-		game,
-		"../Content/WoodenCrate.obj",
-		L"../Content/WoodenCrate_Diffuse.png",
-		{ 0.0f, 0.0f, 0.0f },
-		{ 0.5f, 0.5f, 0.5f });
-	crate.Add<ItemComponent>();
-	AttachSphere(game, crate, 1.0f, { 0.0f, 0.5f, 0.0f });
-	
-	ecs::Entity& mill = LoadModel(
-		game,
-		"../Content/WindMill.obj",
-		L"../Content/WindMill_Diffuse.jpg",
-		{ 3.0f, 0.0f, 0.0f },
-		{ 0.3f, 0.3f, 0.3f });
-	mill.Add<ItemComponent>();
-	AttachSphere(game, mill, 4.0f, { 0.0f, 2.0f, 0.0f });
 
-	ecs::Entity& bag = LoadModel(
-		game,
-		"../Content/Bag.obj",
-		L"../Content/Bag_Diffuse.jpg",
-		{ -3.0f, 0.0f, 0.0f },
-		{ 0.07f, 0.07f, 0.07f });
-	bag.Add<ItemComponent>();
-	AttachSphere(game, bag, 6.0f, { 0.0f, -1.0f, 0.0f });
+	SpawnItems(game);
 
-	ecs::Entity& pumpkin = LoadModel(
-		game,
-		"../Content/Pumpkin.obj",
-		L"../Content/Pumpkin_Diffuse.png",
-		{ -6.0f, 0.0f, 0.0f });
-	pumpkin.Add<ItemComponent>();
-	AttachSphere(game, pumpkin, 0.4f, { 0.0f, 0.2f, 0.0f });
-	
 	ecs::Entity& ball = LoadModel(
 		game,
 		"../Content/SoccerBall.obj",

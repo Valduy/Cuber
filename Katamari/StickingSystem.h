@@ -88,15 +88,18 @@ private:
 		const CollisionComponent& item_collision)
 	{
 		using namespace DirectX::SimpleMath;
-		constexpr float scale_factor = 0.1f;
+		constexpr float scale_factor = 0.15f;
 		const float katamari_radius = katamari_collision.radius * GetMaxComponent(katamari_transform.GetScale());
 		const float item_radius = item_collision.radius * GetMaxComponent(item_transform.GetScale());
 		const float ratio = katamari_radius / item_radius * scale_factor;
-		const float scale = 1 + ratio;
 
 		auto& sphere_transform = katamari_collision.sphere.Get<engine::TransformComponent>();
-		katamari_collision.radius *= scale;
-		sphere_transform.SetLocalScale(sphere_transform.GetLocalScale() * scale);
+		katamari_collision.radius += ratio;
+		sphere_transform.SetLocalScale({
+			sphere_transform.GetLocalScale().x + ratio,
+			sphere_transform.GetLocalScale().y + ratio,
+			sphere_transform.GetLocalScale().z + ratio,
+		});
 	}
 
 	static float GetMaxComponent(const DirectX::SimpleMath::Vector3& vector) {
