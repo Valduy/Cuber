@@ -43,14 +43,18 @@ public:
 
 	DirectX::SimpleMath::Quaternion GetRotation() const {
 		return parent_ != nullptr
-			? parent_->Get<TransformComponent>().GetRotation() * local_rotation_
+			? local_rotation_ * parent_->Get<TransformComponent>().GetRotation()
 			: local_rotation_;
 	}
 
-	void SetRotation(DirectX::SimpleMath::Quaternion rotation) {
-		local_rotation_ = parent_ != nullptr
-			? rotation / parent_->Get<TransformComponent>().GetRotation()
-			: rotation;
+	void SetRotation(DirectX::SimpleMath::Quaternion rotation) {		
+		if (parent_ != nullptr) {
+			DirectX::SimpleMath::Quaternion quat;
+			parent_->Get<TransformComponent>().GetRotation().Inverse(quat);
+			local_rotation_ = quat * rotation;
+		}
+		else
+			local_rotation_ = rotation;
 	}
 
 	DirectX::SimpleMath::Vector3 GetEuler() const {

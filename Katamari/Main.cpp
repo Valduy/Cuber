@@ -134,7 +134,7 @@ void SpawnItems(engine::Game& game) {
 	constexpr int max = 2 * radius;
 	std::random_device dev;
 	std::mt19937 rng(dev());
-	std::uniform_int_distribution<std::mt19937::result_type> dist(1, max);
+	std::uniform_int_distribution<std::mt19937::result_type> dist(0, max);
 
 	constexpr int pumpkin_count = 5;
 	for (int i = 0; i < pumpkin_count; ++i) {
@@ -200,13 +200,13 @@ int main() {
 		{ 0.0f, 0.0f, 0.0f },
 		{ 0.2f, 0.2f, 0.2f });
 	AttachSphere(game, ball, 3.0f);
+	ball.Add<KatamariComponent>();
 
 	ecs::Entity& katamari = game.GetEntityManager().CreateEntity();
-	katamari.Add<KatamariControllerComponent>([&] {
-		return new KatamariControllerComponent(ball, 10.0f);
-	});
-	ball.Add<KatamariComponent>();
 	TransformComponent& katamari_transform = katamari.Add<TransformComponent>();
+	katamari.Add<KatamariControllerComponent>([&] {
+		return new KatamariControllerComponent(ball, 3.0f);
+	});
 	katamari_transform.SetPosition({ -9.0f, 0.0f, 0.0f });
 	katamari_transform.AddChild(ball);
 	katamari_transform.AddChild(camera);

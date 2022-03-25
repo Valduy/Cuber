@@ -31,7 +31,7 @@ public:
 			auto& item_transform = item.Get<TransformComponent>();
 			auto& item_collision = item.Get<CollisionComponent>();
 			
-			if (IsNearEnough(katamari_transform, katamari_collision, item_transform, item_collision) &&
+			if (IsCanCatch(katamari_transform, katamari_collision, item_transform, item_collision) &&
 				IsCollide(katamari_transform, katamari_collision, item_transform, item_collision)) 
 			{
 				item.Remove<ItemComponent>();
@@ -49,7 +49,7 @@ public:
 	}
 
 private:
-	static bool IsNearEnough(
+	static bool IsCanCatch(
 		const engine::TransformComponent& katamari_transform,
 		const CollisionComponent& katamari_collision,
 		const engine::TransformComponent& item_transform,
@@ -57,7 +57,7 @@ private:
 	{
 		const float katamari_radius = katamari_collision.radius * GetMaxComponent(katamari_transform.GetScale());
 		const float item_radius = item_collision.radius * GetMaxComponent(item_transform.GetScale());
-		return katamari_radius >= item_radius;
+		return katamari_radius > item_radius;
 	}
 
 	static bool IsCollide(
