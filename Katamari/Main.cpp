@@ -17,18 +17,30 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
-ecs::Entity& LoadModel(
+engine::Model crate_model;
+engine::Model mill_model;
+engine::Model bag_model;
+engine::Model pumpkin_model;
+engine::Model ball_model;
+
+DirectX::ScratchImage crate_diffuse;
+DirectX::ScratchImage mill_diffuse;
+DirectX::ScratchImage bag_diffuse;
+DirectX::ScratchImage pumpkin_diffuse;
+DirectX::ScratchImage ball_diffuse;
+
+ecs::Entity& AttachModel(
 	engine::Game& game, 
-	const std::string& model_path, 
-	const wchar_t* texture_path,
+	engine::Model& model, 
+	DirectX::ScratchImage& texture,
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f },
 	DirectX::SimpleMath::Vector3 euler = { 0.0f, 0.0f, 0.0f })
 {
 	ecs::Entity& entity = game.GetEntityManager().CreateEntity();
-	auto& model_component = entity.Add<ModelComponent>();
-	engine::Model::Load(model_component.model, model_path);
-	engine::TextureLoader::LoadWic(	texture_path, &model_component.texture);
+	entity.Add<ModelComponent>([&] {
+		return new ModelComponent(model, texture);
+	});
 
 	auto& transform = entity.Add<engine::TransformComponent>();
 	transform.SetPosition(position);
@@ -65,10 +77,10 @@ ecs::Entity& SpawnCrate(
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	ecs::Entity& crate = LoadModel(
+	ecs::Entity& crate = AttachModel(
 		game,
-		"../Content/WoodenCrate.obj",
-		L"../Content/WoodenCrate_Diffuse.png",
+		crate_model,
+		crate_diffuse,
 		position,
 		{ 0.7f, 0.7f, 0.7f },
 		rotation);
@@ -82,10 +94,10 @@ ecs::Entity& SpawnMill(
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	ecs::Entity& mill = LoadModel(
+	ecs::Entity& mill = AttachModel(
 		game,
-		"../Content/WindMill.obj",
-		L"../Content/WindMill_Diffuse.jpg",
+		mill_model,
+		mill_diffuse,
 		position,
 		{ 0.3f, 0.3f, 0.3f },
 		rotation);
@@ -99,10 +111,10 @@ ecs::Entity& SpawnBag(
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	ecs::Entity& bag = LoadModel(
+	ecs::Entity& bag = AttachModel(
 		game,
-		"../Content/Bag.obj",
-		L"../Content/Bag_Diffuse.jpg",
+		bag_model,
+		bag_diffuse,
 		position,
 		{ 0.07f, 0.07f, 0.07f },
 		rotation);
@@ -116,10 +128,10 @@ ecs::Entity& SpawnPumpkin(
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	ecs::Entity& pumpkin = LoadModel(
+	ecs::Entity& pumpkin = AttachModel(
 		game,
-		"../Content/Pumpkin.obj",
-		L"../Content/Pumpkin_Diffuse.png",
+		pumpkin_model,
+		pumpkin_diffuse,
 		position,
 		{ 1.0f, 1.0f, 1.0f },
 		rotation);
@@ -134,7 +146,7 @@ void SpawnItems(engine::Game& game) {
 	constexpr int max = 2 * radius;
 	std::random_device dev;
 	std::mt19937 rng(dev());
-	std::uniform_int_distribution<std::mt19937::result_type> dist(0, max);
+	const std::uniform_int_distribution<std::mt19937::result_type> dist(0, max);
 
 	constexpr int pumpkin_count = 5;
 	for (int i = 0; i < pumpkin_count; ++i) {
@@ -165,9 +177,72 @@ void SpawnItems(engine::Game& game) {
 	}
 }
 
+HRESULT LoadModels() {
+	using namespace engine;
+	HRESULT result = S_OK;
+
+	if (result = Model::Load(crate_model, "../Content/WoodenCrate.obj"); FAILED(result)) {
+		return result;
+	}
+	if (result = Model::Load(mill_model, "../Content/WindMill.obj"); FAILED(result)) {
+		return result;
+	}
+	if (result = Model::Load(bag_model, "../Content/Bag.obj"); FAILED(result)) {
+		return result;
+	}
+	if (result = Model::Load(pumpkin_model, "../Content/Pumpkin.obj"); FAILED(result)) {
+		return result;
+	}
+	if (result = Model::Load(ball_model, "../Content/SoccerBall.obj"); FAILED(result)) {
+		return result;
+	}
+
+	return result;
+}
+
+HRESULT LoadTextures() {
+	using namespace engine;
+	HRESULT result = S_OK;
+
+	if (result = TextureLoader::LoadWic(L"../Content/WoodenCrate_Diffuse.png", &crate_diffuse); FAILED(result)) {
+		return result;
+	}
+	if (result = TextureLoader::LoadWic(L"../Content/WindMill_Diffuse.jpg", &mill_diffuse); FAILED(result)) {
+		return result;
+	}
+	if (result = TextureLoader::LoadWic(L"../Content/Bag_Diffuse.jpg", &bag_diffuse); FAILED(result)) {
+		return result;
+	}
+	if (result = TextureLoader::LoadWic(L"../Content/Pumpkin_Diffuse.png", &pumpkin_diffuse); FAILED(result)) {
+		return result;
+	}
+	if (result = TextureLoader::LoadWic(L"../Content/SoccerBall_Diffuse.bmp", &ball_diffuse); FAILED(result)) {
+		return result;
+	}
+
+	return result;
+}
+
+void Release() {
+	crate_diffuse.Release();
+	mill_diffuse.Release();
+	bag_diffuse.Release();
+	pumpkin_diffuse.Release();
+	bag_diffuse.Release();
+}
+
 int main() {
-	HRESULT result = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED);
-	if (FAILED(result)) return result;
+	HRESULT result;
+
+	if (result = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED); FAILED(result)) {
+		return result;
+	}
+	if (result = LoadModels(); FAILED(result)) {
+		return result;
+	}
+	if (result = LoadTextures(); FAILED(result)) {
+		return result;
+	}
 
 	using namespace engine;
 	Game game;
@@ -193,10 +268,10 @@ int main() {
 
 	SpawnItems(game);
 
-	ecs::Entity& ball = LoadModel(
+	ecs::Entity& ball = AttachModel(
 		game,
-		"../Content/SoccerBall.obj",
-		L"../Content/SoccerBall_Diffuse.bmp",
+		ball_model,
+		ball_diffuse,
 		{ 0.0f, 0.0f, 0.0f },
 		{ 0.2f, 0.2f, 0.2f });
 	AttachSphere(game, ball, 3.0f);

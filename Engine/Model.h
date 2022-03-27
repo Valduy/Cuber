@@ -64,21 +64,27 @@ private:
 		// TODO: normals
 		for (size_t i = 0; i < mesh->mNumVertices; ++i) {
 			Vertex vertex;
-			const Vector3 position = {
+			vertex.position = Vector3 {
 				mesh->mVertices[i].x,
 				mesh->mVertices[i].y,
 				mesh->mVertices[i].z
 			};
-			vertex.position = position;
+
+			if (mesh->HasNormals()) {
+				const Vector3 normal = {
+					mesh->mNormals[i].x,
+					mesh->mNormals[i].y,
+					mesh->mNormals[i].z
+				};
+			}
 
 			if (mesh->mTextureCoords[0] != nullptr) {
-				const Vector2 texture_coords = {
+				vertex.texture_coords = Vector2 {
 					 mesh->mTextureCoords[0][i].x,
 					 mesh->mTextureCoords[0][i].y,
 				};
-				vertex.texture_coords = texture_coords;
 			} else {
-				vertex.texture_coords = Vector2(0.0f, 0.0f);
+				vertex.texture_coords = Vector2 { 0.0f, 0.0f };
 			}
 
 			vertices.push_back(vertex);
