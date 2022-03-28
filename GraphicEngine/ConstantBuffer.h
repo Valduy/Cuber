@@ -11,7 +11,8 @@ public:
 	ConstantBuffer(size_t sizemem);
 
 	HRESULT Init(Renderer* renderer);
-	void SetBuffer(unsigned int slot = 0);
+	void VSSetBuffer(unsigned int slot = 0);
+	void PSSetBuffer(unsigned int slot = 0);
 	void Update(const void* data) const;
 
 private:

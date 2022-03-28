@@ -9,6 +9,7 @@ class LayoutDescriptor {
 public:
 	static const LayoutDescriptor kPosition3;
 	static const LayoutDescriptor kPosition3Texture2;
+	static const LayoutDescriptor kPosition3Normal3Texture2;
 	static const LayoutDescriptor kPosition4Color4;
 
 	const D3D11_INPUT_ELEMENT_DESC* GetData() const;

@@ -14,21 +14,41 @@
 
 class RenderSystem : public engine::Game::SystemBase {
 public:
-	struct ConstData {
-		DirectX::SimpleMath::Matrix mat;
+	struct TransformData {
+		DirectX::SimpleMath::Matrix world;
+		DirectX::SimpleMath::Matrix world_view_proj;
+		DirectX::SimpleMath::Matrix inverse_transpose_world;		
+	};
+
+	struct MaterialData {
+		float ambient_factor;
+		float shininess;
+		float specular_factor;
+		float dummy;
+	};
+
+	struct LightData {
+		DirectX::SimpleMath::Vector3 view_position;
+		float dummy0;
+		DirectX::SimpleMath::Vector3 light_direction;
+		float dummy1;
+		DirectX::SimpleMath::Vector3 light_color;
+		float dummy2;
 	};
 
 	RenderSystem()
 		: shader_()
 		, sampler_(D3D11_FILTER_MIN_MAG_MIP_LINEAR, 0)
+		, light_buffer(sizeof(LightData))
 	{}
 
 	void Init(engine::Game& game) override {
 		engine::Game::SystemBase::Init(game);
 
 		using namespace graph;
-		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition3Texture2, L"../Shaders/MaterialShader.hlsl");
+		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition3Normal3Texture2, L"../Shaders/MaterialShader.hlsl");
 		sampler_.Init(&GetRenderer());
+		light_buffer.Init(&GetRenderer());
 
 		using namespace engine;
 		for (auto it = GetIterator<TransformComponent, ModelComponent>(); it.HasCurrent(); it.Next()) {
@@ -45,14 +65,27 @@ public:
 				model_buffers.push_back({ vb, ib });
 			}
 
-			ConstantBuffer constant_buffer(sizeof(ConstData));
-			constant_buffer.Init(&GetRenderer());
+			ConstantBuffer transform_buffer(sizeof(TransformData));
+			transform_buffer.Init(&GetRenderer());
+
+			ConstantBuffer material_buffer(sizeof(MaterialData));
+			material_buffer.Init(&GetRenderer());
+			MaterialData material_data{
+				model_component.material.ambient_factor,
+				model_component.material.shininess,
+				model_component.material.specular_factor
+			};
+			material_buffer.Update(&material_data);
 
 			Texture texture;
 			texture.Init(&GetRenderer(), model_component.texture);
 
 			entity.Add<RenderComponent>([&] {
-				return new RenderComponent(model_buffers, constant_buffer, texture);
+				return new RenderComponent(
+					model_buffers, 
+					transform_buffer, 
+					material_buffer,
+					texture);
 			});
 		}		
 	}
@@ -63,6 +96,12 @@ public:
 
 		ecs::Entity& camera = camera_it.Get();
 		engine::CameraComponent& camera_component = camera.Get<engine::CameraComponent>();
+		
+		LightData light_data{};
+		light_data.view_position = camera_component.position;
+		light_data.light_direction = DirectX::SimpleMath::Vector3{ 0.0f, -1.0f, 0.0f };
+		light_data.light_color = DirectX::SimpleMath::Vector3{ 1.0f, 1.0f, 1.0f };
+		light_buffer.Update(&light_data);
 
 		using namespace engine;
 		for (auto it = GetIterator<RenderComponent, TransformComponent>(); it.HasCurrent(); it.Next()) {
@@ -72,23 +111,30 @@ public:
 
 			DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
 			DirectX::SimpleMath::Matrix camera_matrix = camera_component.GetCameraMatrix();
-			DirectX::SimpleMath::Matrix transform_matrix = model_matrix * camera_matrix;
-			ConstData data{ transform_matrix.Transpose() };
+			DirectX::SimpleMath::Matrix world_view_proj_matrix = model_matrix * camera_matrix;
+			TransformData transform_data{
+				model_matrix.Transpose(),
+				world_view_proj_matrix.Transpose(),
+				model_matrix.Transpose().Invert().Transpose(),
+			};
 
-			render_component.constant_buffer.Update(&data);
+			render_component.transform_buffer.Update(&transform_data);
 		}
 	}
 
 	void Render() override {
 		shader_.SetShader();
 		sampler_.SetSampler();
+		light_buffer.PSSetBuffer(2);
+
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		using namespace engine;
 		for (auto it = GetIterator<RenderComponent>(); it.HasCurrent(); it.Next()) {
 			ecs::Entity& model = it.Get();
 			RenderComponent& render_component = model.Get<RenderComponent>();
-			render_component.constant_buffer.SetBuffer();
+			render_component.transform_buffer.VSSetBuffer(0);
+			render_component.material_buffer.PSSetBuffer(1);
 			render_component.texture.SetTexture();
 
 			for (MeshBuffers& mesh_buffers : render_component.model_buffers) {
@@ -103,4 +149,5 @@ public:
 private:
 	graph::Shader shader_;
 	graph::Sampler sampler_;
+	graph::ConstantBuffer light_buffer;
 };

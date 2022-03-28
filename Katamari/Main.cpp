@@ -39,7 +39,7 @@ ecs::Entity& AttachModel(
 {
 	ecs::Entity& entity = game.GetEntityManager().CreateEntity();
 	entity.Add<ModelComponent>([&] {
-		return new ModelComponent(model, texture);
+		return new ModelComponent(model, texture, Material());
 	});
 
 	auto& transform = entity.Add<engine::TransformComponent>();
@@ -65,7 +65,7 @@ ecs::Entity& AttachSphere(
 	sphere_transform.SetLocalPosition(local_position);
 	sphere_transform.SetLocalScale({ radius, radius, radius });
 
-	auto& collision_component = entity.Add<CollisionComponent>([&] {
+	entity.Add<CollisionComponent>([&] {
 		return new CollisionComponent(sphere, local_position, radius);
 	});
 
@@ -247,12 +247,14 @@ int main() {
 	using namespace engine;
 	Game game;
 
+	//CameraSystem fps_camera_system;
 	KatamariCameraSystem camera_system;
 	KatamariControllerSystem katamari_controller_system;
 	StickingSystem sticking_system;
 	LinesRendererSystem lines_renderer_system;
 	RenderSystem render_system;
 
+	//game.PushSystem(fps_camera_system);
 	game.PushSystem(camera_system);
 	game.PushSystem(katamari_controller_system);
 	game.PushSystem(sticking_system);

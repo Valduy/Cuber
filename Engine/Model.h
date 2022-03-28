@@ -61,7 +61,6 @@ private:
 		std::vector<Vertex> vertices;
 		std::vector<int> indices;
 
-		// TODO: normals
 		for (size_t i = 0; i < mesh->mNumVertices; ++i) {
 			Vertex vertex;
 			vertex.position = Vector3 {
@@ -71,7 +70,7 @@ private:
 			};
 
 			if (mesh->HasNormals()) {
-				const Vector3 normal = {
+				vertex.normal = Vector3{
 					mesh->mNormals[i].x,
 					mesh->mNormals[i].y,
 					mesh->mNormals[i].z

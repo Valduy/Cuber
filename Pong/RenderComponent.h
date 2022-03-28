@@ -10,7 +10,7 @@ public:
 	std::vector<DirectX::SimpleMath::Vector4> vertices;
 	graph::VertexBuffer vertex_buffer;
 	graph::IndexBuffer index_buffer;
-	graph::ConstantBuffer constant_buffer;
+	graph::ConstantBuffer transform_buffer;
 
 	RenderComponent(
 		std::vector<DirectX::SimpleMath::Vector4> vertices,
@@ -20,6 +20,6 @@ public:
 		: vertices(vertices)
 		, vertex_buffer(vertex_buffer)
 		, index_buffer(index_buffer)
-		, constant_buffer(constant_buffer)
+		, transform_buffer(constant_buffer)
 	{}
 };

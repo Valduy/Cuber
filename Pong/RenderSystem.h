@@ -59,7 +59,7 @@ public:
 			RenderComponent& render_component = entity.Get<RenderComponent>();
 			const TransformComponent& transform_component = entity.Get<TransformComponent>();
 			ConstData data{ transform_component.x, transform_component.y };
-			render_component.constant_buffer.Update(&data);
+			render_component.transform_buffer.Update(&data);
 		}
 	}
 
@@ -74,7 +74,7 @@ public:
 
 			render_component.vertex_buffer.SetBuffer(32);
 			render_component.index_buffer.SetBuffer();
-			render_component.constant_buffer.SetBuffer();
+			render_component.transform_buffer.VSSetBuffer();
 			
 			GetGame().GetRenderer().GetContext().DrawIndexed(
 				render_component.index_buffer.GetSize(), 0, 0);

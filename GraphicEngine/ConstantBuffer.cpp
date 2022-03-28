@@ -28,9 +28,14 @@ HRESULT graph::ConstantBuffer::Init(Renderer* renderer) {
 	return renderer_->GetDevice().CreateBuffer(&const_buf_desc, nullptr, &constant_buffer_);
 }
 
-void graph::ConstantBuffer::SetBuffer(unsigned int slot) {
+void graph::ConstantBuffer::VSSetBuffer(unsigned int slot) {
 	assert(renderer_ != nullptr && "Constant buffer isn't initialized");
 	renderer_->GetContext().VSSetConstantBuffers(slot, 1, constant_buffer_.GetAddressOf());
+}
+
+void graph::ConstantBuffer::PSSetBuffer(unsigned int slot) {
+	assert(renderer_ != nullptr && "Constant buffer isn't initialized");
+	renderer_->GetContext().PSSetConstantBuffers(slot, 1, constant_buffer_.GetAddressOf());
 }
 
 void graph::ConstantBuffer::Update(const void* data) const {

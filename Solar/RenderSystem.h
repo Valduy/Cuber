@@ -13,7 +13,7 @@
 
 class RenderSystem : public engine::Game::SystemBase {
 public:
-	struct ConstData {
+	struct TransformData {
 		DirectX::SimpleMath::Matrix mat;
 	};
 
@@ -35,7 +35,7 @@ public:
 			IndexBuffer ib(shape_component.indexes.data(), shape_component.indexes.size());
 			ib.Init(&GetRenderer());
 
-			ConstantBuffer cb(sizeof(ConstData));
+			ConstantBuffer cb(sizeof(TransformData));
 			cb.Init(&GetRenderer());
 
 			entity.Add<RenderComponent>([&] {
@@ -60,9 +60,9 @@ public:
 			DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
 			DirectX::SimpleMath::Matrix camera_matrix = camera_component.GetCameraMatrix();
 			DirectX::SimpleMath::Matrix transform_matrix = model_matrix * camera_matrix;
-			ConstData data{ transform_matrix.Transpose() };
+			TransformData data{ transform_matrix.Transpose() };
 
-			render_component.constant_buffer.Update(&data);
+			render_component.transform_buffer.Update(&data);
 		}
 	}
 
@@ -77,7 +77,7 @@ public:
 
 			render_component.vertex_buffer.SetBuffer(32);
 			render_component.index_buffer.SetBuffer();
-			render_component.constant_buffer.SetBuffer();
+			render_component.transform_buffer.VSSetBuffer();
 			
 			GetRenderer().GetContext().DrawIndexed(
 				render_component.index_buffer.GetSize(), 0, 0);

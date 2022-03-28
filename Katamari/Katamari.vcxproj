@@ -163,6 +163,7 @@
     <ClInclude Include="KatamariComponent.h" />
     <ClInclude Include="KatamariControllerComponent.h" />
     <ClInclude Include="KatamariControllerSystem.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="ModelComponent.h" />

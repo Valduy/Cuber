@@ -81,8 +81,8 @@ public:
 			LinesRenderComponent& lines_render_component = entity.Get<LinesRenderComponent>();
 
 			lines_render_component.vertex_buffer.SetBuffer(sizeof(DirectX::SimpleMath::Vector3));
-			lines_render_component.matrix_const_buffer.SetBuffer(0);
-			lines_render_component.color_const_buffer.SetBuffer(1);
+			lines_render_component.matrix_const_buffer.VSSetBuffer(0);
+			lines_render_component.color_const_buffer.VSSetBuffer(1);
 
 			GetRenderer().GetContext().IASetPrimitiveTopology(lines_component.topology);
 			GetRenderer().GetContext().Draw(lines_component.points.size(), 0);

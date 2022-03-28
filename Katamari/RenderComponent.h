@@ -22,15 +22,18 @@ public:
 class RenderComponent : public ecs::Entity::ComponentBase {
 public:
 	std::vector<MeshBuffers> model_buffers;
-	graph::ConstantBuffer constant_buffer;
+	graph::ConstantBuffer transform_buffer;
+	graph::ConstantBuffer material_buffer;
 	graph::Texture texture;
 
 	RenderComponent(
 		std::vector<MeshBuffers> model_buffers,
-		graph::ConstantBuffer constant_buffer,
+		graph::ConstantBuffer transform_buffer,
+		graph::ConstantBuffer material_buffer,
 		graph::Texture texture)
 		: model_buffers(model_buffers)
-		, constant_buffer(constant_buffer)
+		, transform_buffer(transform_buffer)
+		, material_buffer(material_buffer)
 		, texture(texture)
 	{}
 };
