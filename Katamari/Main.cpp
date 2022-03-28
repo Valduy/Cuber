@@ -20,27 +20,28 @@
 
 engine::Model crate_model;
 engine::Model mill_model;
-engine::Model bag_model;
+engine::Model pear_model;
 engine::Model pumpkin_model;
 engine::Model ball_model;
 
 DirectX::ScratchImage crate_diffuse;
 DirectX::ScratchImage mill_diffuse;
-DirectX::ScratchImage bag_diffuse;
+DirectX::ScratchImage pear_diffuse;
 DirectX::ScratchImage pumpkin_diffuse;
 DirectX::ScratchImage ball_diffuse;
 
 ecs::Entity& AttachModel(
-	engine::Game& game, 
-	engine::Model& model, 
+	engine::Game& game,
+	engine::Model& model,
 	DirectX::ScratchImage& texture,
+	Material material,
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f },
 	DirectX::SimpleMath::Vector3 euler = { 0.0f, 0.0f, 0.0f })
 {
 	ecs::Entity& entity = game.GetEntityManager().CreateEntity();
 	entity.Add<ModelComponent>([&] {
-		return new ModelComponent(model, texture, Material());
+		return new ModelComponent(model, texture, material);
 	});
 
 	auto& transform = entity.Add<engine::TransformComponent>();
@@ -82,6 +83,7 @@ ecs::Entity& SpawnCrate(
 		game,
 		crate_model,
 		crate_diffuse,
+		{ 0.1f, 3.0f, 0.5f },
 		position,
 		{ 0.7f, 0.7f, 0.7f },
 		rotation);
@@ -99,6 +101,7 @@ ecs::Entity& SpawnMill(
 		game,
 		mill_model,
 		mill_diffuse,
+		{ 0.1f, 3.0f, 0.5f },
 		position,
 		{ 0.3f, 0.3f, 0.3f },
 		rotation);
@@ -107,21 +110,22 @@ ecs::Entity& SpawnMill(
 	return mill;
 }
 
-ecs::Entity& SpawnBag(
+ecs::Entity& SpawnPear(
 	engine::Game& game,
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	ecs::Entity& bag = AttachModel(
+	ecs::Entity& pear = AttachModel(
 		game,
-		bag_model,
-		bag_diffuse,
+		pear_model,
+		pear_diffuse,
+		{ 0.1f, 32.0f, 0.75f },
 		position,
-		{ 0.07f, 0.07f, 0.07f },
+		{ 0.3f, 0.3f, 0.3f },
 		rotation);
-	bag.Add<ItemComponent>();
-	AttachSphere(game, bag, 6.0f, { 0.0f, -1.0f, 0.0f });
-	return bag;
+	pear.Add<ItemComponent>();
+	AttachSphere(game, pear, 2.0f, { 0.0f, 0.0f, 0.0f });
+	return pear;
 }
 
 ecs::Entity& SpawnPumpkin(
@@ -133,6 +137,7 @@ ecs::Entity& SpawnPumpkin(
 		game,
 		pumpkin_model,
 		pumpkin_diffuse,
+		{ 0.1f, 32.0f, 0.75f },
 		position,
 		{ 3.0f, 3.0f, 3.0f },
 		rotation);
@@ -156,11 +161,11 @@ void SpawnItems(engine::Game& game) {
 		SpawnPumpkin(game, { static_cast<float>(x), 0.0f, static_cast<float>(y) });
 	}
 
-	constexpr int bag_count = 10;
-	for (int i = 0; i < bag_count; ++i) {
+	constexpr int pear_count = 10;
+	for (int i = 0; i < pear_count; ++i) {
 		int x = min + dist(rng);
 		int y = min + dist(rng);
-		SpawnBag(game, { static_cast<float>(x), 0.0f, static_cast<float>(y) });
+		SpawnPear(game, { static_cast<float>(x), 0.0f, static_cast<float>(y) });
 	}
 
 	constexpr int crate_count = 5;
@@ -188,7 +193,7 @@ HRESULT LoadModels() {
 	if (result = Model::Load(mill_model, "../Content/WindMill.obj"); FAILED(result)) {
 		return result;
 	}
-	if (result = Model::Load(bag_model, "../Content/Bag.obj"); FAILED(result)) {
+	if (result = Model::Load(pear_model, "../Content/Pear.obj"); FAILED(result)) {
 		return result;
 	}
 	if (result = Model::Load(pumpkin_model, "../Content/Pumpkin.obj"); FAILED(result)) {
@@ -211,7 +216,7 @@ HRESULT LoadTextures() {
 	if (result = TextureLoader::LoadWic(L"../Content/WindMill_Diffuse.jpg", &mill_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Bag_Diffuse.jpg", &bag_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"../Content/Pear_Diffuse.jpg", &pear_diffuse); FAILED(result)) {
 		return result;
 	}
 	if (result = TextureLoader::LoadWic(L"../Content/Pumpkin_Diffuse.png", &pumpkin_diffuse); FAILED(result)) {
@@ -227,9 +232,9 @@ HRESULT LoadTextures() {
 void Release() {
 	crate_diffuse.Release();
 	mill_diffuse.Release();
-	bag_diffuse.Release();
+	pear_diffuse.Release();
 	pumpkin_diffuse.Release();
-	bag_diffuse.Release();
+	pear_diffuse.Release();
 }
 
 int main() {
@@ -280,9 +285,10 @@ int main() {
 		game,
 		ball_model,
 		ball_diffuse,
+		{ 0.1f, 32.0f, 0.6f },
 		{ 0.0f, 0.0f, 0.0f },
-		{ 0.2f, 0.2f, 0.2f });
-	AttachSphere(game, ball, 3.0f);
+		{ 0.25f, 0.25f, 0.25f });
+	AttachSphere(game, ball, 3.2f);
 	ball.Add<KatamariComponent>();
 
 	ecs::Entity& katamari = game.GetEntityManager().CreateEntity();

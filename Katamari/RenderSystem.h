@@ -72,9 +72,9 @@ public:
 			ConstantBuffer material_buffer(sizeof(MaterialData));
 			material_buffer.Init(&GetRenderer());
 			MaterialData material_data{
-				model_component.material.ambient_factor,
+				model_component.material.ambient,
 				model_component.material.shininess,
-				model_component.material.specular_factor
+				model_component.material.specular
 			};
 			material_buffer.Update(&material_data);
 
