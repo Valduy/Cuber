@@ -4,6 +4,7 @@
 #include "KatamariControllerSystem.h"
 #include "RenderSystem.h"
 #include "CollisionComponent.h"
+#include "DirectionLightComponent.h"
 #include "ItemComponent.h"
 #include "StickingSystem.h"
 #include "../Engine/Game.h"
@@ -133,10 +134,10 @@ ecs::Entity& SpawnPumpkin(
 		pumpkin_model,
 		pumpkin_diffuse,
 		position,
-		{ 1.0f, 1.0f, 1.0f },
+		{ 3.0f, 3.0f, 3.0f },
 		rotation);
 	pumpkin.Add<ItemComponent>();
-	AttachSphere(game, pumpkin, 0.4f, { 0.0f, 0.2f, 0.0f });
+	AttachSphere(game, pumpkin, 0.5f, { 0.0f, 0.2f, 0.0f });
 	return pumpkin;
 }
 
@@ -155,7 +156,7 @@ void SpawnItems(engine::Game& game) {
 		SpawnPumpkin(game, { static_cast<float>(x), 0.0f, static_cast<float>(y) });
 	}
 
-	constexpr int bag_count = 5;
+	constexpr int bag_count = 10;
 	for (int i = 0; i < bag_count; ++i) {
 		int x = min + dist(rng);
 		int y = min + dist(rng);
@@ -268,6 +269,11 @@ int main() {
 	camera.Add<CameraComponent>();
 	camera.Add<TransformComponent>();
 
+	ecs::Entity& light = game.GetEntityManager().CreateEntity();
+	auto& direction_light = light.Add<DirectionLightComponent>();
+	direction_light.light_direction = DirectX::SimpleMath::Vector3 { 0.0f, -1.0f, 0.0f };
+	direction_light.light_color = DirectX::SimpleMath::Vector3 { 1.0f, 1.0f, 1.0f };
+
 	SpawnItems(game);
 
 	ecs::Entity& ball = AttachModel(
@@ -280,7 +286,7 @@ int main() {
 	ball.Add<KatamariComponent>();
 
 	ecs::Entity& katamari = game.GetEntityManager().CreateEntity();
-	TransformComponent& katamari_transform = katamari.Add<TransformComponent>();
+	auto& katamari_transform = katamari.Add<TransformComponent>();
 	katamari.Add<KatamariControllerComponent>([&] {
 		return new KatamariControllerComponent(ball, 3.0f, 3.0f);
 	});

@@ -158,6 +158,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CollisionComponent.h" />
+    <ClInclude Include="DirectionLightComponent.h" />
     <ClInclude Include="ItemComponent.h" />
     <ClInclude Include="KatamariCameraSystem.h" />
     <ClInclude Include="KatamariComponent.h" />

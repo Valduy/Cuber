@@ -3,6 +3,7 @@
 #include <SimpleMath.h>
 #include <d3d11.h>
 
+#include "DirectionLightComponent.h"
 #include "../Engine/TransformComponent.h"
 #include "../Engine/CameraComponent.h"
 #include "../Engine/Game.h"
@@ -21,9 +22,9 @@ public:
 	};
 
 	struct MaterialData {
-		float ambient_factor;
+		float ambient;
 		float shininess;
-		float specular_factor;
+		float specular;
 		float dummy;
 	};
 
@@ -96,11 +97,17 @@ public:
 
 		ecs::Entity& camera = camera_it.Get();
 		engine::CameraComponent& camera_component = camera.Get<engine::CameraComponent>();
+
+		auto light_it = GetIterator<DirectionLightComponent>();
+		if (!light_it.HasCurrent()) return;
+
+		ecs::Entity& light = light_it.Get();
+		auto& light_component = light.Get<DirectionLightComponent>();
 		
 		LightData light_data{};
 		light_data.view_position = camera_component.position;
-		light_data.light_direction = DirectX::SimpleMath::Vector3{ 0.0f, -1.0f, 0.0f };
-		light_data.light_color = DirectX::SimpleMath::Vector3{ 1.0f, 1.0f, 1.0f };
+		light_data.light_direction = light_component.light_direction;
+		light_data.light_color = light_component.light_color;
 		light_buffer.Update(&light_data);
 
 		using namespace engine;

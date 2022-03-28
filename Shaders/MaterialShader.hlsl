@@ -1,26 +1,41 @@
-cbuffer	Transform : register(b0)
+struct TransformData
 {
 	matrix world;
 	matrix world_view_proj;
 	matrix inverse_transpose_world;
 };
 
-cbuffer Material : register(b1)
+struct MaterialData
 {
-	float ambient_factor;
+	float ambient;
 	float shininess;
-	float specular_factor;
-	float dummy0;
-}
+	float specular;
+	float dummy;
+};
 
-cbuffer Light : register(b2)
+struct LightData
 {
 	float3 view_position;
-	float dummy1;
+	float dummy0;
 	float3 light_direction;
-	float dummy2;
+	float dummy1;
 	float3 light_color;
-	float dummy3;
+	float dummy2;
+};
+
+cbuffer TransformBuffer : register(b0)
+{
+	TransformData Transform;
+}
+
+cbuffer MaterialBuffer : register(b1)
+{
+	MaterialData Material;
+}
+
+cbuffer LightBuffer : register(b2)
+{
+	LightData Light;
 }
 
 Texture2D DiffuseMap : register(t0);
@@ -45,10 +60,10 @@ PS_IN VSMain(VS_IN input)
 {
 	PS_IN output = (PS_IN)0;
 
-	output.pos = mul(float4(input.pos, 1.0), world_view_proj);
-	output.norm = mul(float4(input.norm, 0.0), inverse_transpose_world);
+	output.pos = mul(float4(input.pos, 1.0), Transform.world_view_proj);
+	output.norm = mul(float4(input.norm, 0.0), Transform.inverse_transpose_world);
 	output.tex = input.tex;
-	output.world_pos = mul(float4(input.pos, 1.0), world);
+	output.world_pos = mul(float4(input.pos, 1.0), Transform.world);
 
 	return output;
 }
@@ -59,20 +74,19 @@ float4 PSMain(PS_IN input) : SV_Target
 	clip(color.a - 0.01f);
 
 	// ambient
-	float3 ambient = ambient_factor * light_color;
+	float3 ambient = Material.ambient * Light.light_color;
 
 	// diffuse
 	float3 normal = normalize(input.norm.xyz);
-	float3 to_light_direction = -light_direction;
+	float3 to_light_direction = -Light.light_direction;
 	float diff = max(0.0, dot(to_light_direction, normal));
-	float3 diffuse = diff * light_color;
+	float3 diffuse = diff * Light.light_color;
 
 	// specular
-	float3 vp = view_position;
-	float3 view_direction = normalize(view_position - input.world_pos.xyz);
-	float3 reflect_direction = normalize(reflect(light_direction, normal));
-	float spec = pow(max(0.0, dot(view_direction, reflect_direction)), shininess);
-	float3 specular = specular_factor * spec * light_color;
+	float3 view_direction = normalize(Light.view_position - input.world_pos.xyz);
+	float3 reflect_direction = normalize(reflect(Light.light_direction, normal));
+	float spec = pow(max(0.0, dot(view_direction, reflect_direction)), Material.shininess);
+	float3 specular = Material.specular * spec * Light.light_color;
 
 	float3 result = (ambient + diffuse + specular) * color.xyz;
 	return float4(result, 1.0f);
