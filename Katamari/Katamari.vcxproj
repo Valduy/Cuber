@@ -168,6 +168,7 @@
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="ModelComponent.h" />
+    <ClInclude Include="SolarSystem.h" />
     <ClInclude Include="StickingSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -6,6 +6,7 @@
 #include "CollisionComponent.h"
 #include "DirectionLightComponent.h"
 #include "ItemComponent.h"
+#include "SolarSystem.h"
 #include "StickingSystem.h"
 #include "../Engine/Game.h"
 #include "../Engine/Model.h"
@@ -255,6 +256,7 @@ int main() {
 
 	//CameraSystem fps_camera_system;
 	KatamariCameraSystem camera_system;
+	SolarSystem solar_system;
 	KatamariControllerSystem katamari_controller_system;
 	StickingSystem sticking_system;
 	LinesRendererSystem lines_renderer_system;
@@ -262,6 +264,7 @@ int main() {
 
 	//game.PushSystem(fps_camera_system);
 	game.PushSystem(camera_system);
+	game.PushSystem(solar_system);
 	game.PushSystem(katamari_controller_system);
 	game.PushSystem(sticking_system);
 	game.PushSystem(lines_renderer_system);
@@ -274,10 +277,13 @@ int main() {
 	camera.Add<CameraComponent>();
 	camera.Add<TransformComponent>();
 
+	using namespace DirectX::SimpleMath;
+	Vector3 light_direction(-1.0f, -1.0f, 0.0f);
+	light_direction.Normalize();
 	ecs::Entity& light = game.GetEntityManager().CreateEntity();
 	auto& direction_light = light.Add<DirectionLightComponent>();
-	direction_light.light_direction = DirectX::SimpleMath::Vector3 { 0.0f, -1.0f, 0.0f };
-	direction_light.light_color = DirectX::SimpleMath::Vector3 { 1.0f, 1.0f, 1.0f };
+	direction_light.light_direction = light_direction;
+	direction_light.light_color = Vector3(1.0f, 1.0f, 1.0f);
 
 	SpawnItems(game);
 
