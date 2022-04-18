@@ -24,12 +24,14 @@ engine::Model mill_model;
 engine::Model pear_model;
 engine::Model pumpkin_model;
 engine::Model ball_model;
+engine::Model grass_model;
 
 DirectX::ScratchImage crate_diffuse;
 DirectX::ScratchImage mill_diffuse;
 DirectX::ScratchImage pear_diffuse;
 DirectX::ScratchImage pumpkin_diffuse;
 DirectX::ScratchImage ball_diffuse;
+DirectX::ScratchImage grass_diffuse;
 
 ecs::Entity& AttachModel(
 	engine::Game& game,
@@ -143,7 +145,7 @@ ecs::Entity& SpawnPumpkin(
 		{ 3.0f, 3.0f, 3.0f },
 		rotation);
 	pumpkin.Add<ItemComponent>();
-	AttachSphere(game, pumpkin, 0.5f, { 0.0f, 0.2f, 0.0f });
+	AttachSphere(game, pumpkin, 0.5f, { 0.0f, 0.3f, 0.0f });
 	return pumpkin;
 }
 
@@ -184,9 +186,62 @@ void SpawnItems(engine::Game& game) {
 	}
 }
 
+ecs::Entity& SpawnCamera(engine::Game& game) {
+	ecs::Entity& camera = game.GetEntityManager().CreateEntity();
+	camera.Add<engine::CameraComponent>();
+	camera.Add<engine::TransformComponent>();
+	return camera;
+}
+
+ecs::Entity& SpawnKatamari(engine::Game& game, ecs::Entity& camera) {
+	ecs::Entity& ball = AttachModel(
+		game,
+		ball_model,
+		ball_diffuse,
+		{ 0.1f, 32.0f, 0.6f },
+		{ 0.0f, 0.0f, 0.0f },
+		{ 0.25f, 0.25f, 0.25f });
+	AttachSphere(game, ball, 3.2f);
+	ball.Add<KatamariComponent>();
+
+	ecs::Entity& katamari = game.GetEntityManager().CreateEntity();	
+	katamari.Add<KatamariControllerComponent>([&] {
+		return new KatamariControllerComponent(ball, 3.0f, 3.0f);
+	});
+
+	auto& katamari_transform = katamari.Add<engine::TransformComponent>();
+	katamari_transform.SetPosition({ -9.0f, 0.0f, 0.0f });
+	katamari_transform.AddChild(ball);
+	katamari_transform.AddChild(camera);
+	camera.Get<engine::TransformComponent>().SetLocalPosition({ 0.0, 5.0, -10.0 });
+	return katamari;
+}
+
+ecs::Entity& SpawnDirectionLight(engine::Game& game) {
+	DirectX::SimpleMath::Vector3 light_direction(-1.0f, -1.0f, 0.0f);
+	light_direction.Normalize();
+	ecs::Entity& light = game.GetEntityManager().CreateEntity();
+	auto& direction_light = light.Add<DirectionLightComponent>();
+	direction_light.light_direction = light_direction;
+	direction_light.light_color = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
+	return light;
+}
+
+ecs::Entity& SpawnPlane(engine::Game& game) {
+	ecs::Entity& plane = AttachModel(
+		game,
+		grass_model,
+		grass_diffuse,
+		{ 0.1f, 10.0f, 0.1f },
+		{ 0.0f, -1.0f, 0.0f },
+		{ 20.0f, 1.0f, 20.0f },
+		{ 0.0f, 0.0f, 0.0f });
+	return plane;
+}
+
 HRESULT LoadModels() {
 	using namespace engine;
-	HRESULT result = S_OK;
+	HRESULT result;
 
 	if (result = Model::Load(crate_model, "../Content/WoodenCrate.obj"); FAILED(result)) {
 		return result;
@@ -203,13 +258,16 @@ HRESULT LoadModels() {
 	if (result = Model::Load(ball_model, "../Content/SoccerBall.obj"); FAILED(result)) {
 		return result;
 	}
+	if (result = Model::Load(grass_model, "../Content/Plane.obj"); FAILED(result)) {
+		return result;
+	}
 
 	return result;
 }
 
 HRESULT LoadTextures() {
 	using namespace engine;
-	HRESULT result = S_OK;
+	HRESULT result;
 
 	if (result = TextureLoader::LoadWic(L"../Content/WoodenCrate_Diffuse.png", &crate_diffuse); FAILED(result)) {
 		return result;
@@ -220,10 +278,13 @@ HRESULT LoadTextures() {
 	if (result = TextureLoader::LoadWic(L"../Content/Pear_Diffuse.jpg", &pear_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Pumpkin_Diffuse.png", &pumpkin_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"../Content/Pumpkin_Diffuse.jpg", &pumpkin_diffuse); FAILED(result)) {
 		return result;
 	}
 	if (result = TextureLoader::LoadWic(L"../Content/SoccerBall_Diffuse.bmp", &ball_diffuse); FAILED(result)) {
+		return result;
+	}
+	if (result = TextureLoader::LoadWic(L"../Content/Plane_Diffuse.jpg", &grass_diffuse); FAILED(result)) {
 		return result;
 	}
 
@@ -270,42 +331,14 @@ int main() {
 	game.PushSystem(lines_renderer_system);
 	game.PushSystem(render_system);
 
-	ecs::Entity& plane = DebugUtils::CreatePlane(game, 100, 100);
-	ecs::Entity& axis = DebugUtils::CreateAxis(game, 3.0f);
+	auto& plane = DebugUtils::CreatePlane(game, 100, 100);
+	auto& axis = DebugUtils::CreateAxis(game, 3.0f);
 
-	ecs::Entity& camera = game.GetEntityManager().CreateEntity();
-	camera.Add<CameraComponent>();
-	camera.Add<TransformComponent>();
-
-	using namespace DirectX::SimpleMath;
-	Vector3 light_direction(-1.0f, -1.0f, 0.0f);
-	light_direction.Normalize();
-	ecs::Entity& light = game.GetEntityManager().CreateEntity();
-	auto& direction_light = light.Add<DirectionLightComponent>();
-	direction_light.light_direction = light_direction;
-	direction_light.light_color = Vector3(1.0f, 1.0f, 1.0f);
-
-	SpawnItems(game);
-
-	ecs::Entity& ball = AttachModel(
-		game,
-		ball_model,
-		ball_diffuse,
-		{ 0.1f, 32.0f, 0.6f },
-		{ 0.0f, 0.0f, 0.0f },
-		{ 0.25f, 0.25f, 0.25f });
-	AttachSphere(game, ball, 3.2f);
-	ball.Add<KatamariComponent>();
-
-	ecs::Entity& katamari = game.GetEntityManager().CreateEntity();
-	auto& katamari_transform = katamari.Add<TransformComponent>();
-	katamari.Add<KatamariControllerComponent>([&] {
-		return new KatamariControllerComponent(ball, 3.0f, 3.0f);
-	});
-	katamari_transform.SetPosition({ -9.0f, 0.0f, 0.0f });
-	katamari_transform.AddChild(ball);
-	katamari_transform.AddChild(camera);
-	camera.Get<TransformComponent>().SetLocalPosition({ 0.0, 5.0, -10.0 });
+	auto& camera = SpawnCamera(game);
+	auto& light = SpawnDirectionLight(game);
+	auto& katamari = SpawnKatamari(game, camera);
+	auto& grass = SpawnPlane(game);
+	SpawnItems(game);	
 
 	game.Run();
 	return 0;

@@ -28,7 +28,8 @@ public:
 	static HRESULT Load(Model& model, const std::string& path) {
 		model.meshes_.clear();
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+		const aiScene* scene = importer.ReadFile(path, 
+			aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_FlipWindingOrder);
 
 		if (scene == nullptr || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || scene->mRootNode == nullptr) {
 			std::cout << importer.GetErrorString() << std::endl;

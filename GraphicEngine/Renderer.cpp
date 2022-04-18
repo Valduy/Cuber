@@ -2,6 +2,7 @@
 #include "Renderer.h"
 
 #include <cassert>
+#include <iostream>
 
 ID3D11Device& graph::Renderer::GetDevice() const {
 	assert(device_ != nullptr && "Renderer isn't initialized.");
@@ -160,7 +161,7 @@ HRESULT graph::Renderer::CreateRenderTargetView() {
 
 HRESULT graph::Renderer::CreateRasterState() {
 	CD3D11_RASTERIZER_DESC raster_desc = {};
-	raster_desc.CullMode = D3D11_CULL_NONE;
+	raster_desc.CullMode = D3D11_CULL_BACK;
 	raster_desc.FillMode = D3D11_FILL_SOLID;
 
 	return device_->CreateRasterizerState(&raster_desc, &raster_state_);
