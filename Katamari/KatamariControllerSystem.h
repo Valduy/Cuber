@@ -69,8 +69,7 @@ private:
 		const Quaternion quat = Quaternion::CreateFromYawPitchRoll(0, input_axis.z, -input_axis.x);
 
 		auto& katamari_transform = katamari_component->body.Get<TransformComponent>();
-		katamari_transform.SetLocalRotation(
-			katamari_transform.GetLocalRotation() * quat);
+		katamari_transform.SetLocalRotation(katamari_transform.GetLocalRotation() * quat);
 	}
 
 	void UpdateRotation(engine::TransformComponent* transform) {
