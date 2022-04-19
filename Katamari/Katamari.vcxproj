@@ -168,7 +168,9 @@
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="ModelComponent.h" />
-    <ClInclude Include="SolarSystem.h" />
+    <ClInclude Include="DirectionLightSystem.h" />
+    <ClInclude Include="ShadowComponent.h" />
+    <ClInclude Include="ShadowMapRenderSystem.h" />
     <ClInclude Include="StickingSystem.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

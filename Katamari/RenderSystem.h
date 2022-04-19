@@ -19,6 +19,7 @@ public:
 		DirectX::SimpleMath::Matrix world;
 		DirectX::SimpleMath::Matrix world_view_proj;
 		DirectX::SimpleMath::Matrix inverse_transpose_world;		
+		DirectX::SimpleMath::Matrix light_world_view_proj;
 	};
 
 	struct MaterialData {
@@ -88,20 +89,20 @@ public:
 					material_buffer,
 					texture);
 			});
-		}		
+		}
 	}
 
 	void Update(float dt) override {
 		auto camera_it = GetIterator<engine::CameraComponent>();
 		if (!camera_it.HasCurrent()) return;
 
-		ecs::Entity& camera = camera_it.Get();
-		engine::CameraComponent& camera_component = camera.Get<engine::CameraComponent>();
+		auto& camera = camera_it.Get();
+		auto& camera_component = camera.Get<engine::CameraComponent>();
 
 		auto light_it = GetIterator<DirectionLightComponent>();
 		if (!light_it.HasCurrent()) return;
 
-		ecs::Entity& light = light_it.Get();
+		auto& light = light_it.Get();
 		auto& light_component = light.Get<DirectionLightComponent>();
 		
 		LightData light_data{};
@@ -112,17 +113,20 @@ public:
 
 		using namespace engine;
 		for (auto it = GetIterator<RenderComponent, TransformComponent>(); it.HasCurrent(); it.Next()) {
-			ecs::Entity& model = it.Get();
+			auto& model = it.Get();
 			RenderComponent& render_component = model.Get<RenderComponent>();
 			TransformComponent& transform_component = model.Get<TransformComponent>();
 
 			DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
 			DirectX::SimpleMath::Matrix camera_matrix = camera_component.GetCameraMatrix();
+			DirectX::SimpleMath::Matrix light_matrix = light_component.GetLightMatrix();
 			DirectX::SimpleMath::Matrix world_view_proj_matrix = model_matrix * camera_matrix;
+			DirectX::SimpleMath::Matrix light_world_view_proj_matrix = model_matrix * light_matrix;
 			TransformData transform_data{
 				model_matrix.Transpose(),
 				world_view_proj_matrix.Transpose(),
 				model_matrix.Transpose().Invert().Transpose(),
+				light_world_view_proj_matrix.Transpose(),
 			};
 
 			render_component.transform_buffer.Update(&transform_data);
@@ -134,6 +138,13 @@ public:
 		sampler_.SetSampler();
 		light_buffer.PSSetBuffer(2);
 
+		auto light_it = GetIterator<DirectionLightComponent>();
+		if (!light_it.HasCurrent()) return;
+
+		auto& light = light_it.Get();
+		auto& light_component = light.Get<DirectionLightComponent>();
+		light_component.shadow_map.SetTexture(1);
+
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		using namespace engine;
@@ -142,7 +153,7 @@ public:
 			RenderComponent& render_component = model.Get<RenderComponent>();
 			render_component.transform_buffer.VSSetBuffer(0);
 			render_component.material_buffer.PSSetBuffer(1);
-			render_component.texture.SetTexture();
+			render_component.texture.SetTexture(0);		
 
 			for (MeshBuffers& mesh_buffers : render_component.model_buffers) {
 				mesh_buffers.vertex_buffers.SetBuffer(sizeof(Vertex));

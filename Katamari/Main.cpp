@@ -6,7 +6,8 @@
 #include "CollisionComponent.h"
 #include "DirectionLightComponent.h"
 #include "ItemComponent.h"
-#include "SolarSystem.h"
+#include "DirectionLightSystem.h"
+#include "ShadowMapRenderSystem.h"
 #include "StickingSystem.h"
 #include "../Engine/Game.h"
 #include "../Engine/Model.h"
@@ -217,13 +218,27 @@ ecs::Entity& SpawnKatamari(engine::Game& game, ecs::Entity& camera) {
 	return katamari;
 }
 
-ecs::Entity& SpawnDirectionLight(engine::Game& game) {
-	DirectX::SimpleMath::Vector3 light_direction(-1.0f, -1.0f, 0.0f);
-	light_direction.Normalize();
-	ecs::Entity& light = game.GetEntityManager().CreateEntity();
+ecs::Entity& SpawnDirectionLight(
+	engine::Game& game, 
+	DirectX::SimpleMath::Vector3 position, 
+	DirectX::SimpleMath::Vector3 direction,
+	DirectX::SimpleMath::Vector3 color)
+{
+	auto& light = game.GetEntityManager().CreateEntity();
+	auto& light_transform = light.Add<engine::TransformComponent>();
+	light_transform.SetPosition(position);
+
+	auto& axis = engine::DebugUtils::CreateAxis(game, 1);
+	light_transform.AddChild(axis);
+
+	auto& sphere = engine::DebugUtils::CreateSphere(game, 1, { 1.0f, 1.0f, 1.0f, 0.0f });
+	light_transform.AddChild(sphere);
+
+	auto& line = engine::DebugUtils::CreateLine(game, position, position + direction, { 1.0f, 1.0f, 0.0f, 0.0f });
+
 	auto& direction_light = light.Add<DirectionLightComponent>();
-	direction_light.light_direction = light_direction;
-	direction_light.light_color = DirectX::SimpleMath::Vector3(1.0f, 1.0f, 1.0f);
+	direction_light.light_direction = direction;
+	direction_light.light_color = color;
 	return light;
 }
 
@@ -317,25 +332,32 @@ int main() {
 
 	//CameraSystem fps_camera_system;
 	KatamariCameraSystem camera_system;
-	SolarSystem solar_system;
+	DirectionLightSystem direction_light_system;
 	KatamariControllerSystem katamari_controller_system;
 	StickingSystem sticking_system;
 	LinesRendererSystem lines_renderer_system;
+	ShadowMapRenderSystem shadow_system;
 	RenderSystem render_system;
 
 	//game.PushSystem(fps_camera_system);
 	game.PushSystem(camera_system);
-	game.PushSystem(solar_system);
+	game.PushSystem(direction_light_system);
 	game.PushSystem(katamari_controller_system);
 	game.PushSystem(sticking_system);
-	game.PushSystem(lines_renderer_system);
+	game.PushSystem(lines_renderer_system);	
 	game.PushSystem(render_system);
+	game.PushSystem(shadow_system);
 
 	auto& plane = DebugUtils::CreatePlane(game, 100, 100);
 	auto& axis = DebugUtils::CreateAxis(game, 3.0f);
 
+	DirectX::SimpleMath::Vector3 light_position = { 25.0f, 6.0f, 0.0f };
+	DirectX::SimpleMath::Vector3 light_direction = {-1.0f, -1.0f, 0.0f };
+	DirectX::SimpleMath::Vector3 light_color = { 1.0f, 1.0f, 1.0f };
+	light_direction.Normalize();
+
 	auto& camera = SpawnCamera(game);
-	auto& light = SpawnDirectionLight(game);
+	auto& light = SpawnDirectionLight(game, light_position, light_direction, light_color);
 	auto& katamari = SpawnKatamari(game, camera);
 	auto& grass = SpawnPlane(game);
 	SpawnItems(game);	

@@ -37,6 +37,19 @@ public:
 		return result;
 	}
 
+	void SetRenderTarget() {
+		assert(renderer_ != nullptr && "ShadowMap isn't initialized.");
+		ID3D11RenderTargetView* render_targets[1] = { nullptr };
+		renderer_->GetContext().RSSetViewports(1, &viewport_);
+		renderer_->GetContext().OMSetRenderTargets(1, render_targets, depth_buffer_.Get());
+		renderer_->GetContext().ClearDepthStencilView(depth_buffer_.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
+	}
+
+	void SetTexture(int slot = 0) {
+		assert(renderer_ != nullptr && "ShadowMap isn't initialized.");
+		renderer_->GetContext().PSSetShaderResources(slot, 1, shadow_map_.GetAddressOf());
+	}
+
 private:
 	Renderer* renderer_;
 

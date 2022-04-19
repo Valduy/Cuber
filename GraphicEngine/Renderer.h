@@ -17,6 +17,21 @@ namespace graph {
 		void BeginRender();
 		void EndRender();
 
+		// TODO: Crutch, should implement render target stack!
+		void SetDefaultRenderTarget() {
+			D3D11_VIEWPORT viewport = {};
+			viewport.Width = static_cast<float>(window_.GetWidth());
+			viewport.Height = static_cast<float>(window_.GetHeight());
+			viewport.TopLeftX = 0;
+			viewport.TopLeftY = 0;
+			viewport.MinDepth = 0;
+			viewport.MaxDepth = 1.0f;
+
+			context_->OMSetDepthStencilState(depth_stencil_state_.Get(), 0);
+			context_->RSSetViewports(1, &viewport);
+			context_->OMSetRenderTargets(1, render_target_view_.GetAddressOf(), depth_stencil_view_.Get());
+		}
+
 	private:
 		Window& window_;
 		Microsoft::WRL::ComPtr<IDXGISwapChain> swap_chain_;

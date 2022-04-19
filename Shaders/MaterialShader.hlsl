@@ -3,6 +3,7 @@ struct TransformData
 	matrix world;
 	matrix world_view_proj;
 	matrix inverse_transpose_world;
+	matrix light_world_view_proj;
 };
 
 struct MaterialData
@@ -39,6 +40,7 @@ cbuffer LightBuffer : register(b2)
 }
 
 Texture2D DiffuseMap : register(t0);
+Texture2D ShadowMap : register(t1);
 SamplerState Sampler : register(s0);
 
 struct VS_IN
@@ -54,6 +56,7 @@ struct PS_IN
 	float4 norm : NORMAL;
 	float2 tex : TEXCOORD0;
 	float4 world_pos : TEXCOORD1;
+	float4 light_pos : TEXCOORD2;
 };
 
 PS_IN VSMain(VS_IN input)
@@ -64,8 +67,24 @@ PS_IN VSMain(VS_IN input)
 	output.norm = mul(float4(input.norm, 0.0), Transform.inverse_transpose_world);
 	output.tex = input.tex;
 	output.world_pos = mul(float4(input.pos, 1.0), Transform.world);
+	output.light_pos = mul(float4(input.pos, 1.0), Transform.light_world_view_proj);
 
 	return output;
+}
+
+float CalculateShadow(float4 light_pos)
+{
+	float3 proj = light_pos.xyz / light_pos.w;	
+	float shadow_x = proj.x * 0.5 + 0.5;
+	float shadow_y = -proj.y * 0.5 + 0.5;
+	float current_depth = proj.z;
+	float closest_depth = ShadowMap.Sample(Sampler, float2(shadow_x, shadow_y)).r;	
+
+	if (current_depth > closest_depth) {
+		return 1.0;
+	}
+
+	return 0.0;
 }
 
 float4 PSMain(PS_IN input) : SV_Target
@@ -88,6 +107,7 @@ float4 PSMain(PS_IN input) : SV_Target
 	float spec = pow(max(0.0, dot(view_direction, reflect_direction)), Material.shininess);
 	float3 specular = Material.specular * spec * Light.light_color;
 
-	float3 result = (ambient + diffuse + specular) * color.xyz;
+	float shadow = CalculateShadow(input.light_pos);
+	float3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * color.xyz;
 	return float4(result, 1.0f);
 }
