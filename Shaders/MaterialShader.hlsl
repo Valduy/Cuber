@@ -72,15 +72,16 @@ PS_IN VSMain(VS_IN input)
 	return output;
 }
 
-float CalculateShadow(float4 light_pos)
+float CalculateShadow(float4 light_pos, float4 norm)
 {
 	float3 proj = light_pos.xyz / light_pos.w;	
-	float shadow_x = proj.x * 0.5 + 0.5;
-	float shadow_y = -proj.y * 0.5 + 0.5;
+	float proj_x = proj.x * 0.5 + 0.5;
+	float proj_y = -proj.y * 0.5 + 0.5;
 	float current_depth = proj.z;
-	float closest_depth = ShadowMap.Sample(Sampler, float2(shadow_x, shadow_y)).r;	
+	float closest_depth = ShadowMap.Sample(Sampler, float2(proj_x, proj_y)).r;
+	float bias = 0.005;
 
-	if (current_depth > closest_depth) {
+	if (current_depth - bias > closest_depth) {
 		return 1.0;
 	}
 
@@ -107,7 +108,7 @@ float4 PSMain(PS_IN input) : SV_Target
 	float spec = pow(max(0.0, dot(view_direction, reflect_direction)), Material.shininess);
 	float3 specular = Material.specular * spec * Light.light_color;
 
-	float shadow = CalculateShadow(input.light_pos);
+	float shadow = CalculateShadow(input.light_pos, input.norm);
 	float3 result = (ambient + (1.0 - shadow) * (diffuse + specular)) * color.xyz;
 	return float4(result, 1.0f);
 }
