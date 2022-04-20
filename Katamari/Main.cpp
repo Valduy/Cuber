@@ -344,9 +344,9 @@ int main() {
 	game.PushSystem(direction_light_system);
 	game.PushSystem(katamari_controller_system);
 	game.PushSystem(sticking_system);
-	game.PushSystem(lines_renderer_system);	
-	game.PushSystem(render_system);
+	game.PushSystem(lines_renderer_system);
 	game.PushSystem(shadow_system);
+	game.PushSystem(render_system);	
 
 	auto& plane = DebugUtils::CreatePlane(game, 100, 100);
 	auto& axis = DebugUtils::CreateAxis(game, 3.0f);

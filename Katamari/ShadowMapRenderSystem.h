@@ -32,7 +32,7 @@ public:
 		light_component.shadow_map.Init(&GetRenderer(), 1024, 1024);
 
 		using namespace engine;
-		auto it = GetIterator<RenderComponent, TransformComponent>();
+		auto it = GetIterator<ModelComponent, TransformComponent>();
 		for (; it.HasCurrent(); it.Next()) {
 			auto& model = it.Get();
 
@@ -53,10 +53,9 @@ public:
 		auto& light_component = light.Get<DirectionLightComponent>();
 
 		using namespace engine;
-		auto it = GetIterator<RenderComponent, TransformComponent, ShadowComponent>();
+		auto it = GetIterator<TransformComponent, ShadowComponent>();
 		for (; it.HasCurrent(); it.Next()) {
 			auto& model = it.Get();
-			auto& render_component = model.Get<RenderComponent>();
 			auto& transform_component = model.Get<TransformComponent>();
 			auto& shadow_component = model.Get<ShadowComponent>();
 

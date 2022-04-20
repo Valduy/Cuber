@@ -30,7 +30,32 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\PointLight.hlsl" />
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\PointLight.hlsl" />
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\PointLight.hlsl" />
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\PointLight.hlsl" />
     <None Include="Shaders\ShadowMapShader.hlsl" />
     <None Include="Shaders\**">
       <Filter>Shaders</Filter>
