@@ -19,6 +19,9 @@
     <Filter Include="Header Files\Systems">
       <UniqueIdentifier>{b577925a-8d5e-44ed-9e73-d43f5f6eaeef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{d849cd67-956c-499f-91ed-259167acf4d8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -27,6 +30,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="RenderComponent.h">

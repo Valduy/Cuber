@@ -19,6 +19,9 @@
     <Filter Include="Header Files\Systems">
       <UniqueIdentifier>{7555d112-ab05-44c9-bea1-a2bfe76bb09f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{f1261fc1-bd06-40bb-bff6-530fd7b31226}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -27,6 +30,12 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="$(SolutionDir)Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShapeComponent.h">

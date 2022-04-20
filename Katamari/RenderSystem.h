@@ -48,7 +48,7 @@ public:
 		engine::Game::SystemBase::Init(game);
 
 		using namespace graph;
-		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition3Normal3Texture2, L"../Shaders/MaterialShader.hlsl");
+		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition3Normal3Texture2, L"Shaders/MaterialShader.hlsl");
 		sampler_.Init(&GetRenderer());
 		light_buffer.Init(&GetRenderer());
 

@@ -22,7 +22,7 @@ public:
 		engine::Game::SystemBase::Init(game);
 
 		using namespace graph;
-		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition3Normal3Texture2, L"../Shaders/ShadowMapShader.hlsl");
+		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition3Normal3Texture2, L"Shaders/ShadowMapShader.hlsl");
 
 		auto light_it = GetIterator<DirectionLightComponent>();
 		if (!light_it.HasCurrent()) return;

@@ -19,6 +19,9 @@
     <Filter Include="Header Files\Components">
       <UniqueIdentifier>{333dea3e-c2c0-442c-930e-252f713be436}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{5065fa0a-1c27-44f2-91c1-d3a412bcead1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -77,5 +80,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

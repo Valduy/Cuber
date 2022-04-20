@@ -28,7 +28,7 @@ public:
 		engine::Game::SystemBase::Init(game);
 
 		using namespace graph;
-		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition4Color4, L"../Shaders/PongShader.hlsl");
+		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition4Color4, L"Shaders/PongShader.hlsl");
 
 		using namespace DirectX::SimpleMath;
 		auto it = GetIterator<ShapeComponent, TransformComponent>();

@@ -31,6 +31,9 @@
     <Filter Include="Header Files\engine\Model">
       <UniqueIdentifier>{cb17dabd-e6e2-4702-91f4-4216e44972d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{278425b3-5466-47e4-acdf-128669afd752}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -89,5 +92,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

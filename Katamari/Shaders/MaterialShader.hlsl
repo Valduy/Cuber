@@ -74,7 +74,7 @@ PS_IN VSMain(VS_IN input)
 
 float CalculateShadow(float4 light_pos, float4 norm)
 {
-	float3 proj = light_pos.xyz / light_pos.w;	
+	float3 proj = light_pos.xyz / light_pos.w;
 	float proj_x = proj.x * 0.5 + 0.5;
 	float proj_y = -proj.y * 0.5 + 0.5;
 	float current_depth = proj.z;

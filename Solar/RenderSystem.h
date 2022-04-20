@@ -21,7 +21,7 @@ public:
 		engine::Game::SystemBase::Init(game);
 		
 		using namespace graph;
-		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition4Color4, L"../Shaders/SolarShader.hlsl");
+		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition4Color4, L"Shaders/SolarShader.hlsl");
 
 		using namespace engine;
 		for (auto it = GetIterator<TransformComponent, ShapeComponent>(); it.HasCurrent(); it.Next()) {

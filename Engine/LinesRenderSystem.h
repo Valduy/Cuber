@@ -24,7 +24,14 @@ public:
 
 	void Init(Game& game) override {
 		SystemBase::Init(game);
-		shader_.Init(&GetRenderer(), graph::LayoutDescriptor::kPosition3, L"../Shaders/LineShader.hlsl");
+
+#ifdef _DEBUG
+		shader_.Init(&GetRenderer(), graph::LayoutDescriptor::kPosition3, L"../Engine/Shaders/LineShader.hlsl");
+#else
+		shader_.Init(&GetRenderer(), graph::LayoutDescriptor::kPosition3, path);
+#endif
+
+		shader_.Init(&GetRenderer(), graph::LayoutDescriptor::kPosition3, L"Shaders/LineShader.hlsl");
 
 		for (auto it = GetIterator<TransformComponent, LinesComponent>(); it.HasCurrent(); it.Next()) {
 			ecs::Entity& entity = it.Get();
