@@ -7,6 +7,7 @@
 #include "DirectionLightComponent.h"
 #include "ItemComponent.h"
 #include "DirectionLightSystem.h"
+#include "ShadowMapDebugSystem.h"
 #include "ShadowMapRenderSystem.h"
 #include "StickingSystem.h"
 #include "../Engine/Game.h"
@@ -338,6 +339,7 @@ int main() {
 	LinesRendererSystem lines_renderer_system;
 	ShadowMapRenderSystem shadow_system;
 	RenderSystem render_system;
+	ShadowMapDebugSystem shadow_debug_system;
 
 	//game.PushSystem(fps_camera_system);
 	game.PushSystem(camera_system);
@@ -346,7 +348,8 @@ int main() {
 	game.PushSystem(sticking_system);
 	game.PushSystem(lines_renderer_system);
 	game.PushSystem(shadow_system);
-	game.PushSystem(render_system);	
+	game.PushSystem(render_system);
+	game.PushSystem(shadow_debug_system);
 
 	auto& plane = DebugUtils::CreatePlane(game, 100, 100);
 	auto& axis = DebugUtils::CreateAxis(game, 3.0f);

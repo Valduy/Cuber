@@ -156,10 +156,10 @@ public:
 			render_component.texture.SetTexture(0);		
 
 			for (MeshBuffers& mesh_buffers : render_component.model_buffers) {
-				mesh_buffers.vertex_buffers.SetBuffer(sizeof(Vertex));
-				mesh_buffers.index_buffers.SetBuffer();
+				mesh_buffers.vertex_buffer.SetBuffer(sizeof(Vertex));
+				mesh_buffers.index_buffer.SetBuffer();
 				GetRenderer().GetContext().DrawIndexed(
-					mesh_buffers.index_buffers.GetSize(), 0, 0);
+					mesh_buffers.index_buffer.GetSize(), 0, 0);
 			}			
 		}
 	}

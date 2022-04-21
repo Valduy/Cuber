@@ -28,10 +28,8 @@ public:
 #ifdef _DEBUG
 		shader_.Init(&GetRenderer(), graph::LayoutDescriptor::kPosition3, L"../Engine/Shaders/LineShader.hlsl");
 #else
-		shader_.Init(&GetRenderer(), graph::LayoutDescriptor::kPosition3, path);
-#endif
-
 		shader_.Init(&GetRenderer(), graph::LayoutDescriptor::kPosition3, L"Shaders/LineShader.hlsl");
+#endif		
 
 		for (auto it = GetIterator<TransformComponent, LinesComponent>(); it.HasCurrent(); it.Next()) {
 			ecs::Entity& entity = it.Get();

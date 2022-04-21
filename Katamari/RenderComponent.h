@@ -8,14 +8,14 @@
 
 class MeshBuffers {
 public:
-	graph::VertexBuffer vertex_buffers;
-	graph::IndexBuffer index_buffers;	
+	graph::VertexBuffer vertex_buffer;
+	graph::IndexBuffer index_buffer;	
 
 	MeshBuffers(
-		graph::VertexBuffer vertex_buffers,
-		graph::IndexBuffer index_buffers)
-		: vertex_buffers(vertex_buffers)
-		, index_buffers(index_buffers)
+		graph::VertexBuffer vertex_buffer,
+		graph::IndexBuffer index_buffer)
+		: vertex_buffer(vertex_buffer)
+		, index_buffer(index_buffer)
 	{}
 };
 

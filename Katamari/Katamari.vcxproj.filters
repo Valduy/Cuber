@@ -24,18 +24,33 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Shaders\PointLight.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapDebugShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="Shaders\**">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\**">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\PointLight.hlsl" />
     <None Include="Shaders\ShadowMapShader.hlsl" />
     <None Include="Shaders\**">
       <Filter>Shaders</Filter>
@@ -56,11 +71,33 @@
     <None Include="Shaders\PointLight.hlsl" />
     <None Include="Shaders\ShadowMapShader.hlsl" />
     <None Include="Shaders\PointLight.hlsl" />
+    <None Include="Shaders\ShadowMapDebugShader.hlsl" />
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\PointLight.hlsl" />
+    <None Include="Shaders\ShadowMapDebugShader.hlsl" />
     <None Include="Shaders\ShadowMapShader.hlsl" />
     <None Include="Shaders\**">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\PointLight.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapDebugShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="Shaders\**">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\MaterialShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\PointLight.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>
@@ -110,5 +147,18 @@
     <ClInclude Include="ShadowComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
+    <ClInclude Include="ShadowMapDebugSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Main.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="Shaders\ShadowMapDebugShader.hlsl">
+      <Filter>Shaders</Filter>
+    </CopyFileToFolders>
   </ItemGroup>
 </Project>
