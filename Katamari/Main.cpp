@@ -163,7 +163,7 @@ void SpawnItems(engine::Game& game) {
 	for (int i = 0; i < pumpkin_count; ++i) {
 		int x = min + dist(rng);
 		int y = min + dist(rng);
-		SpawnPumpkin(game, { static_cast<float>(x), 0.0f, static_cast<float>(y) });
+		SpawnPumpkin(game, { static_cast<float>(x), -0.5f, static_cast<float>(y) });
 	}
 
 	constexpr int pear_count = 10;
@@ -177,14 +177,14 @@ void SpawnItems(engine::Game& game) {
 	for (int i = 0; i < crate_count; ++i) {
 		int x = min + dist(rng);
 		int y = min + dist(rng);
-		SpawnCrate(game, { static_cast<float>(x), 0.0f, static_cast<float>(y) });
+		SpawnCrate(game, { static_cast<float>(x), -0.5f, static_cast<float>(y) });
 	}
 
 	constexpr int mill_count = 5;
 	for (int i = 0; i < mill_count; ++i) {
 		int x = min + dist(rng);
 		int y = min + dist(rng);
-		SpawnMill(game, { static_cast<float>(x), 0.0f, static_cast<float>(y) });
+		SpawnMill(game, { static_cast<float>(x), -0.5f, static_cast<float>(y) });
 	}
 }
 
@@ -243,13 +243,13 @@ ecs::Entity& SpawnDirectionLight(
 	return light;
 }
 
-ecs::Entity& SpawnPlane(engine::Game& game) {
+ecs::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 position) {
 	ecs::Entity& plane = AttachModel(
 		game,
 		grass_model,
 		grass_diffuse,
 		{ 0.1f, 10.0f, 0.1f },
-		{ 0.0f, -1.0f, 0.0f },
+		position,
 		{ 20.0f, 1.0f, 20.0f },
 		{ 0.0f, 0.0f, 0.0f });
 	return plane;
@@ -354,7 +354,7 @@ int main() {
 	auto& plane = DebugUtils::CreatePlane(game, 100, 100);
 	auto& axis = DebugUtils::CreateAxis(game, 3.0f);
 
-	DirectX::SimpleMath::Vector3 light_position = { 25.0f, 6.0f, 0.0f };
+	DirectX::SimpleMath::Vector3 light_position = { 15.0f, 6.0f, 0.0f };
 	DirectX::SimpleMath::Vector3 light_direction = {-1.0f, -1.0f, 0.0f };
 	DirectX::SimpleMath::Vector3 light_color = { 1.0f, 1.0f, 1.0f };
 	light_direction.Normalize();
@@ -362,7 +362,7 @@ int main() {
 	auto& camera = SpawnCamera(game);
 	auto& light = SpawnDirectionLight(game, light_position, light_direction, light_color);
 	auto& katamari = SpawnKatamari(game, camera);
-	auto& grass = SpawnPlane(game);
+	auto& grass = SpawnPlane(game, { 0.0f, -0.5f, 0.0f });
 	SpawnItems(game);	
 
 	game.Run();

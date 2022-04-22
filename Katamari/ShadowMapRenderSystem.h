@@ -25,7 +25,7 @@ public:
 
 		auto& light = light_it.Get();
 		auto& light_component = light.Get<DirectionLightComponent>();
-		light_component.shadow_map.Init(&GetRenderer(), 1024, 1024);
+		light_component.shadow_map.Init(&GetRenderer(), 2048, 2048);
 
 		using namespace engine;
 		auto it = GetIterator<ModelComponent, TransformComponent>();

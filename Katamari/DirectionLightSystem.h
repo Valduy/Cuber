@@ -5,7 +5,8 @@
 
 class DirectionLightSystem : public engine::Game::SystemBase {
 public:
-	void Update(float dt) override {
+	void Init(engine::Game& game) override {
+		engine::Game::SystemBase::Init(game);
 		using namespace DirectX::SimpleMath;
 		using namespace engine;
 
