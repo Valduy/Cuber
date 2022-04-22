@@ -33,6 +33,9 @@ public:
 		if (result = CreateShadowMap(depth_map.Get()); FAILED(result)) {
 			return result;
 		}
+		if (result = CreateRasterState(); FAILED(result)) {
+			return result;
+		}
 
 		return result;
 	}
@@ -40,6 +43,7 @@ public:
 	void SetRenderTarget() {
 		assert(renderer_ != nullptr && "ShadowMap isn't initialized.");
 		ID3D11RenderTargetView* render_targets[1] = { nullptr };
+		renderer_->GetContext().RSSetState(raster_state_.Get());
 		renderer_->GetContext().RSSetViewports(1, &viewport_);
 		renderer_->GetContext().OMSetRenderTargets(1, render_targets, depth_buffer_.Get());
 		renderer_->GetContext().ClearDepthStencilView(depth_buffer_.Get(), D3D11_CLEAR_DEPTH, 1.0f, 0);
@@ -55,6 +59,7 @@ private:
 
 	Microsoft::WRL::ComPtr<ID3D11ShaderResourceView> shadow_map_;
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depth_buffer_;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState1> raster_state_;
 	D3D11_VIEWPORT viewport_;
 	UINT width_;
 	UINT height_;
@@ -105,6 +110,24 @@ private:
 
 		return renderer_->GetDevice().CreateShaderResourceView(
 			depth_map, &shadow_map_desc, shadow_map_.GetAddressOf());
+	}
+
+	HRESULT CreateRasterState() {
+		CD3D11_RASTERIZER_DESC1 raster_desc = {};
+		raster_desc.CullMode = D3D11_CULL_BACK;
+		raster_desc.FillMode = D3D11_FILL_SOLID;
+		raster_desc.DepthBias = 10.0f;
+		raster_desc.DepthBiasClamp = 0.0f;
+		raster_desc.SlopeScaledDepthBias = 2.5f;
+
+		Microsoft::WRL::ComPtr<ID3D11Device1> device_1_;
+		HRESULT result = renderer_->GetDevice().QueryInterface(IID_ID3D11Device1, reinterpret_cast<void**>(device_1_.GetAddressOf()));
+
+		if (FAILED(result)) {
+			return result;
+		}
+
+		return device_1_->CreateRasterizerState1(&raster_desc, &raster_state_);
 	}
 };
 

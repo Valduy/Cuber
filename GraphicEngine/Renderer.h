@@ -2,6 +2,7 @@
 
 #include <wrl.h>
 #include <d3d11.h>
+#include <d3d11_1.h>
 
 #include "Window.h"
 
@@ -27,6 +28,7 @@ namespace graph {
 			viewport.MinDepth = 0;
 			viewport.MaxDepth = 1.0f;
 
+			context_->RSSetState(raster_state_.Get());
 			context_->OMSetDepthStencilState(depth_stencil_state_.Get(), 0);
 			context_->RSSetViewports(1, &viewport);
 			context_->OMSetRenderTargets(1, render_target_view_.GetAddressOf(), depth_stencil_view_.Get());
@@ -42,7 +44,7 @@ namespace graph {
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilView> depth_stencil_view_;
 		Microsoft::WRL::ComPtr<ID3D11DepthStencilState> depth_stencil_state_;
 		Microsoft::WRL::ComPtr<ID3D11RenderTargetView> render_target_view_;
-		Microsoft::WRL::ComPtr<ID3D11RasterizerState> raster_state_;		
+		Microsoft::WRL::ComPtr<ID3D11RasterizerState1> raster_state_;		
 
 		HRESULT CreateDeviceAndSwapChain();
 		HRESULT GetBackTexture();

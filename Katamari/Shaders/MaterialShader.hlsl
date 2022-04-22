@@ -79,9 +79,8 @@ float CalculateShadow(float4 light_pos, float4 norm)
 	float proj_y = -proj.y * 0.5 + 0.5;
 	float current_depth = proj.z;
 	float closest_depth = ShadowMap.Sample(Sampler, float2(proj_x, proj_y)).r;
-	float bias = 0.005;
 
-	if (current_depth - bias > closest_depth) {
+	if (current_depth > closest_depth) {
 		return 1.0;
 	}
 

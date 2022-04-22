@@ -160,9 +160,19 @@ HRESULT graph::Renderer::CreateRenderTargetView() {
 }
 
 HRESULT graph::Renderer::CreateRasterState() {
-	CD3D11_RASTERIZER_DESC raster_desc = {};
+	CD3D11_RASTERIZER_DESC1 raster_desc = {};
 	raster_desc.CullMode = D3D11_CULL_BACK;
 	raster_desc.FillMode = D3D11_FILL_SOLID;
+	raster_desc.DepthBias = 0.0f;
+	raster_desc.DepthBiasClamp = 0.0f;
+	raster_desc.SlopeScaledDepthBias = 0.0f;
 
-	return device_->CreateRasterizerState(&raster_desc, &raster_state_);
+	Microsoft::WRL::ComPtr<ID3D11Device1> device_1_;
+	HRESULT result = device_->QueryInterface(IID_ID3D11Device1, reinterpret_cast<void**>(device_1_.GetAddressOf()));
+
+	if (FAILED(result)) {
+		return result;
+	}
+
+	return device_1_->CreateRasterizerState1(&raster_desc, &raster_state_);	
 }
