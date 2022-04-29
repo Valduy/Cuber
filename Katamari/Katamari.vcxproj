@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\MaterialShader.hlsl">
+    <None Include="Shaders\ForwardShader.hlsl">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Shaders\PointLight.hlsl">
@@ -171,6 +171,7 @@
   <ItemGroup>
     <ClInclude Include="CollisionComponent.h" />
     <ClInclude Include="DirectionLightComponent.h" />
+    <ClInclude Include="ForwardRenderComponent.h" />
     <ClInclude Include="ItemComponent.h" />
     <ClInclude Include="KatamariCameraSystem.h" />
     <ClInclude Include="KatamariComponent.h" />
@@ -178,9 +179,10 @@
     <ClInclude Include="KatamariControllerSystem.h" />
     <ClInclude Include="Material.h" />
     <ClInclude Include="RenderComponent.h" />
-    <ClInclude Include="RenderSystem.h" />
+    <ClInclude Include="ForwardRenderSystem.h" />
     <ClInclude Include="ModelComponent.h" />
     <ClInclude Include="DirectionLightSystem.h" />
+    <ClInclude Include="RenderPreparationSystem.h" />
     <ClInclude Include="ShadowComponent.h" />
     <ClInclude Include="ShadowMapDebugSystem.h" />
     <ClInclude Include="ShadowMapRenderSystem.h" />

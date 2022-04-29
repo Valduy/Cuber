@@ -2,7 +2,8 @@
 
 #include "KatamariCameraSystem.h"
 #include "KatamariControllerSystem.h"
-#include "RenderSystem.h"
+#include "RenderPreparationSystem.h"
+#include "ForwardRenderSystem.h"
 #include "CollisionComponent.h"
 #include "DirectionLightComponent.h"
 #include "ItemComponent.h"
@@ -336,9 +337,10 @@ int main() {
 	DirectionLightSystem direction_light_system;
 	KatamariControllerSystem katamari_controller_system;
 	StickingSystem sticking_system;
+	RenderPreparationSystem render_preparation_system;
 	LinesRendererSystem lines_renderer_system;
 	ShadowMapRenderSystem shadow_system;
-	RenderSystem render_system;
+	ForwardRenderSystem render_system;
 	ShadowMapDebugSystem shadow_debug_system;
 
 	//game.PushSystem(fps_camera_system);
@@ -346,6 +348,7 @@ int main() {
 	game.PushSystem(direction_light_system);
 	game.PushSystem(katamari_controller_system);
 	game.PushSystem(sticking_system);
+	game.PushSystem(render_preparation_system);
 	game.PushSystem(lines_renderer_system);
 	game.PushSystem(shadow_system);
 	game.PushSystem(render_system);
@@ -366,5 +369,6 @@ int main() {
 	SpawnItems(game);	
 
 	game.Run();
+	Release();
 	return 0;
 }

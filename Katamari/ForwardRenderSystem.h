@@ -4,6 +4,7 @@
 #include <d3d11.h>
 
 #include "DirectionLightComponent.h"
+#include "ForwardRenderComponent.h"
 #include "../Engine/TransformComponent.h"
 #include "../Engine/CameraComponent.h"
 #include "../Engine/Game.h"
@@ -13,12 +14,15 @@
 #include "RenderComponent.h"
 #include "ModelComponent.h"
 
-class RenderSystem : public engine::Game::SystemBase {
+class ForwardRenderSystem : public engine::Game::SystemBase {
 public:
-	struct TransformData {
+	struct ModelTransformData {
 		DirectX::SimpleMath::Matrix world;
 		DirectX::SimpleMath::Matrix world_view_proj;
 		DirectX::SimpleMath::Matrix inverse_transpose_world;		
+	};
+
+	struct LightTransformData {
 		DirectX::SimpleMath::Matrix light_world_view_proj;
 	};
 
@@ -38,7 +42,7 @@ public:
 		float dummy2;
 	};
 
-	RenderSystem()
+	ForwardRenderSystem()
 		: shader_()
 		, sampler_(D3D11_FILTER_MIN_MAG_MIP_LINEAR, 0)
 		, light_buffer(sizeof(LightData))
@@ -48,46 +52,19 @@ public:
 		engine::Game::SystemBase::Init(game);
 
 		using namespace graph;
-		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition3Normal3Texture2, L"Shaders/MaterialShader.hlsl");
+		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition3Normal3Texture2, L"Shaders/ForwardShader.hlsl");
 		sampler_.Init(&GetRenderer());
 		light_buffer.Init(&GetRenderer());
 
 		using namespace engine;
 		for (auto it = GetIterator<TransformComponent, ModelComponent>(); it.HasCurrent(); it.Next()) {
 			ecs::Entity& entity = it.Get();
-			ModelComponent& model_component = entity.Get<ModelComponent>();
-			std::vector<MeshBuffers> model_buffers;
 
-			for (const Mesh& mesh : model_component.model.GetMeshes()) {
-				VertexBuffer vb(mesh.vertices.data(), sizeof(Vertex) * mesh.vertices.size());
-				vb.Init(&GetRenderer());
+			ConstantBuffer light_transform_buffer(sizeof(LightTransformData));
+			light_transform_buffer.Init(&GetRenderer());
 
-				IndexBuffer ib(mesh.indices.data(), mesh.indices.size());
-				ib.Init(&GetRenderer());
-				model_buffers.push_back({ vb, ib });
-			}
-
-			ConstantBuffer transform_buffer(sizeof(TransformData));
-			transform_buffer.Init(&GetRenderer());
-
-			ConstantBuffer material_buffer(sizeof(MaterialData));
-			material_buffer.Init(&GetRenderer());
-			MaterialData material_data{
-				model_component.material.ambient,
-				model_component.material.shininess,
-				model_component.material.specular
-			};
-			material_buffer.Update(&material_data);
-
-			Texture texture;
-			texture.Init(&GetRenderer(), model_component.texture);
-
-			entity.Add<RenderComponent>([&] {
-				return new RenderComponent(
-					model_buffers, 
-					transform_buffer, 
-					material_buffer,
-					texture);
+			entity.Add<ForwardRenderComponent>([&] {
+				return new ForwardRenderComponent(light_transform_buffer);
 			});
 		}
 	}
@@ -112,31 +89,27 @@ public:
 		light_buffer.Update(&light_data);
 
 		using namespace engine;
-		for (auto it = GetIterator<RenderComponent, TransformComponent>(); it.HasCurrent(); it.Next()) {
+		auto it = GetIterator<TransformComponent, ForwardRenderComponent>();
+		for (; it.HasCurrent(); it.Next()) {
 			auto& model = it.Get();
-			RenderComponent& render_component = model.Get<RenderComponent>();
-			TransformComponent& transform_component = model.Get<TransformComponent>();
+			auto& transform_component = model.Get<TransformComponent>();
+			auto& forward_render_component = model.Get<ForwardRenderComponent>();
 
 			DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
-			DirectX::SimpleMath::Matrix camera_matrix = camera_component.GetCameraMatrix();
 			DirectX::SimpleMath::Matrix light_matrix = light_component.GetLightMatrix();
-			DirectX::SimpleMath::Matrix world_view_proj_matrix = model_matrix * camera_matrix;
 			DirectX::SimpleMath::Matrix light_world_view_proj_matrix = model_matrix * light_matrix;
-			TransformData transform_data{
-				model_matrix.Transpose(),
-				world_view_proj_matrix.Transpose(),
-				model_matrix.Transpose().Invert().Transpose(),
-				light_world_view_proj_matrix.Transpose(),
-			};
 
-			render_component.transform_buffer.Update(&transform_data);
+			LightTransformData light_transform_data {
+				light_world_view_proj_matrix.Transpose()
+			};
+			forward_render_component.light_transform_buffer.Update(&light_transform_data);
 		}
 	}
 
 	void Render() override {
 		shader_.SetShader();
 		sampler_.SetSampler();
-		light_buffer.PSSetBuffer(2);
+		light_buffer.PSSetBuffer(3);
 
 		auto light_it = GetIterator<DirectionLightComponent>();
 		if (!light_it.HasCurrent()) return;
@@ -148,12 +121,16 @@ public:
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		using namespace engine;
-		for (auto it = GetIterator<RenderComponent>(); it.HasCurrent(); it.Next()) {
+		auto it = GetIterator<RenderComponent, ForwardRenderComponent>();
+		for (; it.HasCurrent(); it.Next()) {
 			ecs::Entity& model = it.Get();
-			RenderComponent& render_component = model.Get<RenderComponent>();
+			auto& render_component = model.Get<RenderComponent>();
 			render_component.transform_buffer.VSSetBuffer(0);
-			render_component.material_buffer.PSSetBuffer(1);
-			render_component.texture.SetTexture(0);		
+			render_component.material_buffer.PSSetBuffer(2);
+			render_component.texture.SetTexture(0);
+
+			auto& forward_render_component = model.Get<ForwardRenderComponent>();
+			forward_render_component.light_transform_buffer.VSSetBuffer(1);
 
 			for (MeshBuffers& mesh_buffers : render_component.model_buffers) {
 				mesh_buffers.vertex_buffer.SetBuffer(sizeof(Vertex));
@@ -168,4 +145,20 @@ private:
 	graph::Shader shader_;
 	graph::Sampler sampler_;
 	graph::ConstantBuffer light_buffer;
+
+	std::vector<MeshBuffers> CreateMeshBuffers(const engine::Model& model) {
+		std::vector<MeshBuffers> model_buffers;
+
+		for (const engine::Mesh& mesh : model.GetMeshes()) {
+			graph::VertexBuffer vb(mesh.vertices.data(), sizeof(engine::Vertex) * mesh.vertices.size());
+			vb.Init(&GetRenderer());
+
+			graph::IndexBuffer ib(mesh.indices.data(), mesh.indices.size());
+			ib.Init(&GetRenderer());
+
+			model_buffers.push_back({ vb, ib });
+		}
+
+		return model_buffers;
+	}
 };

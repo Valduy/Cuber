@@ -28,16 +28,22 @@
     <None Include="Shaders\PointLight.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\ShadowMapDebugShader.hlsl">
+    <None Include="Shaders\ShadowMapShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\PointLight.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\ShadowMapShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\**">
+    <None Include="Shaders\PointLight.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\**">
+    <None Include="Shaders\ShadowMapDebugShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\**">
@@ -91,7 +97,7 @@
     <None Include="Shaders\**">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\MaterialShader.hlsl">
+    <None Include="Shaders\ForwardShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\PointLight.hlsl">
@@ -108,7 +114,7 @@
     <ClInclude Include="ModelComponent.h">
       <Filter>Header Files\Components</Filter>
     </ClInclude>
-    <ClInclude Include="RenderSystem.h">
+    <ClInclude Include="ForwardRenderSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="KatamariControllerSystem.h">
@@ -148,6 +154,12 @@
       <Filter>Header Files\Components</Filter>
     </ClInclude>
     <ClInclude Include="ShadowMapDebugSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="ForwardRenderComponent.h">
+      <Filter>Header Files\Components</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderPreparationSystem.h">
       <Filter>Header Files\Systems</Filter>
     </ClInclude>
   </ItemGroup>
