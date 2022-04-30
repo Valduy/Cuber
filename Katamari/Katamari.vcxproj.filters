@@ -22,6 +22,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{d849cd67-956c-499f-91ed-259167acf4d8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\ShaderData">
+      <UniqueIdentifier>{bf646de9-f4df-4a95-877a-194a32dd12e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -161,6 +164,15 @@
     </ClInclude>
     <ClInclude Include="RenderPreparationSystem.h">
       <Filter>Header Files\Systems</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialData.h">
+      <Filter>Header Files\ShaderData</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelTransformData.h">
+      <Filter>Header Files\ShaderData</Filter>
+    </ClInclude>
+    <ClInclude Include="GBuffer.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

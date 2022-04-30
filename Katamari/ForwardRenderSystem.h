@@ -16,21 +16,8 @@
 
 class ForwardRenderSystem : public engine::Game::SystemBase {
 public:
-	struct ModelTransformData {
-		DirectX::SimpleMath::Matrix world;
-		DirectX::SimpleMath::Matrix world_view_proj;
-		DirectX::SimpleMath::Matrix inverse_transpose_world;		
-	};
-
 	struct LightTransformData {
 		DirectX::SimpleMath::Matrix light_world_view_proj;
-	};
-
-	struct MaterialData {
-		float ambient;
-		float shininess;
-		float specular;
-		float dummy;
 	};
 
 	struct LightData {

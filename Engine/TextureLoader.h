@@ -13,6 +13,14 @@ public:
 			nullptr,
 			*image);
 	}
+
+	static HRESULT LoadWicSrgb(const wchar_t* path, DirectX::ScratchImage* image) {
+		return LoadFromWICFile(
+			path,
+			DirectX::WIC_FLAGS_DEFAULT_SRGB,
+			nullptr,
+			*image);
+	}
 };
 
 } // namespace engine

@@ -1,27 +1,16 @@
 #pragma once
 
+#include "MaterialData.h"
 #include "../Engine/Game.h"
 #include "../Engine/TransformComponent.h"
 #include "../GraphicEngine/ConstantBuffer.h"
 #include "../GraphicEngine/Texture.h"
 #include "ModelComponent.h"
+#include "ModelTransformData.h"
 #include "RenderComponent.h"
 
 class RenderPreparationSystem : public engine::Game::SystemBase {
 public:
-	struct ModelTransformData {
-		DirectX::SimpleMath::Matrix world;
-		DirectX::SimpleMath::Matrix world_view_proj;
-		DirectX::SimpleMath::Matrix inverse_transpose_world;
-	};
-
-	struct MaterialData {
-		float ambient;
-		float shininess;
-		float specular;
-		float dummy;
-	};
-
 	void Init(engine::Game& game) override {
 		engine::Game::SystemBase::Init(game);
 

@@ -14,6 +14,10 @@ ID3D11DeviceContext& graph::Renderer::GetContext() const {
 	return *context_.Get();
 }
 
+graph::Window& graph::Renderer::GetWindow() const {
+	return window_;
+}
+
 graph::Renderer::Renderer(Window& window)
 	: window_(window)
 	, swap_chain_(nullptr)

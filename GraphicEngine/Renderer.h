@@ -12,6 +12,7 @@ namespace graph {
 	public:
 		ID3D11Device& GetDevice() const;
 		ID3D11DeviceContext& GetContext() const;
+		Window& GetWindow() const;
 
 		Renderer(Window& window);
 		HRESULT Init();

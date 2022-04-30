@@ -172,12 +172,15 @@
     <ClInclude Include="CollisionComponent.h" />
     <ClInclude Include="DirectionLightComponent.h" />
     <ClInclude Include="ForwardRenderComponent.h" />
+    <ClInclude Include="GBuffer.h" />
     <ClInclude Include="ItemComponent.h" />
     <ClInclude Include="KatamariCameraSystem.h" />
     <ClInclude Include="KatamariComponent.h" />
     <ClInclude Include="KatamariControllerComponent.h" />
     <ClInclude Include="KatamariControllerSystem.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="MaterialData.h" />
+    <ClInclude Include="ModelTransformData.h" />
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="ForwardRenderSystem.h" />
     <ClInclude Include="ModelComponent.h" />
