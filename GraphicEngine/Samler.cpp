@@ -27,7 +27,7 @@ HRESULT graph::Sampler::Init(Renderer* renderer) {
 	return renderer_->GetDevice().CreateSamplerState(&sampler_desc, &sampler_state_);
 }
 
-void graph::Sampler::SetSampler() {
+void graph::Sampler::SetSampler(unsigned int slot) {
 	assert(renderer_ != nullptr && "Sampler isn't initialized.");
-	renderer_->GetContext().PSSetSamplers(0, 1, sampler_state_.GetAddressOf());
+	renderer_->GetContext().PSSetSamplers(slot, 1, sampler_state_.GetAddressOf());
 }

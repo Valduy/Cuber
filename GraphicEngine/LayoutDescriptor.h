@@ -7,6 +7,7 @@ namespace graph {
 
 class LayoutDescriptor {
 public:
+	static const LayoutDescriptor kEmpty;
 	static const LayoutDescriptor kPosition2;
 	static const LayoutDescriptor kPosition3;
 	static const LayoutDescriptor kPosition2Texture2;

@@ -1,6 +1,8 @@
 #include "pch.h"
 #include "LayoutDescriptor.h"
 
+const graph::LayoutDescriptor graph::LayoutDescriptor::kEmpty{};
+
 const graph::LayoutDescriptor graph::LayoutDescriptor::kPosition2{
 	D3D11_INPUT_ELEMENT_DESC {
 		"POSITION",

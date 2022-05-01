@@ -50,6 +50,7 @@ cbuffer LightBuffer : register(b3)
 
 Texture2D DiffuseMap : register(t0);
 Texture2D ShadowMap : register(t1);
+
 SamplerState Sampler : register(s0);
 
 struct VS_IN

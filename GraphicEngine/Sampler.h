@@ -11,7 +11,7 @@ public:
 	Sampler(D3D11_FILTER filter, unsigned int max_anisotropy);
 
 	HRESULT Init(Renderer* renderer);
-	void SetSampler();
+	void SetSampler(unsigned int slot = 0);
 
 private:
 	Renderer* renderer_;

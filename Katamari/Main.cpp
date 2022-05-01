@@ -4,6 +4,7 @@
 #include "KatamariControllerSystem.h"
 #include "RenderPreparationSystem.h"
 #include "ForwardRenderSystem.h"
+#include "GeometryPassSystem.h"
 #include "CollisionComponent.h"
 #include "DirectionLightComponent.h"
 #include "ItemComponent.h"
@@ -342,6 +343,7 @@ int main() {
 	ShadowMapRenderSystem shadow_system;
 	ForwardRenderSystem render_system;
 	ShadowMapDebugSystem shadow_debug_system;
+	GeometryPassSystem geometry_pass_system;
 
 	//game.PushSystem(fps_camera_system);
 	game.PushSystem(camera_system);
@@ -353,6 +355,7 @@ int main() {
 	game.PushSystem(shadow_system);
 	game.PushSystem(render_system);
 	game.PushSystem(shadow_debug_system);
+	//game.PushSystem(geometry_pass_system);
 
 	auto& plane = DebugUtils::CreatePlane(game, 100, 100);
 	auto& axis = DebugUtils::CreateAxis(game, 3.0f);

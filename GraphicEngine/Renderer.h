@@ -13,6 +13,7 @@ namespace graph {
 		ID3D11Device& GetDevice() const;
 		ID3D11DeviceContext& GetContext() const;
 		Window& GetWindow() const;
+		ID3D11DepthStencilView& GetDepthStencilView() const;
 
 		Renderer(Window& window);
 		HRESULT Init();
@@ -48,7 +49,7 @@ namespace graph {
 		Microsoft::WRL::ComPtr<ID3D11RasterizerState1> raster_state_;		
 
 		HRESULT CreateDeviceAndSwapChain();
-		HRESULT GetBackTexture();
+		HRESULT CreateBackTexture();
 		HRESULT CreateDepthStencilBuffer();
 		HRESULT CreateDepthStencilView();
 		HRESULT CreateDepthStencilState();

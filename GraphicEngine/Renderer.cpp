@@ -18,6 +18,11 @@ graph::Window& graph::Renderer::GetWindow() const {
 	return window_;
 }
 
+ID3D11DepthStencilView& graph::Renderer::GetDepthStencilView() const {
+	assert(depth_stencil_view_ != nullptr && "Renderer isn't initialized.");
+	return *depth_stencil_view_.Get();
+}
+
 graph::Renderer::Renderer(Window& window)
 	: window_(window)
 	, swap_chain_(nullptr)
@@ -35,7 +40,7 @@ HRESULT graph::Renderer::Init() {
 	if (result = CreateDeviceAndSwapChain(); FAILED(result)) {
 		return result;
 	}
-	if (result = GetBackTexture(); FAILED(result)) {
+	if (result = CreateBackTexture(); FAILED(result)) {
 		return result;
 	}
 	if (result = CreateDepthStencilBuffer(); FAILED(result)) {
@@ -117,7 +122,7 @@ HRESULT graph::Renderer::CreateDeviceAndSwapChain() {
 		&context_);
 }
 
-HRESULT graph::Renderer::GetBackTexture() {
+HRESULT graph::Renderer::CreateBackTexture() {
 	ID3D11Texture2D* ptr = nullptr;
 	HRESULT result = swap_chain_->GetBuffer(0, IID_ID3D11Texture2D, reinterpret_cast<void**>(&ptr));
 
@@ -154,7 +159,7 @@ HRESULT graph::Renderer::CreateDepthStencilState() {
 	D3D11_DEPTH_STENCIL_DESC depth_stencil_desc = {};
 	depth_stencil_desc.DepthEnable = true;
 	depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
-	depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS_EQUAL;
+	depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS;
 
 	return device_->CreateDepthStencilState(&depth_stencil_desc, depth_stencil_state_.GetAddressOf());
 }

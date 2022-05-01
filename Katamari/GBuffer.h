@@ -1,11 +1,52 @@
 #pragma once
 
 #include <d3d11.h>
+#include <SimpleMath.h>
 #include <wrl/client.h>
 #include "../GraphicEngine/Renderer.h"
 
 class GBuffer {
 public:
+	ID3D11Texture2D& GetDiffuseTexture() const {
+		assert(diffuse_texture_ != nullptr && "GBuffer isn't initialized.");
+		return *diffuse_texture_.Get();
+	}
+
+	ID3D11Texture2D& GetNormalTexture() const {
+		assert(normal_texture_ != nullptr && "GBuffer isn't initialized.");
+		return *normal_texture_.Get();
+	}
+
+	ID3D11Texture2D& GetPositionTexture() const {
+		assert(position_texture_ != nullptr && "GBuffer isn't initialized.");
+		return *position_texture_.Get();
+	}
+
+	ID3D11Texture2D& GetAccumulationTexture() const {
+		assert(accumulation_texture_ != nullptr && "GBuffer isn't initialized.");
+		return *accumulation_texture_.Get();
+	}
+
+	ID3D11ShaderResourceView& GetDiffuseShaderResourceView() const {
+		assert(diffuse_srv_ != nullptr && "GBuffer isn't initialized.");
+		return *diffuse_srv_.Get();
+	}
+
+	ID3D11ShaderResourceView& GetNormalShaderResourceView() const {
+		assert(normal_srv_ != nullptr && "GBuffer isn't initialized.");
+		return *normal_srv_.Get();
+	}
+
+	ID3D11ShaderResourceView& GetPositionShaderResourceView() const {
+		assert(position_srv_ != nullptr && "GBuffer isn't initialized.");
+		return *position_srv_.Get();
+	}
+
+	ID3D11ShaderResourceView& GetAccumulationShaderResourceView() const {
+		assert(accumulation_srv_ != nullptr && "GBuffer isn't initialized.");
+		return *accumulation_srv_.Get();
+	}
+
 	GBuffer()
 		: renderer_(nullptr)
 	{}
@@ -61,6 +102,51 @@ public:
 		}
 
 		return result;
+	}
+
+	void SetGeometryPassTargets() const {
+		DirectX::SimpleMath::Color clear_color = { 0.0f, 0.0f, 0.0f, 1.0f };
+		renderer_->GetContext().ClearRenderTargetView(diffuse_rtv_.Get(), clear_color);
+		renderer_->GetContext().ClearRenderTargetView(normal_rtv_.Get(), clear_color);
+		renderer_->GetContext().ClearRenderTargetView(position_rtv_.Get(), clear_color);
+
+		ID3D11RenderTargetView* views[] = {
+			diffuse_rtv_.Get(),
+			normal_rtv_.Get(),
+			position_rtv_.Get(),
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+		};
+		renderer_->GetContext().OMSetRenderTargets(8, views, &renderer_->GetDepthStencilView());
+	}
+
+	void SetLightPassTargets() const {
+		DirectX::SimpleMath::Color clear_color = { 0.0f, 0.0f, 0.0f, 1.0f };
+		renderer_->GetContext().ClearRenderTargetView(accumulation_rtv_.Get(), clear_color);
+
+		ID3D11RenderTargetView* views[] = {
+			accumulation_rtv_.Get(),
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+			nullptr,
+		};
+		renderer_->GetContext().OMSetRenderTargets(8, views, &renderer_->GetDepthStencilView());
+	}
+
+	void SetResources() {
+		ID3D11ShaderResourceView* resources[] = {
+			diffuse_srv_.Get(),
+			normal_srv_.Get(),
+			position_srv_.Get(),
+		};
+		renderer_->GetContext().PSSetShaderResources(0, 3, resources);
 	}
 
 private:

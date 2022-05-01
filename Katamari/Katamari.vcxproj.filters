@@ -43,16 +43,22 @@
     <None Include="Shaders\PointLight.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\ShadowMapDebugShader.hlsl">
+    <None Include="Shaders\ShadowMapShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\PointLight.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\ShadowMapShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\**">
+    <None Include="Shaders\PointLight.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\**">
+    <None Include="Shaders\ShadowMapDebugShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\**">
@@ -174,6 +180,9 @@
     <ClInclude Include="GBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="GeometryPassSystem.h">
+      <Filter>Header Files\Systems</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -182,6 +191,12 @@
   </ItemGroup>
   <ItemGroup>
     <CopyFileToFolders Include="Shaders\ShadowMapDebugShader.hlsl">
+      <Filter>Shaders</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Shaders\GeometryPassShader.hlsl">
+      <Filter>Shaders</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Shaders\FillShader.hlsl">
       <Filter>Shaders</Filter>
     </CopyFileToFolders>
   </ItemGroup>
