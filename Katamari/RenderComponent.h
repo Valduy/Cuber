@@ -24,16 +24,22 @@ public:
 	std::vector<MeshBuffers> model_buffers;
 	graph::ConstantBuffer transform_buffer;
 	graph::ConstantBuffer material_buffer;
-	graph::Texture texture;
+	graph::Texture diffuse;
+	graph::Texture normal;
+	graph::Texture specular;
 
 	RenderComponent(
 		std::vector<MeshBuffers> model_buffers,
 		graph::ConstantBuffer transform_buffer,
 		graph::ConstantBuffer material_buffer,
-		graph::Texture texture)
+		graph::Texture diffuse,
+		graph::Texture normal,
+		graph::Texture specular)
 		: model_buffers(model_buffers)
 		, transform_buffer(transform_buffer)
 		, material_buffer(material_buffer)
-		, texture(texture)
+		, diffuse(diffuse)
+		, normal(normal)
+		, specular(specular)
 	{}
 };

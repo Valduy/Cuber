@@ -20,7 +20,9 @@ SamplerState Sampler
 struct VS_IN
 {
 	float3 pos : POSITION0;
-	float3 norm : NORMAL0;
+	float3 normal : NORMAL0;
+	float3 binorm : BINORMAL0;
+	float3 tangent : TANGENT0;
 	float2 tex : TEXCOORD0;
 };
 

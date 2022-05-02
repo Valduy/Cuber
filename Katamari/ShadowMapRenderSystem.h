@@ -18,7 +18,10 @@ public:
 		engine::Game::SystemBase::Init(game);
 
 		using namespace graph;
-		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition3Normal3Texture2, L"Shaders/ShadowMapShader.hlsl");
+		shader_.Init(
+			&GetRenderer(), 
+			LayoutDescriptor::kPosition3Normal3Binormal3Tangent3Texture2, 
+			L"Shaders/ShadowMapShader.hlsl");
 
 		auto light_it = GetIterator<DirectionLightComponent>();
 		if (!light_it.HasCurrent()) return;
@@ -85,7 +88,7 @@ public:
 			auto& render_component = model.Get<RenderComponent>();
 			auto& shadow_component = model.Get<ShadowComponent>();
 			shadow_component.transform_buffer.VSSetBuffer();
-			render_component.texture.SetTexture();
+			render_component.diffuse.SetTexture();
 
 			for (MeshBuffers& mesh_buffers : render_component.model_buffers) {
 				mesh_buffers.vertex_buffer.SetBuffer(sizeof(Vertex));

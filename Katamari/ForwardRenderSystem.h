@@ -39,7 +39,10 @@ public:
 		engine::Game::SystemBase::Init(game);
 
 		using namespace graph;
-		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition3Normal3Texture2, L"Shaders/ForwardShader.hlsl");
+		shader_.Init(
+			&GetRenderer(), 
+			LayoutDescriptor::kPosition3Normal3Binormal3Tangent3Texture2,
+			L"Shaders/ForwardShader.hlsl");
 		sampler_.Init(&GetRenderer());
 		light_buffer.Init(&GetRenderer());
 
@@ -114,7 +117,7 @@ public:
 			auto& render_component = model.Get<RenderComponent>();
 			render_component.transform_buffer.VSSetBuffer(0);
 			render_component.material_buffer.PSSetBuffer(2);
-			render_component.texture.SetTexture(0);
+			render_component.diffuse.SetTexture(0);
 
 			auto& forward_render_component = model.Get<ForwardRenderComponent>();
 			forward_render_component.light_transform_buffer.VSSetBuffer(1);

@@ -21,7 +21,7 @@ public:
 		engine::Game::SystemBase::Init(game);
 		
 		using namespace graph;
-		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition4Color4, L"Shaders/SolarShader.hlsl");
+		shader_.Init(&GetRenderer(), kLayout, L"Shaders/SolarShader.hlsl");
 
 		using namespace engine;
 		for (auto it = GetIterator<TransformComponent, ShapeComponent>(); it.HasCurrent(); it.Next()) {
@@ -85,6 +85,27 @@ public:
 	}
 
 private:
+	const graph::LayoutDescriptor kLayout{
+	D3D11_INPUT_ELEMENT_DESC{
+		"POSITION",
+		0,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		0,
+		0,
+		D3D11_INPUT_PER_VERTEX_DATA,
+		0,
+	},
+	D3D11_INPUT_ELEMENT_DESC{
+		"COLOR",
+		0,
+		DXGI_FORMAT_R32G32B32A32_FLOAT,
+		0,
+		D3D11_APPEND_ALIGNED_ELEMENT,
+		D3D11_INPUT_PER_VERTEX_DATA,
+		0,
+	},
+	};
+
 	graph::Shader shader_;
 
 	std::vector<DirectX::SimpleMath::Vector4> GetVertices(

@@ -26,7 +26,9 @@ public:
 					CreateMeshBuffers(model_component.model),
 					CreateConstantBuffer<sizeof(ModelTransformData)>(),
 					CreateConstantBuffer<sizeof(MaterialData)>(),
-					CreateTexture(model_component.texture));
+					CreateTexture(model_component.diffuse),
+					CreateTexture(model_component.normal),
+					CreateTexture(model_component.specular));
 				});
 		}
 	}

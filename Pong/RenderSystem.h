@@ -28,7 +28,7 @@ public:
 		engine::Game::SystemBase::Init(game);
 
 		using namespace graph;
-		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition4Color4, L"Shaders/PongShader.hlsl");
+		shader_.Init(&GetRenderer(), kLayout, L"Shaders/PongShader.hlsl");
 
 		using namespace DirectX::SimpleMath;
 		auto it = GetIterator<ShapeComponent, TransformComponent>();
@@ -82,6 +82,27 @@ public:
 	}
 
 private:
+	const graph::LayoutDescriptor kLayout {
+		D3D11_INPUT_ELEMENT_DESC{
+			"POSITION",
+			0,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			0,
+			0,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0,
+		},
+		D3D11_INPUT_ELEMENT_DESC{
+			"COLOR",
+			0,
+			DXGI_FORMAT_R32G32B32A32_FLOAT,
+			0,
+			D3D11_APPEND_ALIGNED_ELEMENT,
+			D3D11_INPUT_PER_VERTEX_DATA,
+			0,
+		},
+	};
+
 	graph::Shader shader_;
 
 	static std::vector<DirectX::SimpleMath::Vector4> GetVertices(

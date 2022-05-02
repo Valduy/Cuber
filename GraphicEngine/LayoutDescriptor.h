@@ -13,7 +13,7 @@ public:
 	static const LayoutDescriptor kPosition2Texture2;
 	static const LayoutDescriptor kPosition3Texture2;
 	static const LayoutDescriptor kPosition3Normal3Texture2;
-	static const LayoutDescriptor kPosition4Color4;
+	static const LayoutDescriptor kPosition3Normal3Binormal3Tangent3Texture2;
 
 	const D3D11_INPUT_ELEMENT_DESC* GetData() const;
 	size_t GetSize() const;

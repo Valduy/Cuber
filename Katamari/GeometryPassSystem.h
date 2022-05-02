@@ -27,7 +27,7 @@ public:
 
 		shader_.Init(
 			&GetRenderer(), 
-			graph::LayoutDescriptor::kPosition3Normal3Texture2, 
+			graph::LayoutDescriptor::kPosition3Normal3Binormal3Tangent3Texture2,
 			L"Shaders/GeometryPassShader.hlsl");
 
 		t_shader_.Init(
@@ -46,6 +46,32 @@ public:
 	}
 
 	void Render() override {
+		OpaquePass();
+		
+		////GetRenderer().SetDefaultRenderTarget();
+		////t_shader_.SetShader();		
+		//////ID3D11ShaderResourceView* srv = &g_buffer_.GetDiffuseShaderResourceView();
+		//////ID3D11ShaderResourceView* srv = &g_buffer_.GetNormalShaderResourceView();
+		////ID3D11ShaderResourceView* srv = &g_buffer_.GetPositionShaderResourceView();
+		////GetRenderer().GetContext().PSSetShaderResources(0, 1, &srv);
+		////GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		////GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
+		////GetRenderer().GetContext().Draw(4, 0);
+	}
+
+private:
+	GBuffer g_buffer_;
+	graph::Shader shader_;
+	////DirectX::ScratchImage image;
+	////graph::Texture t_texture_;
+	graph::Shader t_shader_;
+	graph::Sampler sampler_;
+
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> cull_back_rs_;
+	Microsoft::WRL::ComPtr<ID3D11BlendState> opaque_bs_;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> opaque_dss_;
+
+	void OpaquePass() {
 		GetRenderer().GetContext().ClearDepthStencilView(
 			&GetRenderer().GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 
@@ -64,7 +90,9 @@ public:
 			ecs::Entity& model = it.Get();
 			auto& render_component = model.Get<RenderComponent>();
 			render_component.transform_buffer.VSSetBuffer(0);
-			render_component.texture.SetTexture(0);
+			render_component.diffuse.SetTexture(0);
+			render_component.normal.SetTexture(1);
+			render_component.specular.SetTexture(2);
 
 			for (MeshBuffers& mesh_buffers : render_component.model_buffers) {
 				mesh_buffers.vertex_buffer.SetBuffer(sizeof(Vertex));
@@ -73,29 +101,7 @@ public:
 					mesh_buffers.index_buffer.GetSize(), 0, 0);
 			}
 		}
-		
-		//GetRenderer().SetDefaultRenderTarget();
-		//t_shader_.SetShader();		
-		////ID3D11ShaderResourceView* srv = &g_buffer_.GetDiffuseShaderResourceView();
-		////ID3D11ShaderResourceView* srv = &g_buffer_.GetNormalShaderResourceView();
-		//ID3D11ShaderResourceView* srv = &g_buffer_.GetPositionShaderResourceView();
-		//GetRenderer().GetContext().PSSetShaderResources(0, 1, &srv);
-		//GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-		//GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
-		//GetRenderer().GetContext().Draw(4, 0);
 	}
-
-private:
-	GBuffer g_buffer_;
-	graph::Shader shader_;
-	////DirectX::ScratchImage image;
-	////graph::Texture t_texture_;
-	graph::Shader t_shader_;
-	graph::Sampler sampler_;
-
-	Microsoft::WRL::ComPtr<ID3D11RasterizerState> cull_back_rs_;
-	Microsoft::WRL::ComPtr<ID3D11BlendState> opaque_bs_;
-	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> opaque_dss_;
 
 	HRESULT CreateRasterizerState() {
 		D3D11_RASTERIZER_DESC raster_desc{};

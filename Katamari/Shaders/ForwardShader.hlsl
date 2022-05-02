@@ -56,14 +56,16 @@ SamplerState Sampler : register(s0);
 struct VS_IN
 {
 	float3 pos : POSITION0;
-	float3 norm : NORMAL0;
+	float3 normal : NORMAL0;
+	float3 binormal : BINORMAL0;
+	float3 tangent : TANGENT0;
 	float2 tex : TEXCOORD0;
 };
 
 struct PS_IN
 {
 	float4 pos : SV_POSITION0;
-	float4 norm : NORMAL;
+	float4 normal : NORMAL;
 	float2 tex : TEXCOORD0;
 	float4 world_pos : TEXCOORD1;
 	float4 light_pos : TEXCOORD2;
@@ -74,7 +76,7 @@ PS_IN VSMain(VS_IN input)
 	PS_IN output = (PS_IN)0;
 
 	output.pos = mul(float4(input.pos, 1.0), ModelTransform.world_view_proj);
-	output.norm = mul(float4(input.norm, 0.0), ModelTransform.inverse_transpose_world);
+	output.normal = mul(float4(input.normal, 0.0), ModelTransform.inverse_transpose_world);
 	output.tex = input.tex;
 	output.world_pos = mul(float4(input.pos, 1.0), ModelTransform.world);
 	output.light_pos = mul(float4(input.pos, 1.0), LightTransform.light_world_view_proj);
@@ -106,7 +108,7 @@ float4 PSMain(PS_IN input) : SV_Target
 	float3 ambient = Material.ambient * Light.light_color;
 
 	// diffuse
-	float3 normal = normalize(input.norm.xyz);
+	float3 normal = normalize(input.normal.xyz);
 	float3 to_light_direction = -Light.light_direction;
 	float diff = max(0.0, dot(to_light_direction, normal));
 	float3 diffuse = diff * Light.light_color;

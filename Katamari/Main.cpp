@@ -23,24 +23,36 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
-engine::Model crate_model;
-engine::Model mill_model;
+engine::Model apricot_model;
 engine::Model pear_model;
 engine::Model pumpkin_model;
-engine::Model ball_model;
-engine::Model grass_model;
+engine::Model apple_model;
+engine::Model plane_model;
 
-DirectX::ScratchImage crate_diffuse;
-DirectX::ScratchImage mill_diffuse;
+DirectX::ScratchImage apricot_diffuse;
 DirectX::ScratchImage pear_diffuse;
 DirectX::ScratchImage pumpkin_diffuse;
-DirectX::ScratchImage ball_diffuse;
-DirectX::ScratchImage grass_diffuse;
+DirectX::ScratchImage apple_diffuse;
+DirectX::ScratchImage plane_diffuse;
+
+DirectX::ScratchImage apricot_normal;
+DirectX::ScratchImage pear_normal;
+DirectX::ScratchImage pumpkin_normal;
+DirectX::ScratchImage apple_normal;
+DirectX::ScratchImage plane_normal;
+
+DirectX::ScratchImage apricot_specular;
+DirectX::ScratchImage pear_specular;
+DirectX::ScratchImage pumpkin_specular;
+DirectX::ScratchImage apple_specular;
+DirectX::ScratchImage plane_specular;
 
 ecs::Entity& AttachModel(
 	engine::Game& game,
 	engine::Model& model,
-	DirectX::ScratchImage& texture,
+	DirectX::ScratchImage& diffuse,
+	DirectX::ScratchImage& normal,
+	DirectX::ScratchImage& specular,
 	Material material,
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f },
@@ -48,7 +60,7 @@ ecs::Entity& AttachModel(
 {
 	ecs::Entity& entity = game.GetEntityManager().CreateEntity();
 	entity.Add<ModelComponent>([&] {
-		return new ModelComponent(model, texture, material);
+		return new ModelComponent(model, diffuse, normal, specular, material);
 	});
 
 	auto& transform = entity.Add<engine::TransformComponent>();
@@ -81,40 +93,24 @@ ecs::Entity& AttachSphere(
 	return sphere;
 }
 
-ecs::Entity& SpawnCrate(
+ecs::Entity& SpawnApricot(
 	engine::Game& game,
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	ecs::Entity& crate = AttachModel(
+	ecs::Entity& apricot = AttachModel(
 		game,
-		crate_model,
-		crate_diffuse,
-		{ 0.1f, 3.0f, 0.5f },
-		position,
-		{ 0.7f, 0.7f, 0.7f },
-		rotation);
-	crate.Add<ItemComponent>();
-	AttachSphere(game, crate, 1.0f, { 0.0f, 0.5f, 0.0f });
-	return crate;
-}
-
-ecs::Entity& SpawnMill(
-	engine::Game& game,
-	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
-	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
-{
-	ecs::Entity& mill = AttachModel(
-		game,
-		mill_model,
-		mill_diffuse,
+		apricot_model,
+		apricot_diffuse,
+		apple_normal,
+		apricot_specular,
 		{ 0.1f, 3.0f, 0.5f },
 		position,
 		{ 0.3f, 0.3f, 0.3f },
 		rotation);
-	mill.Add<ItemComponent>();
-	AttachSphere(game, mill, 4.0f, { 0.0f, 2.0f, 0.0f });
-	return mill;
+	apricot.Add<ItemComponent>();
+	AttachSphere(game, apricot, 2.0f, { 0.0f, 2.0f, 0.0f });
+	return apricot;
 }
 
 ecs::Entity& SpawnPear(
@@ -126,6 +122,8 @@ ecs::Entity& SpawnPear(
 		game,
 		pear_model,
 		pear_diffuse,
+		pear_normal,
+		pear_specular,
 		{ 0.1f, 32.0f, 0.75f },
 		position,
 		{ 0.3f, 0.3f, 0.3f },
@@ -144,6 +142,8 @@ ecs::Entity& SpawnPumpkin(
 		game,
 		pumpkin_model,
 		pumpkin_diffuse,
+		pumpkin_normal,
+		pumpkin_specular,
 		{ 0.1f, 32.0f, 0.75f },
 		position,
 		{ 3.0f, 3.0f, 3.0f },
@@ -154,7 +154,7 @@ ecs::Entity& SpawnPumpkin(
 }
 
 void SpawnItems(engine::Game& game) {
-	constexpr int radius = 10;
+	constexpr int radius = 7;
 	constexpr int min = -radius;
 	constexpr int max = 2 * radius;
 	std::random_device dev;
@@ -175,18 +175,11 @@ void SpawnItems(engine::Game& game) {
 		SpawnPear(game, { static_cast<float>(x), 0.0f, static_cast<float>(y) });
 	}
 
-	constexpr int crate_count = 5;
-	for (int i = 0; i < crate_count; ++i) {
+	constexpr int apricot_count = 5;
+	for (int i = 0; i < apricot_count; ++i) {
 		int x = min + dist(rng);
 		int y = min + dist(rng);
-		SpawnCrate(game, { static_cast<float>(x), -0.5f, static_cast<float>(y) });
-	}
-
-	constexpr int mill_count = 5;
-	for (int i = 0; i < mill_count; ++i) {
-		int x = min + dist(rng);
-		int y = min + dist(rng);
-		SpawnMill(game, { static_cast<float>(x), -0.5f, static_cast<float>(y) });
+		SpawnApricot(game, { static_cast<float>(x), -0.5f, static_cast<float>(y) });
 	}
 }
 
@@ -198,24 +191,26 @@ ecs::Entity& SpawnCamera(engine::Game& game) {
 }
 
 ecs::Entity& SpawnKatamari(engine::Game& game, ecs::Entity& camera) {
-	ecs::Entity& ball = AttachModel(
+	ecs::Entity& apple = AttachModel(
 		game,
-		ball_model,
-		ball_diffuse,
+		apple_model,
+		apple_diffuse,
+		apple_normal,
+		apple_specular,
 		{ 0.1f, 32.0f, 0.6f },
 		{ 0.0f, 0.0f, 0.0f },
-		{ 0.25f, 0.25f, 0.25f });
-	AttachSphere(game, ball, 3.2f);
-	ball.Add<KatamariComponent>();
+		{ 1.0f, 1.0f, 1.0f });
+	AttachSphere(game, apple, 1.0f);
+	apple.Add<KatamariComponent>();
 
 	ecs::Entity& katamari = game.GetEntityManager().CreateEntity();	
 	katamari.Add<KatamariControllerComponent>([&] {
-		return new KatamariControllerComponent(ball, 3.0f, 3.0f);
+		return new KatamariControllerComponent(apple, 3.0f, 3.0f);
 	});
 
 	auto& katamari_transform = katamari.Add<engine::TransformComponent>();
 	katamari_transform.SetPosition({ -9.0f, 0.0f, 0.0f });
-	katamari_transform.AddChild(ball);
+	katamari_transform.AddChild(apple);
 	katamari_transform.AddChild(camera);
 	camera.Get<engine::TransformComponent>().SetLocalPosition({ 0.0, 5.0, -10.0 });
 	return katamari;
@@ -246,75 +241,130 @@ ecs::Entity& SpawnDirectionLight(
 }
 
 ecs::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 position) {
-	ecs::Entity& plane = AttachModel(
+	return AttachModel(
 		game,
-		grass_model,
-		grass_diffuse,
+		plane_model,
+		plane_diffuse,
+		plane_normal,
+		plane_specular,
 		{ 0.1f, 10.0f, 0.1f },
 		position,
-		{ 20.0f, 1.0f, 20.0f },
+		{ 15.0f, 1.0f, 15.0f },
 		{ 0.0f, 0.0f, 0.0f });
-	return plane;
+
 }
 
 HRESULT LoadModels() {
 	using namespace engine;
 	HRESULT result;
 
-	if (result = Model::Load(crate_model, "../Content/WoodenCrate.obj"); FAILED(result)) {
+	if (result = Model::Load(apricot_model, "../Content/Apricot/Apricot.obj"); FAILED(result)) {
 		return result;
 	}
-	if (result = Model::Load(mill_model, "../Content/WindMill.obj"); FAILED(result)) {
+	if (result = Model::Load(pear_model, "../Content/Pear/Pear.obj"); FAILED(result)) {
 		return result;
 	}
-	if (result = Model::Load(pear_model, "../Content/Pear.obj"); FAILED(result)) {
+	if (result = Model::Load(pumpkin_model, "../Content/Pumpkin/Pumpkin.obj"); FAILED(result)) {
 		return result;
 	}
-	if (result = Model::Load(pumpkin_model, "../Content/Pumpkin.obj"); FAILED(result)) {
+	if (result = Model::Load(apple_model, "../Content/Apple/Apple.obj"); FAILED(result)) {
 		return result;
 	}
-	if (result = Model::Load(ball_model, "../Content/SoccerBall.obj"); FAILED(result)) {
-		return result;
-	}
-	if (result = Model::Load(grass_model, "../Content/Plane.obj"); FAILED(result)) {
+	if (result = Model::Load(plane_model, "../Content/Plane/Plane.obj"); FAILED(result)) {
 		return result;
 	}
 
 	return result;
 }
 
-HRESULT LoadTextures() {
+HRESULT LoadDiffuse() {
 	using namespace engine;
 	HRESULT result;
 
-	if (result = TextureLoader::LoadWic(L"../Content/WoodenCrate_Diffuse.png", &crate_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"../Content/Apricot/Apricot_Diffuse.png", &apricot_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/WindMill_Diffuse.jpg", &mill_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"../Content/Pear/Pear_Diffuse.jpg", &pear_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Pear_Diffuse.jpg", &pear_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"../Content/Pumpkin/Pumpkin_Diffuse.jpg", &pumpkin_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Pumpkin_Diffuse.jpg", &pumpkin_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"../Content/Apple/Apple_Diffuse.jpg", &apple_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/SoccerBall_Diffuse.bmp", &ball_diffuse); FAILED(result)) {
-		return result;
-	}
-	if (result = TextureLoader::LoadWic(L"../Content/Plane_Diffuse.jpg", &grass_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"../Content/Plane/Plane_Diffuse.jpg", &plane_diffuse); FAILED(result)) {
 		return result;
 	}
 
 	return result;
 }
 
-void Release() {
-	crate_diffuse.Release();
-	mill_diffuse.Release();
+HRESULT LoadNormal() {
+	using namespace engine;
+	HRESULT result;
+
+	if (result = TextureLoader::LoadWic(L"../Content/Apricot/Apricot_Normal.png", &apricot_normal); FAILED(result)) {
+		return result;
+	}
+	if (result = TextureLoader::LoadWic(L"../Content/Pear/Pear_Normal.jpg", &pear_normal); FAILED(result)) {
+		return result;
+	}
+	if (result = TextureLoader::LoadWic(L"../Content/Pumpkin/Pumpkin_Normal.jpg", &pumpkin_normal); FAILED(result)) {
+		return result;
+	}
+	if (result = TextureLoader::LoadWic(L"../Content/Apple/Apple_Normal.jpg", &apple_normal); FAILED(result)) {
+		return result;
+	}
+	if (result = TextureLoader::LoadWic(L"../Content/Plane/Plane_Normal.jpg", &plane_normal); FAILED(result)) {
+		return result;
+	}
+
+	return result;
+}
+
+HRESULT LoadSpecular() {
+	using namespace engine;
+	HRESULT result;
+
+	if (result = TextureLoader::LoadWic(L"../Content/Apricot/Apricot_Specular.png", &apricot_specular); FAILED(result)) {
+		return result;
+	}
+	if (result = TextureLoader::LoadWic(L"../Content/Pear/Pear_Specular.jpg", &pear_specular); FAILED(result)) {
+		return result;
+	}
+	if (result = TextureLoader::LoadWic(L"../Content/Pumpkin/Pumpkin_Specular.jpg", &pumpkin_specular); FAILED(result)) {
+		return result;
+	}
+	if (result = TextureLoader::LoadWic(L"../Content/Apple/Apple_Specular.jpg", &apple_specular); FAILED(result)) {
+		return result;
+	}
+	// Use apple normals just because...
+	if (result = TextureLoader::LoadWic(L"../Content/Apple/Apple_Specular.jpg", &plane_specular); FAILED(result)) {
+		return result;
+	} 
+
+	return result;
+}
+
+void Release() {	
+	apricot_diffuse.Release();
 	pear_diffuse.Release();
 	pumpkin_diffuse.Release();
-	pear_diffuse.Release();
+	apple_diffuse.Release();
+	plane_diffuse.Release();
+
+	apricot_normal.Release();
+	pear_normal.Release();
+	pumpkin_normal.Release();
+	apple_normal.Release();
+	plane_normal.Release();
+
+	apricot_specular.Release();
+	pear_specular.Release();
+	pumpkin_specular.Release();
+	apple_specular.Release();
+	plane_specular.Release();
 }
 
 int main() {
@@ -326,7 +376,13 @@ int main() {
 	if (result = LoadModels(); FAILED(result)) {
 		return result;
 	}
-	if (result = LoadTextures(); FAILED(result)) {
+	if (result = LoadDiffuse(); FAILED(result)) {
+		return result;
+	}
+	if (result = LoadNormal(); FAILED(result)) {
+		return result;
+	}
+	if (result = LoadSpecular(); FAILED(result)) {
 		return result;
 	}
 
@@ -355,7 +411,7 @@ int main() {
 	game.PushSystem(shadow_system);
 	game.PushSystem(render_system);
 	game.PushSystem(shadow_debug_system);
-	//game.PushSystem(geometry_pass_system);
+	game.PushSystem(geometry_pass_system);
 
 	auto& plane = DebugUtils::CreatePlane(game, 100, 100);
 	auto& axis = DebugUtils::CreateAxis(game, 3.0f);

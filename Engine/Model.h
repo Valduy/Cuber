@@ -28,8 +28,8 @@ public:
 	static HRESULT Load(Model& model, const std::string& path) {
 		model.meshes_.clear();
 		Assimp::Importer importer;
-		const aiScene* scene = importer.ReadFile(path, 
-			aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_FlipWindingOrder);
+		const aiScene* scene = importer.ReadFile(
+			path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_FlipWindingOrder | aiProcess_CalcTangentSpace);
 
 		if (scene == nullptr || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || scene->mRootNode == nullptr) {
 			std::cout << importer.GetErrorString() << std::endl;
@@ -64,25 +64,16 @@ private:
 
 		for (size_t i = 0; i < mesh->mNumVertices; ++i) {
 			Vertex vertex;
-			vertex.position = Vector3 {
-				mesh->mVertices[i].x,
-				mesh->mVertices[i].y,
-				mesh->mVertices[i].z
-			};
+			vertex.position = ToVector3(mesh->mVertices[i]);
 
 			if (mesh->HasNormals()) {
-				vertex.normal = Vector3{
-					mesh->mNormals[i].x,
-					mesh->mNormals[i].y,
-					mesh->mNormals[i].z
-				};
+				vertex.normal = ToVector3(mesh->mNormals[i]);
 			}
 
 			if (mesh->mTextureCoords[0] != nullptr) {
-				vertex.texture_coords = Vector2 {
-					 mesh->mTextureCoords[0][i].x,
-					 mesh->mTextureCoords[0][i].y,
-				};
+				vertex.texture_coords = ToVector2(mesh->mTextureCoords[0][i]);
+				vertex.tangent = ToVector3(mesh->mTangents[i]);
+				vertex.binormal = ToVector3(mesh->mBitangents[i]);
 			} else {
 				vertex.texture_coords = Vector2 { 0.0f, 0.0f };
 			}
@@ -100,6 +91,14 @@ private:
 		
 		// TODO: now I load only diffuse texture, but i should load all necessary textures in future.
 		return Mesh(vertices, indices);
+	}
+
+	static DirectX::SimpleMath::Vector2 ToVector2(aiVector3D vector) {
+		return { vector.x, vector.y };
+	}
+
+	static DirectX::SimpleMath::Vector3 ToVector3(aiVector3D vector) {
+		return { vector.x, vector.y, vector.z };
 	}
 };
 
