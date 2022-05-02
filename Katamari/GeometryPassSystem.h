@@ -48,15 +48,15 @@ public:
 	void Render() override {
 		OpaquePass();
 		
-		////GetRenderer().SetDefaultRenderTarget();
-		////t_shader_.SetShader();		
-		//////ID3D11ShaderResourceView* srv = &g_buffer_.GetDiffuseShaderResourceView();
-		//////ID3D11ShaderResourceView* srv = &g_buffer_.GetNormalShaderResourceView();
-		////ID3D11ShaderResourceView* srv = &g_buffer_.GetPositionShaderResourceView();
-		////GetRenderer().GetContext().PSSetShaderResources(0, 1, &srv);
-		////GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-		////GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
-		////GetRenderer().GetContext().Draw(4, 0);
+		GetRenderer().SetDefaultRenderTarget();
+		t_shader_.SetShader();		
+		ID3D11ShaderResourceView* srv = &g_buffer_.GetDiffuseShaderResourceView();
+		//ID3D11ShaderResourceView* srv = &g_buffer_.GetNormalShaderResourceView();
+		//ID3D11ShaderResourceView* srv = &g_buffer_.GetPositionShaderResourceView();
+		GetRenderer().GetContext().PSSetShaderResources(0, 1, &srv);
+		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
+		GetRenderer().GetContext().Draw(4, 0);
 	}
 
 private:
