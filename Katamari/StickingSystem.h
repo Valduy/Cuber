@@ -88,7 +88,7 @@ private:
 		const CollisionComponent& item_collision)
 	{
 		using namespace DirectX::SimpleMath;
-		constexpr float ratio = 0.1f;
+		constexpr float ratio = 0.05f;
 
 		auto& sphere_transform = katamari_collision.sphere.Get<engine::TransformComponent>();
 		katamari_collision.radius += ratio;

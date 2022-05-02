@@ -23,10 +23,8 @@ public:
 	};
 
 	ShadowMapDebugSystem()
-		: shader_()
-		, vertices_buffer_(kVertices, sizeof(Vertex) * kVerticesSize)
+		: vertices_buffer_(kVertices, sizeof(Vertex) * kVerticesSize)
 		, indexes_buffer_(kIndexes, kIndexesSize)
-		, transform_buffer_(sizeof(TransformData))
 	{}
 
 	void Init(engine::Game& game) override {
@@ -36,7 +34,7 @@ public:
 		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition2Texture2, L"Shaders/ShadowMapDebugShader.hlsl");
 		vertices_buffer_.Init(&GetRenderer());
 		indexes_buffer_.Init(&GetRenderer());
-		transform_buffer_.Init(&GetRenderer());
+		transform_buffer_.Init(&GetRenderer(), sizeof(TransformData));
 
 		using namespace DirectX::SimpleMath;
 		Matrix transform = Matrix::CreateOrthographic(800, 800, 0.1, 1);

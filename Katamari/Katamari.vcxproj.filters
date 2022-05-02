@@ -25,6 +25,21 @@
     <Filter Include="Header Files\ShaderData">
       <UniqueIdentifier>{bf646de9-f4df-4a95-877a-194a32dd12e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Components\Render">
+      <UniqueIdentifier>{7840f522-a809-4a8c-b643-be6649f88530}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Components\Gameplay">
+      <UniqueIdentifier>{ea7163b8-810f-4b95-8ce4-2d4218fa6229}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems\Render">
+      <UniqueIdentifier>{d3636675-748e-4555-96f1-d45068702696}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems\Gameplay">
+      <UniqueIdentifier>{b6ec8a7f-5112-4319-8827-581bc97514ef}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems\Render\Update">
+      <UniqueIdentifier>{84430da0-9bd1-481c-a3e3-cd7ef34b5a34}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -55,13 +70,22 @@
     <None Include="Shaders\PointLight.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\ShadowMapShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ForwardShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\GeometryPassShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\PointLight.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="Shaders\ShadowMapDebugShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\ShadowMapShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\**">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\ShadowMapShader.hlsl" />
@@ -117,59 +141,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="RenderComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="ModelComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="ForwardRenderSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="KatamariControllerSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="KatamariCameraSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="KatamariControllerComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="CollisionComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="StickingSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="ItemComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="KatamariComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
     <ClInclude Include="Material.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectionLightComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectionLightSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowMapRenderSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="ShadowMapDebugSystem.h">
-      <Filter>Header Files\Systems</Filter>
-    </ClInclude>
-    <ClInclude Include="ForwardRenderComponent.h">
-      <Filter>Header Files\Components</Filter>
-    </ClInclude>
-    <ClInclude Include="RenderPreparationSystem.h">
-      <Filter>Header Files\Systems</Filter>
     </ClInclude>
     <ClInclude Include="MaterialData.h">
       <Filter>Header Files\ShaderData</Filter>
@@ -180,8 +153,68 @@
     <ClInclude Include="GBuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="DirectionLightComponent.h">
+      <Filter>Header Files\Components\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="ForwardRenderComponent.h">
+      <Filter>Header Files\Components\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="DnsMapsComponent.h">
+      <Filter>Header Files\Components\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="MaterialComponent.h">
+      <Filter>Header Files\Components\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowComponent.h">
+      <Filter>Header Files\Components\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="CollisionComponent.h">
+      <Filter>Header Files\Components\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="ItemComponent.h">
+      <Filter>Header Files\Components\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="KatamariComponent.h">
+      <Filter>Header Files\Components\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="KatamariControllerComponent.h">
+      <Filter>Header Files\Components\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionLightSystem.h">
+      <Filter>Header Files\Systems\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="ForwardRenderSystem.h">
+      <Filter>Header Files\Systems\Render</Filter>
+    </ClInclude>
     <ClInclude Include="GeometryPassSystem.h">
-      <Filter>Header Files\Systems</Filter>
+      <Filter>Header Files\Systems\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMapDebugSystem.h">
+      <Filter>Header Files\Systems\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowMapRenderSystem.h">
+      <Filter>Header Files\Systems\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="KatamariCameraSystem.h">
+      <Filter>Header Files\Systems\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="KatamariControllerSystem.h">
+      <Filter>Header Files\Systems\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="StickingSystem.h">
+      <Filter>Header Files\Systems\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelComponent.h">
+      <Filter>Header Files\Components\Render</Filter>
+    </ClInclude>
+    <ClInclude Include="UpdateMaterialsSystem.h">
+      <Filter>Header Files\Systems\Render\Update</Filter>
+    </ClInclude>
+    <ClInclude Include="UpdateMeshesSystem.h">
+      <Filter>Header Files\Systems\Render\Update</Filter>
+    </ClInclude>
+    <ClInclude Include="UpdateDnsMapsSystem.h">
+      <Filter>Header Files\Systems\Render\Update</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

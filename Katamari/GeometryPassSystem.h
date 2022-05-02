@@ -8,9 +8,7 @@
 class GeometryPassSystem : public engine::Game::SystemBase {
 public:
 	GeometryPassSystem()
-		: g_buffer_()
-		, shader_()
-		, sampler_(D3D11_FILTER_MIN_MAG_MIP_LINEAR, 0)
+		: sampler_(D3D11_FILTER_MIN_MAG_MIP_LINEAR, 0)
 	{}
 
 	void Init(engine::Game& game) override {
@@ -48,15 +46,15 @@ public:
 	void Render() override {
 		OpaquePass();
 		
-		GetRenderer().SetDefaultRenderTarget();
-		t_shader_.SetShader();		
-		ID3D11ShaderResourceView* srv = &g_buffer_.GetDiffuseShaderResourceView();
-		//ID3D11ShaderResourceView* srv = &g_buffer_.GetNormalShaderResourceView();
+		//GetRenderer().SetDefaultRenderTarget();
+		//t_shader_.SetShader();		
+		////ID3D11ShaderResourceView* srv = &g_buffer_.GetDiffuseShaderResourceView();
+		////ID3D11ShaderResourceView* srv = &g_buffer_.GetNormalShaderResourceView();
 		//ID3D11ShaderResourceView* srv = &g_buffer_.GetPositionShaderResourceView();
-		GetRenderer().GetContext().PSSetShaderResources(0, 1, &srv);
-		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-		GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
-		GetRenderer().GetContext().Draw(4, 0);
+		//GetRenderer().GetContext().PSSetShaderResources(0, 1, &srv);
+		//GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		//GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
+		//GetRenderer().GetContext().Draw(4, 0);
 	}
 
 private:
@@ -85,16 +83,19 @@ private:
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		using namespace engine;
-		auto it = GetIterator<RenderComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			ecs::Entity& model = it.Get();
-			auto& render_component = model.Get<RenderComponent>();
-			render_component.transform_buffer.VSSetBuffer(0);
-			render_component.diffuse.SetTexture(0);
-			render_component.normal.SetTexture(1);
-			render_component.specular.SetTexture(2);
 
-			for (MeshBuffers& mesh_buffers : render_component.model_buffers) {
+		const auto sign = ecs::Signer::GetSignature<ModelComponent, DnsMapsComponent>();
+		for (auto it = GetIterator(sign); it.HasCurrent(); it.Next()) {
+			auto& model = it.Get();
+			auto& model_component = model.Get<ModelComponent>();
+			auto& dns_maps_component = model.Get<DnsMapsComponent>();
+
+			model_component.transform_buffer.VSSetBuffer(0);
+			dns_maps_component.diffuse_texture.SetTexture(0);
+			dns_maps_component.normal_texture.SetTexture(1);
+			dns_maps_component.specular_texture.SetTexture(2);
+
+			for (MeshBuffers& mesh_buffers : model_component.model_buffers) {
 				mesh_buffers.vertex_buffer.SetBuffer(sizeof(Vertex));
 				mesh_buffers.index_buffer.SetBuffer();
 				GetRenderer().GetContext().DrawIndexed(

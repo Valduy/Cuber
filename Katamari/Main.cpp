@@ -1,22 +1,30 @@
 #include <random>
 
+#include "../Engine/Game.h"
+#include "../Engine/Model.h"
+#include "../Engine/DebugUtils.h"
+#include "../Engine/TextureLoader.h"
+
+#include "../Engine/LinesRenderSystem.h"
+
 #include "KatamariCameraSystem.h"
 #include "KatamariControllerSystem.h"
-#include "RenderPreparationSystem.h"
 #include "ForwardRenderSystem.h"
 #include "GeometryPassSystem.h"
-#include "CollisionComponent.h"
-#include "DirectionLightComponent.h"
-#include "ItemComponent.h"
 #include "DirectionLightSystem.h"
 #include "ShadowMapDebugSystem.h"
 #include "ShadowMapRenderSystem.h"
 #include "StickingSystem.h"
-#include "../Engine/Game.h"
-#include "../Engine/Model.h"
-#include "../Engine/DebugUtils.h"
-#include "../Engine/LinesRenderSystem.h"
-#include "../Engine/TextureLoader.h"
+#include "UpdateMeshesSystem.h"
+#include "UpdateMaterialsSystem.h"
+#include "UpdateDnsMapsSystem.h"
+
+#include "CollisionComponent.h"
+#include "DirectionLightComponent.h"
+#include "ItemComponent.h"
+#include "DnsMapsComponent.h"
+#include "ModelComponent.h"
+#include "MaterialComponent.h"
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -47,28 +55,44 @@ DirectX::ScratchImage pumpkin_specular;
 DirectX::ScratchImage apple_specular;
 DirectX::ScratchImage plane_specular;
 
-ecs::Entity& AttachModel(
-	engine::Game& game,
-	engine::Model& model,
-	DirectX::ScratchImage& diffuse,
-	DirectX::ScratchImage& normal,
-	DirectX::ScratchImage& specular,
-	Material material,
-	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
-	DirectX::SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f },
-	DirectX::SimpleMath::Vector3 euler = { 0.0f, 0.0f, 0.0f })
+engine::TransformComponent& AddTransform(
+	ecs::Entity& entity,
+	DirectX::SimpleMath::Vector3 position,
+	DirectX::SimpleMath::Vector3 euler,
+	DirectX::SimpleMath::Vector3 scale)
 {
-	ecs::Entity& entity = game.GetEntityManager().CreateEntity();
-	entity.Add<ModelComponent>([&] {
-		return new ModelComponent(model, diffuse, normal, specular, material);
+	auto& transform_component = entity.Add<engine::TransformComponent>();
+	transform_component.SetPosition(position);
+	transform_component.SetEuler(euler);
+	transform_component.SetScale(scale);
+	return transform_component;
+}
+
+ModelComponent& AttachModel(
+	ecs::Entity& entity, 
+	engine::Model& model)
+{
+	return entity.Add<ModelComponent>([&] {
+		return new ModelComponent(model);
 	});
+}
 
-	auto& transform = entity.Add<engine::TransformComponent>();
-	transform.SetPosition(position);
-	transform.SetScale(scale);
-	transform.SetEuler(euler);
+MaterialComponent& AttachMaterial(ecs::Entity& entity, Material material) {
+	auto& material_component = entity.Add<MaterialComponent>();
+	material_component.material = material;
+	return material_component;
+}
 
-	return entity;
+DnsMapsComponent& AttachDnsMaps(
+	ecs::Entity& entity,
+	DirectX::ScratchImage& diffuse,
+	DirectX::ScratchImage& normal, 
+	DirectX::ScratchImage& specular)
+{
+	auto& maps_component = entity.Add<DnsMapsComponent>([&] {
+		return new DnsMapsComponent(diffuse, normal, specular);
+	});
+	return maps_component;
 }
 
 ecs::Entity& AttachSphere(
@@ -80,7 +104,7 @@ ecs::Entity& AttachSphere(
 	using namespace engine;
 	auto& entity_transform = entity.Get<TransformComponent>();
 
-	ecs::Entity& sphere = DebugUtils::CreateSphere(game, 1.0f, { 0.0f, 1.0f, 0.0f, 1.0f });
+	auto& sphere = DebugUtils::CreateSphere(game, 1.0f, { 0.0f, 1.0f, 0.0f, 1.0f });
 	auto& sphere_transform = sphere.Get<TransformComponent>();
 	entity_transform.AddChild(sphere);
 	sphere_transform.SetLocalPosition(local_position);
@@ -98,18 +122,13 @@ ecs::Entity& SpawnApricot(
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	ecs::Entity& apricot = AttachModel(
-		game,
-		apricot_model,
-		apricot_diffuse,
-		apple_normal,
-		apricot_specular,
-		{ 0.1f, 3.0f, 0.5f },
-		position,
-		{ 0.3f, 0.3f, 0.3f },
-		rotation);
-	apricot.Add<ItemComponent>();
+	auto& apricot = game.GetEntityManager().CreateEntity();
+	AddTransform(apricot, position, rotation, { 0.3f, 0.3f, 0.3f });
+	AttachModel(apricot, apricot_model);
+	AttachMaterial(apricot, { 0.1f, 3.0f, 0.5f });
+	AttachDnsMaps(apricot, apricot_diffuse, apricot_normal, apricot_specular);
 	AttachSphere(game, apricot, 2.0f, { 0.0f, 2.0f, 0.0f });
+	apricot.Add<ItemComponent>();
 	return apricot;
 }
 
@@ -118,18 +137,13 @@ ecs::Entity& SpawnPear(
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	ecs::Entity& pear = AttachModel(
-		game,
-		pear_model,
-		pear_diffuse,
-		pear_normal,
-		pear_specular,
-		{ 0.1f, 32.0f, 0.75f },
-		position,
-		{ 0.3f, 0.3f, 0.3f },
-		rotation);
-	pear.Add<ItemComponent>();
+	auto& pear = game.GetEntityManager().CreateEntity();
+	AddTransform(pear, position, rotation, { 0.3f, 0.3f, 0.3f });
+	AttachModel(pear, pear_model);
+	AttachMaterial(pear, { 0.1f, 32.0f, 0.75f });
+	AttachDnsMaps(pear, pear_diffuse, pear_normal, pear_specular);
 	AttachSphere(game, pear, 2.0f, { 0.0f, 0.0f, 0.0f });
+	pear.Add<ItemComponent>();
 	return pear;
 }
 
@@ -138,18 +152,13 @@ ecs::Entity& SpawnPumpkin(
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	ecs::Entity& pumpkin = AttachModel(
-		game,
-		pumpkin_model,
-		pumpkin_diffuse,
-		pumpkin_normal,
-		pumpkin_specular,
-		{ 0.1f, 32.0f, 0.75f },
-		position,
-		{ 3.0f, 3.0f, 3.0f },
-		rotation);
-	pumpkin.Add<ItemComponent>();
+	auto& pumpkin = game.GetEntityManager().CreateEntity();
+	AddTransform(pumpkin, position, rotation, { 3.0f, 3.0f, 3.0f });
+	AttachModel(pumpkin, pumpkin_model);
+	AttachMaterial(pumpkin, { 0.1f, 32.0f, 0.75f });
+	AttachDnsMaps(pumpkin, pumpkin_diffuse, pumpkin_normal, pumpkin_specular);
 	AttachSphere(game, pumpkin, 0.5f, { 0.0f, 0.3f, 0.0f });
+	pumpkin.Add<ItemComponent>();
 	return pumpkin;
 }
 
@@ -191,19 +200,15 @@ ecs::Entity& SpawnCamera(engine::Game& game) {
 }
 
 ecs::Entity& SpawnKatamari(engine::Game& game, ecs::Entity& camera) {
-	ecs::Entity& apple = AttachModel(
-		game,
-		apple_model,
-		apple_diffuse,
-		apple_normal,
-		apple_specular,
-		{ 0.1f, 32.0f, 0.6f },
-		{ 0.0f, 0.0f, 0.0f },
-		{ 1.0f, 1.0f, 1.0f });
+	auto& apple = game.GetEntityManager().CreateEntity();
+	AddTransform(apple, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+	AttachModel(apple, apple_model);
+	AttachMaterial(apple, { 0.1f, 32.0f, 0.6f });
+	AttachDnsMaps(apple, apple_diffuse, apple_normal, apple_specular);
 	AttachSphere(game, apple, 1.0f);
 	apple.Add<KatamariComponent>();
 
-	ecs::Entity& katamari = game.GetEntityManager().CreateEntity();	
+	auto& katamari = game.GetEntityManager().CreateEntity();	
 	katamari.Add<KatamariControllerComponent>([&] {
 		return new KatamariControllerComponent(apple, 3.0f, 3.0f);
 	});
@@ -241,17 +246,12 @@ ecs::Entity& SpawnDirectionLight(
 }
 
 ecs::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 position) {
-	return AttachModel(
-		game,
-		plane_model,
-		plane_diffuse,
-		plane_normal,
-		plane_specular,
-		{ 0.1f, 10.0f, 0.1f },
-		position,
-		{ 15.0f, 1.0f, 15.0f },
-		{ 0.0f, 0.0f, 0.0f });
-
+	auto& plane = game.GetEntityManager().CreateEntity();
+	AddTransform(plane, position, { 0.0f, 0.0f, 0.0f }, { 15.0f, 1.0f, 15.0f });
+	AttachModel(plane, plane_model);
+	AttachMaterial(plane, { 0.1f, 10.0f, 0.1f });
+	AttachDnsMaps(plane, plane_diffuse, plane_normal, plane_specular);
+	return plane;
 }
 
 HRESULT LoadModels() {
@@ -394,7 +394,9 @@ int main() {
 	DirectionLightSystem direction_light_system;
 	KatamariControllerSystem katamari_controller_system;
 	StickingSystem sticking_system;
-	RenderPreparationSystem render_preparation_system;
+	UpdateMeshesSystem update_meshes_system;
+	UpdateMaterialsSystem update_materials_system;
+	UpdateDnsMapsSystem update_dns_system;
 	LinesRendererSystem lines_renderer_system;
 	ShadowMapRenderSystem shadow_system;
 	ForwardRenderSystem render_system;
@@ -406,7 +408,9 @@ int main() {
 	game.PushSystem(direction_light_system);
 	game.PushSystem(katamari_controller_system);
 	game.PushSystem(sticking_system);
-	game.PushSystem(render_preparation_system);
+	game.PushSystem(update_meshes_system);
+	game.PushSystem(update_materials_system);
+	game.PushSystem(update_dns_system);
 	game.PushSystem(lines_renderer_system);
 	game.PushSystem(shadow_system);
 	game.PushSystem(render_system);

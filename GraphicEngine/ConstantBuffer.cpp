@@ -8,14 +8,15 @@ ID3D11Buffer& graph::ConstantBuffer::GetBuffer() {
 	return *constant_buffer_.Get();
 }
 
-graph::ConstantBuffer::ConstantBuffer(size_t sizemem)
+graph::ConstantBuffer::ConstantBuffer()
 	: renderer_(nullptr)
-    , sizemem_(sizemem)
+    , sizemem_(0)
 	, constant_buffer_(nullptr)
 {}
 
-HRESULT graph::ConstantBuffer::Init(Renderer* renderer) {
+HRESULT graph::ConstantBuffer::Init(Renderer* renderer, size_t sizemem) {
 	renderer_ = renderer;
+	sizemem_ = sizemem;
 
 	D3D11_BUFFER_DESC const_buf_desc = {};
 	const_buf_desc.Usage = D3D11_USAGE_DEFAULT;

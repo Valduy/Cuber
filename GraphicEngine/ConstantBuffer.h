@@ -8,9 +8,9 @@ class ConstantBuffer {
 public:
 	ID3D11Buffer& GetBuffer();
 
-	ConstantBuffer(size_t sizemem);
+	ConstantBuffer();
 
-	HRESULT Init(Renderer* renderer);
+	HRESULT Init(Renderer* renderer, size_t sizemem);
 	void VSSetBuffer(unsigned int slot = 0);
 	void PSSetBuffer(unsigned int slot = 0);
 	void Update(const void* data) const;

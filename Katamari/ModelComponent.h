@@ -1,27 +1,31 @@
 #pragma once
 
-#include "Material.h"
 #include "../ECS/Entity.h"
 #include "../Engine/Model.h"
+#include "../GraphicEngine/ConstantBuffer.h"
+#include "../GraphicEngine/VertexBuffer.h"
+#include "../GraphicEngine/IndexBuffer.h"
+
+class MeshBuffers {
+public:
+	graph::VertexBuffer vertex_buffer;
+	graph::IndexBuffer index_buffer;
+
+	MeshBuffers(
+		graph::VertexBuffer vertex_buffer,
+		graph::IndexBuffer index_buffer)
+		: vertex_buffer(vertex_buffer)
+		, index_buffer(index_buffer)
+	{}
+};
 
 class ModelComponent : public ecs::Entity::ComponentBase {
 public:
 	engine::Model& model;
-	DirectX::ScratchImage& diffuse;
-	DirectX::ScratchImage& normal;
-	DirectX::ScratchImage& specular;	
-	Material material;
+	std::vector<MeshBuffers> model_buffers;
+	graph::ConstantBuffer transform_buffer;
 
-	ModelComponent(
-		engine::Model& model,
-		DirectX::ScratchImage& diffuse,
-		DirectX::ScratchImage& normal,
-		DirectX::ScratchImage& specular,
-		Material material)
+	ModelComponent(engine::Model& model)
 		: model(model)
-		, diffuse(diffuse)
-		, normal(normal)
-		, specular(specular)
-		, material(material)
 	{}
 };

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "DirectionLightComponent.h"
-#include "RenderComponent.h"
 #include "ShadowComponent.h"
 #include "../Engine/Game.h"
 #include "../Engine/TransformComponent.h"
@@ -35,8 +34,8 @@ public:
 		for (; it.HasCurrent(); it.Next()) {
 			auto& model = it.Get();
 
-			ConstantBuffer transform_buffer(sizeof(TransformData));
-			transform_buffer.Init(&GetRenderer());
+			ConstantBuffer transform_buffer;
+			transform_buffer.Init(&GetRenderer(), sizeof(TransformData));
 
 			model.Add<ShadowComponent>([&] {
 				return new ShadowComponent(transform_buffer);
@@ -45,11 +44,8 @@ public:
 	}
 
 	void Update(float dt) override {
-		auto light_it = GetIterator<DirectionLightComponent>();
-		if (!light_it.HasCurrent()) return;
-
-		auto& light = light_it.Get();
-		auto& light_component = light.Get<DirectionLightComponent>();
+		DirectX::SimpleMath::Matrix light_matrix;
+		if (!TryGetLightMatrix(&light_matrix)) return;
 
 		using namespace engine;
 		auto it = GetIterator<TransformComponent, ShadowComponent>();
@@ -59,7 +55,6 @@ public:
 			auto& shadow_component = model.Get<ShadowComponent>();
 
 			DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
-			DirectX::SimpleMath::Matrix light_matrix = light_component.GetLightMatrix();
 			DirectX::SimpleMath::Matrix world_view_proj_matrix = model_matrix * light_matrix;
 			TransformData transform_data{
 				world_view_proj_matrix.Transpose(),
@@ -82,15 +77,21 @@ public:
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		
 		using namespace engine;
-		auto it = GetIterator<RenderComponent, ShadowComponent>();
-		for (; it.HasCurrent(); it.Next()) {
+
+		const auto sign = ecs::Signer::GetSignature<
+			ModelComponent,
+			DnsMapsComponent,
+			ShadowComponent>();
+
+		for (auto it = GetIterator(sign); it.HasCurrent(); it.Next()) {
 			auto& model = it.Get();
-			auto& render_component = model.Get<RenderComponent>();
+			auto& model_component = model.Get<ModelComponent>();
+			auto& dns_maps_component = model.Get<DnsMapsComponent>();
 			auto& shadow_component = model.Get<ShadowComponent>();
 			shadow_component.transform_buffer.VSSetBuffer();
-			render_component.diffuse.SetTexture();
+			dns_maps_component.diffuse_texture.SetTexture();
 
-			for (MeshBuffers& mesh_buffers : render_component.model_buffers) {
+			for (MeshBuffers& mesh_buffers : model_component.model_buffers) {
 				mesh_buffers.vertex_buffer.SetBuffer(sizeof(Vertex));
 				mesh_buffers.index_buffer.SetBuffer();
 				GetRenderer().GetContext().DrawIndexed(
@@ -102,5 +103,15 @@ public:
 	}
 
 private:
-	graph::Shader shader_;	
+	graph::Shader shader_;
+
+	bool TryGetLightMatrix(DirectX::SimpleMath::Matrix* light_matrix) {
+		auto light_it = GetIterator<DirectionLightComponent>();
+		if (!light_it.HasCurrent()) return false;
+
+		auto& light = light_it.Get();
+		auto& light_component = light.Get<DirectionLightComponent>();
+		*light_matrix = light_component.GetLightMatrix();
+		return true;
+	}
 };

@@ -6,8 +6,4 @@
 class ForwardRenderComponent : public ecs::Entity::ComponentBase {
 public:
 	graph::ConstantBuffer light_transform_buffer;
-
-	ForwardRenderComponent(graph::ConstantBuffer light_transform_buffer)
-		: light_transform_buffer(light_transform_buffer)
-	{}
 };

@@ -40,11 +40,11 @@ public:
 				sizeof(DirectX::SimpleMath::Vector3) * lines_component.points.size());
 			vb.Init(&GetRenderer());
 
-			graph::ConstantBuffer matrix_cb(sizeof(MatrixData));
-			matrix_cb.Init(&GetRenderer());
+			graph::ConstantBuffer matrix_cb;
+			matrix_cb.Init(&GetRenderer(), sizeof(MatrixData));
 
-			graph::ConstantBuffer color_cb(sizeof(MatrixData));
-			color_cb.Init(&GetRenderer());
+			graph::ConstantBuffer color_cb;
+			color_cb.Init(&GetRenderer(), sizeof(MatrixData));
 
 			entity.Add<LinesRenderComponent>([&] {
 				return new LinesRenderComponent(vb, matrix_cb, color_cb);
