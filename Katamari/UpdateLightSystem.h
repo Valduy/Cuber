@@ -33,6 +33,7 @@ public:
 		for (auto it = GetIterator<DirectionLightComponent>(); it.HasCurrent(); it.Next()) {
 			auto& light = it.Get();
 			auto& direction_light_component = light.Get<DirectionLightComponent>();
+
 			DirectionLightData light_data{};
 			light_data.view_position = camera_component.position;
 			light_data.light_direction = direction_light_component.light_direction;

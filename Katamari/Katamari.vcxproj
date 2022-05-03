@@ -174,7 +174,7 @@
     <ClInclude Include="DirectionLightData.h" />
     <ClInclude Include="ForwardRenderComponent.h" />
     <ClInclude Include="GBuffer.h" />
-    <ClInclude Include="GeometryPassSystem.h" />
+    <ClInclude Include="DefferedRenderSystem.h" />
     <ClInclude Include="DnsMapsComponent.h" />
     <ClInclude Include="ItemComponent.h" />
     <ClInclude Include="KatamariCameraSystem.h" />
@@ -203,7 +203,7 @@
     </CopyFileToFolders>
   </ItemGroup>
   <ItemGroup>
-    <CopyFileToFolders Include="Shaders\FillShader.hlsl">
+    <CopyFileToFolders Include="Shaders\TonePassShader.hlsl">
       <FileType>Document</FileType>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>

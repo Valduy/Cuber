@@ -4,9 +4,9 @@
 #include "../GraphicEngine/Shader.h"
 #include "../Engine/Game.h"
 
-class GeometryPassSystem : public engine::Game::SystemBase {
+class DefferedRenderSystem : public engine::Game::SystemBase {
 public:
-	GeometryPassSystem()
+	DefferedRenderSystem()
 		: sampler_()
 	{}
 
@@ -18,6 +18,9 @@ public:
 		CreateOpaqueBlendState();
 		CreateLightBlendState();
 		CreateOpaqueDepthStencilState();
+		CreateLightLessDepthStencilState();
+		CreateLightGreaterDepthStencilState();
+		CreateNoDepthDepthStencilState();
 
 		g_buffer_.Init(
 			&GetRenderer(), 
@@ -34,10 +37,10 @@ public:
 			graph::LayoutDescriptor::kEmpty,
 			L"Shaders/DirectionLightPassShader.hlsl");
 
-		t_shader_.Init(
+		tone_pass_shader_.Init(
 			&GetRenderer(),
 			graph::LayoutDescriptor::kEmpty,
-			L"Shaders/FillShader.hlsl");
+			L"Shaders/TonePassShader.hlsl");
 				
 		//engine::TextureLoader::LoadWic(L"../Content/Pumpkin_Diffuse.jpg", &image);
 		//t_texture_.Init(&GetRenderer(), image);
@@ -64,7 +67,7 @@ private:
 	GBuffer g_buffer_;
 	graph::Shader opaque_shader_;
 	graph::Shader direction_light_shader_;
-	graph::Shader t_shader_;
+	graph::Shader tone_pass_shader_;
 	graph::Sampler sampler_;
 
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> cull_back_rs_;
@@ -79,9 +82,6 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> no_depth_dss_;
 
 	void OpaquePass() {
-		GetRenderer().GetContext().ClearDepthStencilView(
-			&GetRenderer().GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
-
 		GetRenderer().GetContext().RSSetState(cull_back_rs_.Get());
 		GetRenderer().GetContext().OMSetBlendState(opaque_bs_.Get(), nullptr, 0xffffffff);
 		GetRenderer().GetContext().OMSetDepthStencilState(opaque_dss_.Get(), 0);
@@ -139,14 +139,12 @@ private:
 	}
 
 	void TonePass() {
-		GetRenderer().GetContext().ClearDepthStencilView(
-			&GetRenderer().GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
 		GetRenderer().SetDefaultRenderTarget();
 		GetRenderer().GetContext().RSSetState(cull_back_rs_.Get());
 		GetRenderer().GetContext().OMSetBlendState(opaque_bs_.Get(), nullptr, 0xffffffff);
 		GetRenderer().GetContext().OMSetDepthStencilState(no_depth_dss_.Get(), 0);
 
-		t_shader_.SetShader();
+		tone_pass_shader_.SetShader();
 
 		//ID3D11ShaderResourceView* srv = &g_buffer_.GetDiffuseShaderResourceView();
 		//ID3D11ShaderResourceView* srv = &g_buffer_.GetNormalShaderResourceView();
@@ -233,9 +231,7 @@ private:
 	HRESULT CreateNoDepthDepthStencilState() {
 		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{};
 		depth_stencil_desc.DepthEnable = false;
-		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_GREATER; // TODO: delete
-		depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // TODO: delete
 
-		return GetRenderer().GetDevice().CreateDepthStencilState(&depth_stencil_desc, light_greater_dss_.GetAddressOf());
+		return GetRenderer().GetDevice().CreateDepthStencilState(&depth_stencil_desc, no_depth_dss_.GetAddressOf());
 	}
 };

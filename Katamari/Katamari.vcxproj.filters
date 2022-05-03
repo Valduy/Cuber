@@ -94,6 +94,18 @@
     <None Include="Shaders\ForwardShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\PointLight.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\FillShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ForwardShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="Shaders\GeometryPassShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
@@ -104,9 +116,6 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\ShadowMapShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\**">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\PointLight.hlsl" />
@@ -195,7 +204,7 @@
     <ClInclude Include="ForwardRenderSystem.h">
       <Filter>Header Files\Systems\Render</Filter>
     </ClInclude>
-    <ClInclude Include="GeometryPassSystem.h">
+    <ClInclude Include="DefferedRenderSystem.h">
       <Filter>Header Files\Systems\Render</Filter>
     </ClInclude>
     <ClInclude Include="ShadowMapDebugSystem.h">
@@ -235,13 +244,13 @@
     <CopyFileToFolders Include="Shaders\ShadowMapDebugShader.hlsl">
       <Filter>Shaders</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="Shaders\FillShader.hlsl">
-      <Filter>Shaders</Filter>
-    </CopyFileToFolders>
     <CopyFileToFolders Include="Shaders\GeometryPassShader.hlsl">
       <Filter>Shaders\Defered</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="Shaders\DirectionLightPassShader.hlsl">
+      <Filter>Shaders\Defered</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Shaders\TonePassShader.hlsl">
       <Filter>Shaders\Defered</Filter>
     </CopyFileToFolders>
   </ItemGroup>

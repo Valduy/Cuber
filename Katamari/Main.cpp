@@ -10,7 +10,7 @@
 #include "KatamariCameraSystem.h"
 #include "KatamariControllerSystem.h"
 #include "ForwardRenderSystem.h"
-#include "GeometryPassSystem.h"
+#include "DefferedRenderSystem.h"
 #include "UpdateLightSystem.h"
 #include "ShadowMapDebugSystem.h"
 #include "ShadowMapRenderSystem.h"
@@ -245,7 +245,7 @@ ecs::Entity& SpawnDirectionLight(
 
 ecs::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 position) {
 	auto& plane = game.GetEntityManager().CreateEntity();
-	AddTransform(plane, position, { 0.0f, 0.0f, 0.0f }, { 10.0f, 1.0f, 10.0f });
+	AddTransform(plane, position, { 0.0f, 0.0f, 0.0f }, { 10.0f, 10.0f, 10.0f });
 	AttachModel(plane, plane_model);
 	AttachMaterial(plane, { 0.1f, 10.0f, 0.1f });
 	AttachDnsMaps(plane, plane_diffuse, plane_normal, plane_specular);
@@ -389,7 +389,7 @@ int main() {
 
 	//CameraSystem fps_camera_system;
 	KatamariCameraSystem camera_system;
-	UpdateLightSystem direction_light_system;
+	UpdateLightSystem update_light_system;
 	KatamariControllerSystem katamari_controller_system;
 	StickingSystem sticking_system;
 	UpdateModelRenderDataSystem update_model_render_data_system;
@@ -397,11 +397,11 @@ int main() {
 	ShadowMapRenderSystem shadow_system;
 	ForwardRenderSystem forward_render_system;
 	ShadowMapDebugSystem shadow_debug_system;
-	GeometryPassSystem geometry_pass_system;
+	DefferedRenderSystem deffered_render_system;
 
 	//game.PushSystem(fps_camera_system);
 	game.PushSystem(camera_system);
-	game.PushSystem(direction_light_system);
+	game.PushSystem(update_light_system);
 	game.PushSystem(katamari_controller_system);
 	game.PushSystem(sticking_system);
 	game.PushSystem(update_model_render_data_system);
@@ -409,13 +409,13 @@ int main() {
 	//game.PushSystem(shadow_system);
 	//game.PushSystem(forward_render_system);
 	//game.PushSystem(shadow_debug_system);
-	game.PushSystem(geometry_pass_system);
+	game.PushSystem(deffered_render_system);
 
 	auto& plane = DebugUtils::CreatePlane(game, 100, 100);
 	auto& axis = DebugUtils::CreateAxis(game, 3.0f);
 
 	DirectX::SimpleMath::Vector3 light_position = { 15.0f, 6.0f, 0.0f };
-	DirectX::SimpleMath::Vector3 light_direction = {-1.0f, -1.0f, 0.0f };
+	DirectX::SimpleMath::Vector3 light_direction = {-1.0f, -2.0f, 0.0f };
 	DirectX::SimpleMath::Vector3 light_color = { 1.0f, 1.0f, 1.0f };
 	light_direction.Normalize();
 
@@ -424,6 +424,11 @@ int main() {
 	auto& katamari = SpawnKatamari(game, camera);
 	auto& grass = SpawnPlane(game, { 0.0f, -0.5f, 0.0f });
 	SpawnItems(game);	
+
+	light_position = DirectX::SimpleMath::Vector3{ -15.0f, 6.0f, 0.0f };
+	light_direction = DirectX::SimpleMath::Vector3{ 1.0f, -2.0f, 0.0f };
+	light_direction.Normalize();
+	SpawnDirectionLight(game, light_position, light_direction, light_color);
 
 	game.Run();
 	Release();
