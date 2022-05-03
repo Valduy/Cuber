@@ -125,7 +125,6 @@ private:
 			dots.push_back({ dot_x, dot_y, 0.0f });
 		}
 
-		dots.pop_back();
 		return dots;
 	}
 };

@@ -3,30 +3,36 @@
 #include "GBuffer.h"
 #include "../GraphicEngine/Shader.h"
 #include "../Engine/Game.h"
-#include "../Engine/TextureLoader.h"
 
 class GeometryPassSystem : public engine::Game::SystemBase {
 public:
 	GeometryPassSystem()
-		: sampler_(D3D11_FILTER_MIN_MAG_MIP_LINEAR, 0)
+		: sampler_()
 	{}
 
 	void Init(engine::Game& game) override {
 		engine::Game::SystemBase::Init(game);
 
-		CreateRasterizerState();
-		CreateBlendState();
-		CreateDepthStencilState();
+		CreateCullBackRasterizerState();
+		CreateCullFrontRasterizerState();
+		CreateOpaqueBlendState();
+		CreateLightBlendState();
+		CreateOpaqueDepthStencilState();
 
 		g_buffer_.Init(
 			&GetRenderer(), 
 			GetRenderer().GetWindow().GetWidth(), 
 			GetRenderer().GetWindow().GetHeight());
 
-		shader_.Init(
+		opaque_shader_.Init(
 			&GetRenderer(), 
 			graph::LayoutDescriptor::kPosition3Normal3Binormal3Tangent3Texture2,
 			L"Shaders/GeometryPassShader.hlsl");
+
+		direction_light_shader_.Init(
+			&GetRenderer(),
+			graph::LayoutDescriptor::kEmpty,
+			L"Shaders/DirectionLightPassShader.hlsl");
 
 		t_shader_.Init(
 			&GetRenderer(),
@@ -36,7 +42,12 @@ public:
 		//engine::TextureLoader::LoadWic(L"../Content/Pumpkin_Diffuse.jpg", &image);
 		//t_texture_.Init(&GetRenderer(), image);
 
-		sampler_.Init(&GetRenderer());
+		sampler_.Init(
+			&GetRenderer(),
+			D3D11_TEXTURE_ADDRESS_WRAP,
+			D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+			D3D11_COMPARISON_NEVER,
+			1);
 	}
 
 	void Update(float dt) override {
@@ -45,29 +56,27 @@ public:
 
 	void Render() override {
 		OpaquePass();
-		
-		//GetRenderer().SetDefaultRenderTarget();
-		//t_shader_.SetShader();		
-		////ID3D11ShaderResourceView* srv = &g_buffer_.GetDiffuseShaderResourceView();
-		////ID3D11ShaderResourceView* srv = &g_buffer_.GetNormalShaderResourceView();
-		//ID3D11ShaderResourceView* srv = &g_buffer_.GetPositionShaderResourceView();
-		//GetRenderer().GetContext().PSSetShaderResources(0, 1, &srv);
-		//GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-		//GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
-		//GetRenderer().GetContext().Draw(4, 0);
+		LightPass();
+		TonePass();
 	}
 
 private:
 	GBuffer g_buffer_;
-	graph::Shader shader_;
-	////DirectX::ScratchImage image;
-	////graph::Texture t_texture_;
+	graph::Shader opaque_shader_;
+	graph::Shader direction_light_shader_;
 	graph::Shader t_shader_;
 	graph::Sampler sampler_;
 
 	Microsoft::WRL::ComPtr<ID3D11RasterizerState> cull_back_rs_;
+	Microsoft::WRL::ComPtr<ID3D11RasterizerState> cull_front_rs_;
+
 	Microsoft::WRL::ComPtr<ID3D11BlendState> opaque_bs_;
+	Microsoft::WRL::ComPtr<ID3D11BlendState> light_bs_;
+
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> opaque_dss_;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> light_less_dss_;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> light_greater_dss_;
+	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> no_depth_dss_;
 
 	void OpaquePass() {
 		GetRenderer().GetContext().ClearDepthStencilView(
@@ -77,7 +86,7 @@ private:
 		GetRenderer().GetContext().OMSetBlendState(opaque_bs_.Get(), nullptr, 0xffffffff);
 		GetRenderer().GetContext().OMSetDepthStencilState(opaque_dss_.Get(), 0);
 
-		shader_.SetShader();
+		opaque_shader_.SetShader();
 		sampler_.SetSampler();
 		g_buffer_.SetGeometryPassTargets();
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
@@ -104,7 +113,53 @@ private:
 		}
 	}
 
-	HRESULT CreateRasterizerState() {
+	void LightPass() {
+		GetRenderer().GetContext().OMSetBlendState(light_bs_.Get(), nullptr, 0xffffffff);
+		GetRenderer().GetContext().RSSetState(cull_back_rs_.Get());
+		GetRenderer().GetContext().OMSetDepthStencilState(light_less_dss_.Get(), 0);
+
+		// Light constant buffers...
+		
+		direction_light_shader_.SetShader();
+		g_buffer_.SetLightPassTargets();
+		sampler_.SetSampler();
+		g_buffer_.SetResources();		
+
+		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
+
+		for (auto it = GetIterator<DirectionLightComponent>(); it.HasCurrent(); it.Next()) {
+			auto& light = it.Get();
+			auto& direction_light_component = light.Get<DirectionLightComponent>();
+			direction_light_component.light_data_buffer.PSSetBuffer(0);
+			GetRenderer().GetContext().Draw(4, 0);
+		}
+
+		// Draw all lights...
+	}
+
+	void TonePass() {
+		GetRenderer().GetContext().ClearDepthStencilView(
+			&GetRenderer().GetDepthStencilView(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+		GetRenderer().SetDefaultRenderTarget();
+		GetRenderer().GetContext().RSSetState(cull_back_rs_.Get());
+		GetRenderer().GetContext().OMSetBlendState(opaque_bs_.Get(), nullptr, 0xffffffff);
+		GetRenderer().GetContext().OMSetDepthStencilState(no_depth_dss_.Get(), 0);
+
+		t_shader_.SetShader();
+
+		//ID3D11ShaderResourceView* srv = &g_buffer_.GetDiffuseShaderResourceView();
+		//ID3D11ShaderResourceView* srv = &g_buffer_.GetNormalShaderResourceView();
+		//ID3D11ShaderResourceView* srv = &g_buffer_.GetPositionShaderResourceView();
+		ID3D11ShaderResourceView* srv = &g_buffer_.GetAccumulationShaderResourceView();
+		GetRenderer().GetContext().PSSetShaderResources(0, 1, &srv);
+
+		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
+		GetRenderer().GetContext().Draw(4, 0);
+	}
+
+	HRESULT CreateCullBackRasterizerState() {
 		D3D11_RASTERIZER_DESC raster_desc{};
 		raster_desc.CullMode = D3D11_CULL_BACK;
 		raster_desc.FillMode = D3D11_FILL_SOLID;
@@ -112,7 +167,15 @@ private:
 		return GetRenderer().GetDevice().CreateRasterizerState(&raster_desc, cull_back_rs_.GetAddressOf());
 	}
 
-	HRESULT CreateBlendState() {
+	HRESULT CreateCullFrontRasterizerState() {
+		D3D11_RASTERIZER_DESC raster_desc{};
+		raster_desc.CullMode = D3D11_CULL_FRONT;
+		raster_desc.FillMode = D3D11_FILL_SOLID;
+
+		return GetRenderer().GetDevice().CreateRasterizerState(&raster_desc, cull_front_rs_.GetAddressOf());
+	}
+
+	HRESULT CreateOpaqueBlendState() {
 		D3D11_BLEND_DESC blend_state_desc { false, false };
 		blend_state_desc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
 		blend_state_desc.RenderTarget[0].BlendEnable = true;
@@ -126,12 +189,53 @@ private:
 		return GetRenderer().GetDevice().CreateBlendState(&blend_state_desc, opaque_bs_.GetAddressOf());
 	}
 
-	HRESULT CreateDepthStencilState() {
+	HRESULT CreateLightBlendState() {
+		D3D11_BLEND_DESC blend_state_desc{ false, false };
+		blend_state_desc.RenderTarget[0].RenderTargetWriteMask = 0x0f;
+		blend_state_desc.RenderTarget[0].BlendEnable = true;
+		blend_state_desc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+		blend_state_desc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+		blend_state_desc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+		blend_state_desc.RenderTarget[0].DestBlend = D3D11_BLEND_ONE;
+		blend_state_desc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+		blend_state_desc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+
+		return GetRenderer().GetDevice().CreateBlendState(&blend_state_desc, light_bs_.GetAddressOf());
+	}
+
+	HRESULT CreateOpaqueDepthStencilState() {
 		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{};
 		depth_stencil_desc.DepthEnable = true;
 		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS;
 		depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
 
 		return GetRenderer().GetDevice().CreateDepthStencilState(&depth_stencil_desc, opaque_dss_.GetAddressOf());
+	}
+
+	HRESULT CreateLightLessDepthStencilState() {
+		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{};
+		depth_stencil_desc.DepthEnable = true;
+		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_LESS;
+		depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+		
+		return GetRenderer().GetDevice().CreateDepthStencilState(&depth_stencil_desc, light_less_dss_.GetAddressOf());
+	}
+
+	HRESULT CreateLightGreaterDepthStencilState() {
+		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{};
+		depth_stencil_desc.DepthEnable = true;
+		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_GREATER;
+		depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO;
+
+		return GetRenderer().GetDevice().CreateDepthStencilState(&depth_stencil_desc, light_greater_dss_.GetAddressOf());
+	}
+
+	HRESULT CreateNoDepthDepthStencilState() {
+		D3D11_DEPTH_STENCIL_DESC depth_stencil_desc{};
+		depth_stencil_desc.DepthEnable = false;
+		depth_stencil_desc.DepthFunc = D3D11_COMPARISON_GREATER; // TODO: delete
+		depth_stencil_desc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // TODO: delete
+
+		return GetRenderer().GetDevice().CreateDepthStencilState(&depth_stencil_desc, light_greater_dss_.GetAddressOf());
 	}
 };

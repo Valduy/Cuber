@@ -71,7 +71,7 @@ PS_OUT PSMain(PS_IN input)
 	unpacked_normal = mul(unpacked_normal, TBN);
 
 	output.diff.rgb = DiffuseMap.Sample(Sampler, input.tex.xy).rgb;
-	output.diff.a = DiffuseMap.Sample(Sampler, input.tex.xy).r;
+	output.diff.a = SpecularMap.Sample(Sampler, input.tex.xy).r;
 	output.norm = float4(unpacked_normal, 0.0);
 	output.pos = input.world_pos;
 

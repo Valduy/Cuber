@@ -25,6 +25,6 @@ PS_IN VSMain(uint id : SV_VertexID)
 
 float4 PSMain(PS_IN input) : SV_Target
 {
-	float4 diffuse = normalize(Texture.Sample(Sampler, input.tex));
+	float4 diffuse = Texture.Sample(Sampler, input.tex);
 	return diffuse;
 }

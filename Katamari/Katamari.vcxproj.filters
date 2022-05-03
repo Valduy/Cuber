@@ -40,6 +40,12 @@
     <Filter Include="Header Files\Systems\Render\Update">
       <UniqueIdentifier>{84430da0-9bd1-481c-a3e3-cd7ef34b5a34}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Shaders\Defered">
+      <UniqueIdentifier>{f345da9b-e508-437d-aa13-6da6f3f4ff1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Systems\Render\Light">
+      <UniqueIdentifier>{06af57ad-d4a4-4b14-8929-e40c6d8eb486}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -76,6 +82,18 @@
     <None Include="Shaders\ForwardShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\PointLight.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\PointLight.hlsl" />
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\ForwardShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="Shaders\GeometryPassShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
@@ -86,12 +104,6 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\ShadowMapShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\ShadowMapShader.hlsl" />
-    <None Include="Shaders\PointLight.hlsl" />
-    <None Include="Shaders\ShadowMapShader.hlsl" />
-    <None Include="Shaders\**">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\**">
@@ -180,9 +192,6 @@
     <ClInclude Include="KatamariControllerComponent.h">
       <Filter>Header Files\Components\Gameplay</Filter>
     </ClInclude>
-    <ClInclude Include="DirectionLightSystem.h">
-      <Filter>Header Files\Systems\Render</Filter>
-    </ClInclude>
     <ClInclude Include="ForwardRenderSystem.h">
       <Filter>Header Files\Systems\Render</Filter>
     </ClInclude>
@@ -207,14 +216,14 @@
     <ClInclude Include="ModelComponent.h">
       <Filter>Header Files\Components\Render</Filter>
     </ClInclude>
-    <ClInclude Include="UpdateMaterialsSystem.h">
+    <ClInclude Include="UpdateModelRenderDataSystem.h">
       <Filter>Header Files\Systems\Render\Update</Filter>
     </ClInclude>
-    <ClInclude Include="UpdateMeshesSystem.h">
-      <Filter>Header Files\Systems\Render\Update</Filter>
+    <ClInclude Include="DirectionLightData.h">
+      <Filter>Header Files\ShaderData</Filter>
     </ClInclude>
-    <ClInclude Include="UpdateDnsMapsSystem.h">
-      <Filter>Header Files\Systems\Render\Update</Filter>
+    <ClInclude Include="UpdateLightSystem.h">
+      <Filter>Header Files\Systems\Render\Light</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -226,11 +235,14 @@
     <CopyFileToFolders Include="Shaders\ShadowMapDebugShader.hlsl">
       <Filter>Shaders</Filter>
     </CopyFileToFolders>
-    <CopyFileToFolders Include="Shaders\GeometryPassShader.hlsl">
-      <Filter>Shaders</Filter>
-    </CopyFileToFolders>
     <CopyFileToFolders Include="Shaders\FillShader.hlsl">
       <Filter>Shaders</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Shaders\GeometryPassShader.hlsl">
+      <Filter>Shaders\Defered</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Shaders\DirectionLightPassShader.hlsl">
+      <Filter>Shaders\Defered</Filter>
     </CopyFileToFolders>
   </ItemGroup>
 </Project>

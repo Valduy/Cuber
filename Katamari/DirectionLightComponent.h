@@ -12,6 +12,7 @@ public:
 	DirectX::SimpleMath::Matrix view_matrix;
 	DirectX::SimpleMath::Matrix projection_matrix;
 	graph::ShadowMap shadow_map;
+	graph::ConstantBuffer light_data_buffer;
 
 	DirectX::SimpleMath::Matrix GetLightMatrix() const {
 		return view_matrix * projection_matrix;

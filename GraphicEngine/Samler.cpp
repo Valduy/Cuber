@@ -1,14 +1,18 @@
 #include "pch.h"
 #include "Sampler.h"
 
-graph::Sampler::Sampler(D3D11_FILTER filter, unsigned int max_anisotropy)
+graph::Sampler::Sampler()
 	: renderer_(nullptr)
-	, filter_(filter)
-	, max_anisotropy_(max_anisotropy)
 	, sampler_state_(nullptr)
 {}
 
-HRESULT graph::Sampler::Init(Renderer* renderer) {
+HRESULT graph::Sampler::Init(
+	Renderer* renderer,
+	D3D11_TEXTURE_ADDRESS_MODE address_mode,
+	D3D11_FILTER filter,
+	D3D11_COMPARISON_FUNC comparison_func,
+	UINT max_anisotropy)
+{
 	renderer_ = renderer;
 
 	D3D11_SAMPLER_DESC sampler_desc = {};

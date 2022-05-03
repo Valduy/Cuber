@@ -9,7 +9,6 @@
 #include "ModelComponent.h"
 #include "MaterialComponent.h"
 #include "../Engine/TransformComponent.h"
-#include "../Engine/CameraComponent.h"
 #include "../Engine/Game.h"
 #include "../GraphicEngine/Shader.h"
 #include "../GraphicEngine/Sampler.h"
@@ -21,19 +20,6 @@ public:
 		DirectX::SimpleMath::Matrix light_world_view_proj;
 	};
 
-	struct LightData {
-		DirectX::SimpleMath::Vector3 view_position;
-		float dummy0;
-		DirectX::SimpleMath::Vector3 light_direction;
-		float dummy1;
-		DirectX::SimpleMath::Vector3 light_color;
-		float dummy2;
-	};
-
-	ForwardRenderSystem()
-		: sampler_(D3D11_FILTER_MIN_MAG_MIP_LINEAR, 0)
-	{}
-
 	void Init(engine::Game& game) override {
 		engine::Game::SystemBase::Init(game);
 
@@ -44,8 +30,13 @@ public:
 			&GetRenderer(), 
 			LayoutDescriptor::kPosition3Normal3Binormal3Tangent3Texture2,
 			L"Shaders/ForwardShader.hlsl");
-		sampler_.Init(&GetRenderer());
-		light_buffer.Init(&GetRenderer(), sizeof(LightData));
+
+		sampler_.Init(
+			&GetRenderer(),
+			D3D11_TEXTURE_ADDRESS_CLAMP,
+			D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+			D3D11_COMPARISON_ALWAYS,
+			0);
 				
 		for (auto it = GetIterator<TransformComponent, ModelComponent>(); it.HasCurrent(); it.Next()) {
 			auto& entity = it.Get();
@@ -55,23 +46,11 @@ public:
 	}
 
 	void Update(float dt) override {
-		auto camera_it = GetIterator<engine::CameraComponent>();
-		if (!camera_it.HasCurrent()) return;
-
-		auto& camera = camera_it.Get();
-		auto& camera_component = camera.Get<engine::CameraComponent>();
-
 		auto light_it = GetIterator<DirectionLightComponent>();
 		if (!light_it.HasCurrent()) return;
 
 		auto& light = light_it.Get();
 		auto& light_component = light.Get<DirectionLightComponent>();
-		
-		LightData light_data{};
-		light_data.view_position = camera_component.position;
-		light_data.light_direction = light_component.light_direction;
-		light_data.light_color = light_component.light_color;
-		light_buffer.Update(&light_data);
 
 		using namespace engine;
 		auto it = GetIterator<TransformComponent, ForwardRenderComponent>();
@@ -94,14 +73,9 @@ public:
 	void Render() override {
 		shader_.SetShader();
 		sampler_.SetSampler();
-		light_buffer.PSSetBuffer(3);
 
-		auto light_it = GetIterator<DirectionLightComponent>();
-		if (!light_it.HasCurrent()) return;
-
-		auto& light = light_it.Get();
-		auto& light_component = light.Get<DirectionLightComponent>();
-		light_component.shadow_map.SetTexture(1);
+		// Now I use only first direction light...
+		if (!TrySetLightData()) return;
 
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
@@ -136,5 +110,15 @@ public:
 private:
 	graph::Shader shader_;
 	graph::Sampler sampler_;
-	graph::ConstantBuffer light_buffer;
+
+	bool TrySetLightData() {
+		auto light_it = GetIterator<DirectionLightComponent>();
+		if (!light_it.HasCurrent()) return false;
+
+		auto& light = light_it.Get();
+		auto& light_component = light.Get<DirectionLightComponent>();
+		light_component.light_data_buffer.PSSetBuffer(3);
+		light_component.shadow_map.SetTexture(1);
+		return true;
+	}
 };

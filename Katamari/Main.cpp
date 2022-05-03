@@ -11,13 +11,11 @@
 #include "KatamariControllerSystem.h"
 #include "ForwardRenderSystem.h"
 #include "GeometryPassSystem.h"
-#include "DirectionLightSystem.h"
+#include "UpdateLightSystem.h"
 #include "ShadowMapDebugSystem.h"
 #include "ShadowMapRenderSystem.h"
 #include "StickingSystem.h"
-#include "UpdateMeshesSystem.h"
-#include "UpdateMaterialsSystem.h"
-#include "UpdateDnsMapsSystem.h"
+#include "UpdateModelRenderDataSystem.h"
 
 #include "CollisionComponent.h"
 #include "DirectionLightComponent.h"
@@ -247,7 +245,7 @@ ecs::Entity& SpawnDirectionLight(
 
 ecs::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 position) {
 	auto& plane = game.GetEntityManager().CreateEntity();
-	AddTransform(plane, position, { 0.0f, 0.0f, 0.0f }, { 15.0f, 1.0f, 15.0f });
+	AddTransform(plane, position, { 0.0f, 0.0f, 0.0f }, { 10.0f, 1.0f, 10.0f });
 	AttachModel(plane, plane_model);
 	AttachMaterial(plane, { 0.1f, 10.0f, 0.1f });
 	AttachDnsMaps(plane, plane_diffuse, plane_normal, plane_specular);
@@ -391,15 +389,13 @@ int main() {
 
 	//CameraSystem fps_camera_system;
 	KatamariCameraSystem camera_system;
-	DirectionLightSystem direction_light_system;
+	UpdateLightSystem direction_light_system;
 	KatamariControllerSystem katamari_controller_system;
 	StickingSystem sticking_system;
-	UpdateMeshesSystem update_meshes_system;
-	UpdateMaterialsSystem update_materials_system;
-	UpdateDnsMapsSystem update_dns_system;
+	UpdateModelRenderDataSystem update_model_render_data_system;
 	LinesRendererSystem lines_renderer_system;
 	ShadowMapRenderSystem shadow_system;
-	ForwardRenderSystem render_system;
+	ForwardRenderSystem forward_render_system;
 	ShadowMapDebugSystem shadow_debug_system;
 	GeometryPassSystem geometry_pass_system;
 
@@ -408,13 +404,11 @@ int main() {
 	game.PushSystem(direction_light_system);
 	game.PushSystem(katamari_controller_system);
 	game.PushSystem(sticking_system);
-	game.PushSystem(update_meshes_system);
-	game.PushSystem(update_materials_system);
-	game.PushSystem(update_dns_system);
-	game.PushSystem(lines_renderer_system);
-	game.PushSystem(shadow_system);
-	game.PushSystem(render_system);
-	game.PushSystem(shadow_debug_system);
+	game.PushSystem(update_model_render_data_system);
+	//game.PushSystem(lines_renderer_system);
+	//game.PushSystem(shadow_system);
+	//game.PushSystem(forward_render_system);
+	//game.PushSystem(shadow_debug_system);
 	game.PushSystem(geometry_pass_system);
 
 	auto& plane = DebugUtils::CreatePlane(game, 100, 100);

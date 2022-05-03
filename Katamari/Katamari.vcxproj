@@ -171,6 +171,7 @@
   <ItemGroup>
     <ClInclude Include="CollisionComponent.h" />
     <ClInclude Include="DirectionLightComponent.h" />
+    <ClInclude Include="DirectionLightData.h" />
     <ClInclude Include="ForwardRenderComponent.h" />
     <ClInclude Include="GBuffer.h" />
     <ClInclude Include="GeometryPassSystem.h" />
@@ -186,10 +187,8 @@
     <ClInclude Include="MaterialData.h" />
     <ClInclude Include="ModelTransformData.h" />
     <ClInclude Include="ForwardRenderSystem.h" />
-    <ClInclude Include="DirectionLightSystem.h" />
-    <ClInclude Include="UpdateDnsMapsSystem.h" />
-    <ClInclude Include="UpdateMaterialsSystem.h" />
-    <ClInclude Include="UpdateMeshesSystem.h" />
+    <ClInclude Include="UpdateLightSystem.h" />
+    <ClInclude Include="UpdateModelRenderDataSystem.h" />
     <ClInclude Include="ShadowComponent.h" />
     <ClInclude Include="ShadowMapDebugSystem.h" />
     <ClInclude Include="ShadowMapRenderSystem.h" />
@@ -211,6 +210,14 @@
       <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Shaders</DestinationFolders>
     </CopyFileToFolders>
     <CopyFileToFolders Include="Shaders\GeometryPassShader.hlsl">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
+      <FileType>Document</FileType>
+      <DestinationFolders Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(OutDir)/Shaders</DestinationFolders>
+    </CopyFileToFolders>
+  </ItemGroup>
+  <ItemGroup>
+    <CopyFileToFolders Include="Shaders\DirectionLightPassShader.hlsl">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
       <DeploymentContent Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</DeploymentContent>
       <FileType>Document</FileType>

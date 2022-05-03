@@ -8,9 +8,15 @@ namespace graph {
 
 class Sampler {
 public:
-	Sampler(D3D11_FILTER filter, unsigned int max_anisotropy);
+	Sampler();
 
-	HRESULT Init(Renderer* renderer);
+	HRESULT Init(
+		Renderer* renderer,
+		D3D11_TEXTURE_ADDRESS_MODE address_mode,
+		D3D11_FILTER filter,
+		D3D11_COMPARISON_FUNC comparison_func,
+		UINT max_anisotropy);
+
 	void SetSampler(unsigned int slot = 0);
 
 private:
