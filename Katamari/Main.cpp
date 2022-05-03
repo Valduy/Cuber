@@ -404,12 +404,12 @@ int main() {
 	game.PushSystem(update_light_system);
 	game.PushSystem(katamari_controller_system);
 	game.PushSystem(sticking_system);
-	game.PushSystem(update_model_render_data_system);
-	//game.PushSystem(lines_renderer_system);
+	game.PushSystem(update_model_render_data_system);	
 	//game.PushSystem(shadow_system);
 	//game.PushSystem(forward_render_system);
 	//game.PushSystem(shadow_debug_system);
 	game.PushSystem(deffered_render_system);
+	game.PushSystem(lines_renderer_system);
 
 	auto& plane = DebugUtils::CreatePlane(game, 100, 100);
 	auto& axis = DebugUtils::CreateAxis(game, 3.0f);
@@ -425,10 +425,10 @@ int main() {
 	auto& grass = SpawnPlane(game, { 0.0f, -0.5f, 0.0f });
 	SpawnItems(game);	
 
-	light_position = DirectX::SimpleMath::Vector3{ -15.0f, 6.0f, 0.0f };
-	light_direction = DirectX::SimpleMath::Vector3{ 1.0f, -2.0f, 0.0f };
-	light_direction.Normalize();
-	SpawnDirectionLight(game, light_position, light_direction, light_color);
+	//light_position = DirectX::SimpleMath::Vector3{ -15.0f, 6.0f, 0.0f };
+	//light_direction = DirectX::SimpleMath::Vector3{ 1.0f, -2.0f, 0.0f };
+	//light_direction.Normalize();
+	//SpawnDirectionLight(game, light_position, light_direction, light_color);
 
 	game.Run();
 	Release();

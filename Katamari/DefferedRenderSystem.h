@@ -155,6 +155,9 @@ private:
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 		GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
 		GetRenderer().GetContext().Draw(4, 0);
+
+		// Just because I want to return default depth stencil state...
+		GetRenderer().SetDefaultRenderTarget();
 	}
 
 	HRESULT CreateCullBackRasterizerState() {
