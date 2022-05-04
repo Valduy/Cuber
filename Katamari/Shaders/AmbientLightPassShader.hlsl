@@ -1,11 +1,11 @@
 struct LightData
 {
-	float3 view_position;
-	float dummy0;
-	float3 light_direction;
-	float dummy1;
 	float3 light_color;
+	float dummy0;
+	float intensity;
+	float dummy1;
 	float dummy2;
+	float dummy3;
 };
 
 cbuffer LightBuffer : register(b0)
@@ -61,23 +61,8 @@ GBufferData ReadGBuffer(float2 tex)
 float4 CalculateLight(GBufferData g_buffer)
 {
 	float3 color = g_buffer.diffuse.rgb;
-
-	// diffuse
-	float3 normal = normalize(g_buffer.normal);
-	float3 to_light_direction = -Light.light_direction;
-	float diff = saturate(dot(to_light_direction, normal));
-	if (diff <= 0) discard;
-	float3 diffuse = diff * Light.light_color;
-
-	// specular
-	float shininess = 50;
-	float3 view_direction = normalize(Light.view_position - g_buffer.pos);
-	float3 reflect_direction = normalize(reflect(Light.light_direction, normal));
-	float spec = pow(max(0.0, dot(view_direction, reflect_direction)), shininess);
-	float3 specular = g_buffer.specular * spec * Light.light_color;
-
-	float3 result = (diffuse + specular) * color.xyz;
-	return float4(result, 1.0f);
+	color = color * Light.light_color * Light.intensity;
+	return float4(color, 1.0f);
 }
 
 [earlydepthstencil]

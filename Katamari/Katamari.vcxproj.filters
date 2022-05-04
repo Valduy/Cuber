@@ -46,6 +46,9 @@
     <Filter Include="Header Files\Systems\Render\Light">
       <UniqueIdentifier>{06af57ad-d4a4-4b14-8929-e40c6d8eb486}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Components\Render\Light">
+      <UniqueIdentifier>{10f4b2f5-e7a9-4233-9e20-d01687762908}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -116,6 +119,15 @@
     <None Include="Shaders\ForwardShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\PointLight.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ForwardShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
     <None Include="Shaders\GeometryPassShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
@@ -129,9 +141,6 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\TonePassShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\**">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\PointLight.hlsl" />
@@ -179,9 +188,6 @@
     </ClInclude>
     <ClInclude Include="GBuffer.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DirectionLightComponent.h">
-      <Filter>Header Files\Components\Render</Filter>
     </ClInclude>
     <ClInclude Include="ForwardRenderComponent.h">
       <Filter>Header Files\Components\Render</Filter>
@@ -240,6 +246,15 @@
     <ClInclude Include="UpdateLightSystem.h">
       <Filter>Header Files\Systems\Render\Light</Filter>
     </ClInclude>
+    <ClInclude Include="AmbientLightData.h">
+      <Filter>Header Files\ShaderData</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectionLightComponent.h">
+      <Filter>Header Files\Components\Render\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="AmbientLightComponent.h">
+      <Filter>Header Files\Components\Render\Light</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -257,6 +272,9 @@
       <Filter>Shaders\Defered</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="Shaders\TonePassShader.hlsl">
+      <Filter>Shaders\Defered</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Shaders\AmbientLightPassShader.hlsl">
       <Filter>Shaders\Defered</Filter>
     </CopyFileToFolders>
   </ItemGroup>

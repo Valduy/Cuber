@@ -1,5 +1,6 @@
 #pragma once
 
+#include "AmbientLightComponent.h"
 #include "GBuffer.h"
 #include "../GraphicEngine/Shader.h"
 #include "../Engine/Game.h"
@@ -31,6 +32,11 @@ public:
 			&GetRenderer(), 
 			graph::LayoutDescriptor::kPosition3Normal3Binormal3Tangent3Texture2,
 			L"Shaders/GeometryPassShader.hlsl");
+
+		ambient_light_shader_.Init(
+			&GetRenderer(),
+			graph::LayoutDescriptor::kEmpty,
+			L"Shaders/AmbientLightPassShader.hlsl");
 
 		direction_light_shader_.Init(
 			&GetRenderer(),
@@ -66,7 +72,8 @@ public:
 private:
 	GBuffer g_buffer_;
 	graph::Shader opaque_shader_;
-	graph::Shader direction_light_shader_;
+	graph::Shader ambient_light_shader_;
+	graph::Shader direction_light_shader_;	
 	graph::Shader tone_pass_shader_;
 	graph::Sampler sampler_;
 
@@ -115,27 +122,10 @@ private:
 
 	void LightPass() {
 		GetRenderer().GetContext().OMSetBlendState(light_bs_.Get(), nullptr, 0xffffffff);
-		GetRenderer().GetContext().RSSetState(cull_back_rs_.Get());
-		GetRenderer().GetContext().OMSetDepthStencilState(light_less_dss_.Get(), 0);
-
-		// Light constant buffers...
-		
-		direction_light_shader_.SetShader();
 		g_buffer_.SetLightPassTargets();
-		sampler_.SetSampler();
-		g_buffer_.SetResources();		
 
-		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
-		GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
-
-		for (auto it = GetIterator<DirectionLightComponent>(); it.HasCurrent(); it.Next()) {
-			auto& light = it.Get();
-			auto& direction_light_component = light.Get<DirectionLightComponent>();
-			direction_light_component.light_data_buffer.PSSetBuffer(0);
-			GetRenderer().GetContext().Draw(4, 0);
-		}
-
-		// Draw all lights...
+		RenderAmbientLights();
+		RenderDirectionLights();
 	}
 
 	void TonePass() {
@@ -158,6 +148,42 @@ private:
 
 		// Just because I want to return default depth stencil state...
 		GetRenderer().SetDefaultRenderTarget();
+	}
+
+	void RenderAmbientLights() {
+		GetRenderer().GetContext().RSSetState(cull_back_rs_.Get());
+		GetRenderer().GetContext().OMSetDepthStencilState(light_less_dss_.Get(), 0);
+
+		ambient_light_shader_.SetShader();
+		g_buffer_.SetResources();
+
+		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
+
+		for (auto it = GetIterator<AmbientLightComponent>(); it.HasCurrent(); it.Next()) {
+			auto& light = it.Get();
+			auto& ambient_light_component = light.Get<AmbientLightComponent>();
+			ambient_light_component.light_data_buffer.PSSetBuffer(0);
+			GetRenderer().GetContext().Draw(4, 0);
+		}
+	}
+
+	void RenderDirectionLights() {
+		GetRenderer().GetContext().RSSetState(cull_back_rs_.Get());
+		GetRenderer().GetContext().OMSetDepthStencilState(light_less_dss_.Get(), 0);
+
+		direction_light_shader_.SetShader();		
+		g_buffer_.SetResources();
+
+		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+		GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
+
+		for (auto it = GetIterator<DirectionLightComponent>(); it.HasCurrent(); it.Next()) {
+			auto& light = it.Get();
+			auto& direction_light_component = light.Get<DirectionLightComponent>();
+			direction_light_component.light_data_buffer.PSSetBuffer(0);
+			GetRenderer().GetContext().Draw(4, 0);
+		}
 	}
 
 	HRESULT CreateCullBackRasterizerState() {

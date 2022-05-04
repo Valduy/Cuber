@@ -23,6 +23,7 @@
 #include "DnsMapsComponent.h"
 #include "ModelComponent.h"
 #include "MaterialComponent.h"
+#include "AmbientLightComponent.h";
 
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "dxgi.lib")
@@ -217,6 +218,18 @@ ecs::Entity& SpawnKatamari(engine::Game& game, ecs::Entity& camera) {
 	katamari_transform.AddChild(camera);
 	camera.Get<engine::TransformComponent>().SetLocalPosition({ 0.0, 5.0, -10.0 });
 	return katamari;
+}
+
+ecs::Entity& SpawnAmbientLight(
+	engine::Game& game,
+	DirectX::SimpleMath::Vector3 color, 
+	float intensity)
+{
+	auto& light = game.GetEntityManager().CreateEntity();
+	auto& ambient_light = light.Add<AmbientLightComponent>();
+	ambient_light.light_color = color;
+	ambient_light.intensity = intensity;
+	return light;
 }
 
 ecs::Entity& SpawnDirectionLight(
@@ -447,7 +460,8 @@ int main() {
 	light_direction.Normalize();
 
 	auto& camera = SpawnCamera(game);
-	auto& light = SpawnDirectionLight(game, light_position, light_direction, light_color);
+	auto& ambient_light = SpawnAmbientLight(game, { 1.0f, 1.0f, 1.0f }, 0.1f);
+	auto& direction_light = SpawnDirectionLight(game, light_position, light_direction, light_color);
 	auto& katamari = SpawnKatamari(game, camera);
 	auto& grass = SpawnPlane(game, { 0.0f, -0.5f, 0.0f });
 	SpawnItems(game);	

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "AmbientLightComponent.h"
+#include "AmbientLightData.h"
 #include "DirectionLightComponent.h"
 #include "DirectionLightData.h"
 #include "../Engine/Game.h"
@@ -8,6 +10,30 @@ class UpdateLightSystem : public engine::Game::SystemBase {
 public:
 	void Init(engine::Game& game) override {
 		engine::Game::SystemBase::Init(game);
+		InitAmbientLights();
+		InitDirectionLights();
+	}
+
+	void Update(float dt) override {
+		UpdateAmbientLights();
+		UpdateDirectionLights();
+	}
+
+private:
+	void InitAmbientLights() {
+		using namespace DirectX::SimpleMath;
+		using namespace engine;
+
+		auto it = GetIterator<AmbientLightComponent>();
+		for (; it.HasCurrent(); it.Next()) {
+			auto& light = it.Get();
+			auto& ambient_light_component = light.Get<AmbientLightComponent>();
+
+			ambient_light_component.light_data_buffer.Init(&GetRenderer(), sizeof(AmbientLightData));
+		}
+	}
+
+	void InitDirectionLights() {
 		using namespace DirectX::SimpleMath;
 		using namespace engine;
 
@@ -23,7 +49,23 @@ public:
 		}
 	}
 
-	void Update(float dt) override {
+	void UpdateAmbientLights() {
+		using namespace DirectX::SimpleMath;
+		using namespace engine;
+
+		auto it = GetIterator<AmbientLightComponent>();
+		for (; it.HasCurrent(); it.Next()) {
+			auto& light = it.Get();
+			auto& ambient_light_component = light.Get<AmbientLightComponent>();
+
+			AmbientLightData light_data{};
+			light_data.light_color = ambient_light_component.light_color;
+			light_data.intensity = ambient_light_component.intensity;
+			ambient_light_component.light_data_buffer.Update(&light_data);
+		}
+	}
+
+	void UpdateDirectionLights() {
 		auto camera_it = GetIterator<engine::CameraComponent>();
 		if (!camera_it.HasCurrent()) return;
 
@@ -46,7 +88,6 @@ public:
 		}
 	}
 
-private:
 	static void SetLookAtMatrix(
 		const engine::TransformComponent& transform_component,
 		DirectionLightComponent* direction_light_component)
