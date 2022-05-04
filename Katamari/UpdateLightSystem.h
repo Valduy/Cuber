@@ -34,6 +34,10 @@ public:
 			auto& light = it.Get();
 			auto& direction_light_component = light.Get<DirectionLightComponent>();
 
+			//auto rot = DirectX::SimpleMath::Matrix::CreateRotationY(dt);
+			//direction_light_component.light_direction = DirectX::SimpleMath::Vector3::Transform(direction_light_component.light_direction, rot);
+			//direction_light_component.light_direction.Normalize();
+
 			DirectionLightData light_data{};
 			light_data.view_position = camera_component.position;
 			light_data.light_direction = direction_light_component.light_direction;

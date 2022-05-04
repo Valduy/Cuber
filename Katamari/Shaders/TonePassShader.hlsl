@@ -25,6 +25,6 @@ PS_IN VSMain(uint id : SV_VertexID)
 
 float4 PSMain(PS_IN input) : SV_Target
 {
-	float4 diffuse = Texture.Sample(Sampler, input.tex);
-	return diffuse;
+	float3 result = Texture.Sample(Sampler, input.tex).rgb;
+	return pow(float4(result, 1.0f), 1 / 2.2f);
 }

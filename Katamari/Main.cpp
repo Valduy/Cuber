@@ -33,31 +33,31 @@ engine::Model apricot_model;
 engine::Model pear_model;
 engine::Model pumpkin_model;
 engine::Model apple_model;
-engine::Model plane_model;
+engine::Model tile_model;
 
 DirectX::ScratchImage apricot_diffuse;
 DirectX::ScratchImage pear_diffuse;
 DirectX::ScratchImage pumpkin_diffuse;
 DirectX::ScratchImage apple_diffuse;
-DirectX::ScratchImage plane_diffuse;
+DirectX::ScratchImage tile_diffuse;
 
 DirectX::ScratchImage apricot_normal;
 DirectX::ScratchImage pear_normal;
 DirectX::ScratchImage pumpkin_normal;
 DirectX::ScratchImage apple_normal;
-DirectX::ScratchImage plane_normal;
+DirectX::ScratchImage tile_normal;
 
 DirectX::ScratchImage apricot_specular;
 DirectX::ScratchImage pear_specular;
 DirectX::ScratchImage pumpkin_specular;
 DirectX::ScratchImage apple_specular;
-DirectX::ScratchImage plane_specular;
+DirectX::ScratchImage tile_specular;
 
 engine::TransformComponent& AddTransform(
 	ecs::Entity& entity,
 	DirectX::SimpleMath::Vector3 position,
-	DirectX::SimpleMath::Vector3 euler,
-	DirectX::SimpleMath::Vector3 scale)
+	DirectX::SimpleMath::Vector3 euler = { 0.0f, 0.0f, 0.0f },
+	DirectX::SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f })
 {
 	auto& transform_component = entity.Add<engine::TransformComponent>();
 	transform_component.SetPosition(position);
@@ -243,12 +243,39 @@ ecs::Entity& SpawnDirectionLight(
 	return light;
 }
 
+ecs::Entity& SpawnTile(
+	engine::Game& game, 
+	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
+	DirectX::SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f })
+{
+	auto& tile = game.GetEntityManager().CreateEntity();
+	AddTransform(tile, position, { 0.0f, 0.0f, 0.0f }, scale);
+	AttachModel(tile, tile_model);
+	AttachMaterial(tile, { 0.1f, 10.0f, 0.1f });
+	AttachDnsMaps(tile, tile_diffuse, tile_normal, tile_specular);
+	return tile;
+}
+
+
 ecs::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 position) {
+	using namespace DirectX::SimpleMath;
 	auto& plane = game.GetEntityManager().CreateEntity();
-	AddTransform(plane, position, { 0.0f, 0.0f, 0.0f }, { 10.0f, 10.0f, 10.0f });
-	AttachModel(plane, plane_model);
-	AttachMaterial(plane, { 0.1f, 10.0f, 0.1f });
-	AttachDnsMaps(plane, plane_diffuse, plane_normal, plane_specular);
+	auto& plane_transform = AddTransform(plane, position);
+	constexpr int ratio = 3;
+	constexpr int half_ratio = ratio / 2;
+	constexpr float tile_size = 4;
+	
+	for (int i = 0; i < ratio; ++i) {
+		for (int j = 0; j < ratio; ++j) {
+			const float local_x = tile_size * (i - half_ratio) * 2;
+			const float local_z = tile_size * (j - half_ratio) * 2;
+			auto& tile = SpawnTile(game, {}, { tile_size, 1.0f, tile_size });
+			auto& tile_transform = tile.Get<engine::TransformComponent>();
+			plane_transform.AddChild(tile);
+			tile_transform.SetLocalPosition(Vector3{ local_x, 0, local_z });
+		}		
+	}
+
 	return plane;
 }
 
@@ -268,7 +295,7 @@ HRESULT LoadModels() {
 	if (result = Model::Load(apple_model, "../Content/Apple/Apple.obj"); FAILED(result)) {
 		return result;
 	}
-	if (result = Model::Load(plane_model, "../Content/Plane/Plane.obj"); FAILED(result)) {
+	if (result = Model::Load(tile_model, "../Content/Plane/Plane.obj"); FAILED(result)) {
 		return result;
 	}
 
@@ -279,19 +306,19 @@ HRESULT LoadDiffuse() {
 	using namespace engine;
 	HRESULT result;
 
-	if (result = TextureLoader::LoadWic(L"../Content/Apricot/Apricot_Diffuse.png", &apricot_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWicSrgb(L"../Content/Apricot/Apricot_Diffuse.png", &apricot_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Pear/Pear_Diffuse.jpg", &pear_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWicSrgb(L"../Content/Pear/Pear_Diffuse.jpg", &pear_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Pumpkin/Pumpkin_Diffuse.jpg", &pumpkin_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWicSrgb(L"../Content/Pumpkin/Pumpkin_Diffuse.jpg", &pumpkin_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Apple/Apple_Diffuse.jpg", &apple_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWicSrgb(L"../Content/Apple/Apple_Diffuse.jpg", &apple_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Plane/Plane_Diffuse.jpg", &plane_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWicSrgb(L"../Content/Plane/Plane_Diffuse.jpg", &tile_diffuse); FAILED(result)) {
 		return result;
 	}
 
@@ -314,7 +341,7 @@ HRESULT LoadNormal() {
 	if (result = TextureLoader::LoadWic(L"../Content/Apple/Apple_Normal.jpg", &apple_normal); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Plane/Plane_Normal.jpg", &plane_normal); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"../Content/Plane/Plane_Normal.jpg", &tile_normal); FAILED(result)) {
 		return result;
 	}
 
@@ -338,7 +365,7 @@ HRESULT LoadSpecular() {
 		return result;
 	}
 	// Use apple normals just because...
-	if (result = TextureLoader::LoadWic(L"../Content/Apple/Apple_Specular.jpg", &plane_specular); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"../Content/Apple/Apple_Specular.jpg", &tile_specular); FAILED(result)) {
 		return result;
 	} 
 
@@ -350,19 +377,19 @@ void Release() {
 	pear_diffuse.Release();
 	pumpkin_diffuse.Release();
 	apple_diffuse.Release();
-	plane_diffuse.Release();
+	tile_diffuse.Release();
 
 	apricot_normal.Release();
 	pear_normal.Release();
 	pumpkin_normal.Release();
 	apple_normal.Release();
-	plane_normal.Release();
+	tile_normal.Release();
 
 	apricot_specular.Release();
 	pear_specular.Release();
 	pumpkin_specular.Release();
 	apple_specular.Release();
-	plane_specular.Release();
+	tile_specular.Release();
 }
 
 int main() {

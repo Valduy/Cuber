@@ -76,7 +76,7 @@ float4 CalculateLight(GBufferData g_buffer)
 	float spec = pow(max(0.0, dot(view_direction, reflect_direction)), shininess);
 	float3 specular = g_buffer.specular * spec * Light.light_color;
 
-	float3 result = (0.1 + diffuse + specular) * color.xyz;
+	float3 result = (diffuse + specular) * color.xyz;
 	return float4(result, 1.0f);
 }
 

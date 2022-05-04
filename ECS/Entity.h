@@ -12,7 +12,7 @@ class Entity {
 public:
 	class ComponentBase {
 	public:
-		Entity& GetOwner() {
+		Entity& GetOwner() const {
 			assert(owner_ != nullptr && "Component isn't initialized.");
 			return *owner_;
 		}
