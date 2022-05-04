@@ -31,25 +31,25 @@
 
 engine::Model apricot_model;
 engine::Model pear_model;
-engine::Model pumpkin_model;
+engine::Model statuette_model;
 engine::Model apple_model;
 engine::Model tile_model;
 
 DirectX::ScratchImage apricot_diffuse;
 DirectX::ScratchImage pear_diffuse;
-DirectX::ScratchImage pumpkin_diffuse;
+DirectX::ScratchImage statuette_diffuse;
 DirectX::ScratchImage apple_diffuse;
 DirectX::ScratchImage tile_diffuse;
 
 DirectX::ScratchImage apricot_normal;
 DirectX::ScratchImage pear_normal;
-DirectX::ScratchImage pumpkin_normal;
+DirectX::ScratchImage statuette_normal;
 DirectX::ScratchImage apple_normal;
 DirectX::ScratchImage tile_normal;
 
 DirectX::ScratchImage apricot_specular;
 DirectX::ScratchImage pear_specular;
-DirectX::ScratchImage pumpkin_specular;
+DirectX::ScratchImage statuette_specular;
 DirectX::ScratchImage apple_specular;
 DirectX::ScratchImage tile_specular;
 
@@ -145,19 +145,19 @@ ecs::Entity& SpawnPear(
 	return pear;
 }
 
-ecs::Entity& SpawnPumpkin(
+ecs::Entity& SpawnStatuette(
 	engine::Game& game,
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	auto& pumpkin = game.GetEntityManager().CreateEntity();
-	AddTransform(pumpkin, position, rotation, { 3.0f, 3.0f, 3.0f });
-	AttachModel(pumpkin, pumpkin_model);
-	AttachMaterial(pumpkin, { 0.1f, 32.0f, 0.75f });
-	AttachDnsMaps(pumpkin, pumpkin_diffuse, pumpkin_normal, pumpkin_specular);
-	AttachSphere(game, pumpkin, 0.5f, { 0.0f, 0.3f, 0.0f });
-	pumpkin.Add<ItemComponent>();
-	return pumpkin;
+	auto& statuette = game.GetEntityManager().CreateEntity();
+	AddTransform(statuette, position, rotation, { 0.3f, 0.3f, 0.3f });
+	AttachModel(statuette, statuette_model);
+	AttachMaterial(statuette, { 0.1f, 32.0f, 0.75f });
+	AttachDnsMaps(statuette, statuette_diffuse, statuette_normal, statuette_specular);
+	AttachSphere(game, statuette, 5.0f, { 0.0f, 5.0f, 0.0f });
+	statuette.Add<ItemComponent>();
+	return statuette;
 }
 
 void SpawnItems(engine::Game& game) {
@@ -168,11 +168,11 @@ void SpawnItems(engine::Game& game) {
 	std::mt19937 rng(dev());
 	const std::uniform_int_distribution<std::mt19937::result_type> dist(0, max);
 
-	constexpr int pumpkin_count = 5;
-	for (int i = 0; i < pumpkin_count; ++i) {
+	constexpr int statuette_count = 5;
+	for (int i = 0; i < statuette_count; ++i) {
 		int x = min + dist(rng);
 		int y = min + dist(rng);
-		SpawnPumpkin(game, { static_cast<float>(x), -0.5f, static_cast<float>(y) });
+		SpawnStatuette(game, { static_cast<float>(x), -0.5f, static_cast<float>(y) });
 	}
 
 	constexpr int pear_count = 10;
@@ -283,19 +283,19 @@ HRESULT LoadModels() {
 	using namespace engine;
 	HRESULT result;
 
-	if (result = Model::Load(apricot_model, "../Content/Apricot/Apricot.obj"); FAILED(result)) {
+	if (result = Model::Load(apricot_model, "Content/Apricot/Apricot.obj"); FAILED(result)) {
 		return result;
 	}
-	if (result = Model::Load(pear_model, "../Content/Pear/Pear.obj"); FAILED(result)) {
+	if (result = Model::Load(pear_model, "Content/Pear/Pear.obj"); FAILED(result)) {
 		return result;
 	}
-	if (result = Model::Load(pumpkin_model, "../Content/Pumpkin/Pumpkin.obj"); FAILED(result)) {
+	if (result = Model::Load(statuette_model, "Content/Statuette/Statuette.obj"); FAILED(result)) {
 		return result;
 	}
-	if (result = Model::Load(apple_model, "../Content/Apple/Apple.obj"); FAILED(result)) {
+	if (result = Model::Load(apple_model, "Content/Apple/Apple.obj"); FAILED(result)) {
 		return result;
 	}
-	if (result = Model::Load(tile_model, "../Content/Plane/Plane.obj"); FAILED(result)) {
+	if (result = Model::Load(tile_model, "Content/Plane/Plane.obj"); FAILED(result)) {
 		return result;
 	}
 
@@ -306,19 +306,19 @@ HRESULT LoadDiffuse() {
 	using namespace engine;
 	HRESULT result;
 
-	if (result = TextureLoader::LoadWicSrgb(L"../Content/Apricot/Apricot_Diffuse.png", &apricot_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWicSrgb(L"Content/Apricot/Apricot_Diffuse.png", &apricot_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWicSrgb(L"../Content/Pear/Pear_Diffuse.jpg", &pear_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWicSrgb(L"Content/Pear/Pear_Diffuse.jpg", &pear_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWicSrgb(L"../Content/Pumpkin/Pumpkin_Diffuse.jpg", &pumpkin_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWicSrgb(L"Content/Statuette/Statuette_Diffuse.png", &statuette_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWicSrgb(L"../Content/Apple/Apple_Diffuse.jpg", &apple_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWicSrgb(L"Content/Apple/Apple_Diffuse.jpg", &apple_diffuse); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWicSrgb(L"../Content/Plane/Plane_Diffuse.jpg", &tile_diffuse); FAILED(result)) {
+	if (result = TextureLoader::LoadWicSrgb(L"Content/Plane/Plane_Diffuse.jpg", &tile_diffuse); FAILED(result)) {
 		return result;
 	}
 
@@ -329,19 +329,19 @@ HRESULT LoadNormal() {
 	using namespace engine;
 	HRESULT result;
 
-	if (result = TextureLoader::LoadWic(L"../Content/Apricot/Apricot_Normal.png", &apricot_normal); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"Content/Apricot/Apricot_Normal.png", &apricot_normal); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Pear/Pear_Normal.jpg", &pear_normal); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"Content/Pear/Pear_Normal.jpg", &pear_normal); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Pumpkin/Pumpkin_Normal.jpg", &pumpkin_normal); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"Content/Statuette/Statuette_Normal.png", &statuette_normal); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Apple/Apple_Normal.jpg", &apple_normal); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"Content/Apple/Apple_Normal.jpg", &apple_normal); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Plane/Plane_Normal.jpg", &tile_normal); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"Content/Plane/Plane_Normal.jpg", &tile_normal); FAILED(result)) {
 		return result;
 	}
 
@@ -352,20 +352,20 @@ HRESULT LoadSpecular() {
 	using namespace engine;
 	HRESULT result;
 
-	if (result = TextureLoader::LoadWic(L"../Content/Apricot/Apricot_Specular.png", &apricot_specular); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"Content/Apricot/Apricot_Specular.png", &apricot_specular); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Pear/Pear_Specular.jpg", &pear_specular); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"Content/Pear/Pear_Specular.jpg", &pear_specular); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Pumpkin/Pumpkin_Specular.jpg", &pumpkin_specular); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"Content/Statuette/Statuette_Specular.png", &statuette_specular); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"../Content/Apple/Apple_Specular.jpg", &apple_specular); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"Content/Apple/Apple_Specular.jpg", &apple_specular); FAILED(result)) {
 		return result;
 	}
-	// Use apple normals just because...
-	if (result = TextureLoader::LoadWic(L"../Content/Apple/Apple_Specular.jpg", &tile_specular); FAILED(result)) {
+	// Use apple specular just because...
+	if (result = TextureLoader::LoadWic(L"Content/Apple/Apple_Specular.jpg", &tile_specular); FAILED(result)) {
 		return result;
 	} 
 
@@ -375,19 +375,19 @@ HRESULT LoadSpecular() {
 void Release() {	
 	apricot_diffuse.Release();
 	pear_diffuse.Release();
-	pumpkin_diffuse.Release();
+	statuette_diffuse.Release();
 	apple_diffuse.Release();
 	tile_diffuse.Release();
 
 	apricot_normal.Release();
 	pear_normal.Release();
-	pumpkin_normal.Release();
+	statuette_normal.Release();
 	apple_normal.Release();
 	tile_normal.Release();
 
 	apricot_specular.Release();
 	pear_specular.Release();
-	pumpkin_specular.Release();
+	statuette_specular.Release();
 	apple_specular.Release();
 	tile_specular.Release();
 }

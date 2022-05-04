@@ -100,9 +100,19 @@
     <None Include="Shaders\ShadowMapShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\FillShader.hlsl">
+    <None Include="Shaders\ForwardShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="Shaders\PointLight.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\PointLight.hlsl" />
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\PointLight.hlsl" />
+    <None Include="Shaders\ShadowMapShader.hlsl" />
     <None Include="Shaders\ForwardShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
@@ -118,11 +128,7 @@
     <None Include="Shaders\ShadowMapShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\PointLight.hlsl" />
-    <None Include="Shaders\ShadowMapShader.hlsl" />
-    <None Include="Shaders\PointLight.hlsl" />
-    <None Include="Shaders\ShadowMapShader.hlsl" />
-    <None Include="Shaders\**">
+    <None Include="Shaders\TonePassShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\**">
