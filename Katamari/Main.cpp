@@ -479,24 +479,22 @@ int main() {
 
 	auto& plane = DebugUtils::CreatePlane(game, 100, 100);
 	auto& axis = DebugUtils::CreateAxis(game, 3.0f);
-
-	DirectX::SimpleMath::Vector3 light_position = { 15.0f, 6.0f, 0.0f };
-	DirectX::SimpleMath::Vector3 light_direction = {-1.0f, -2.0f, 0.0f };
-	DirectX::SimpleMath::Vector3 light_color = { 1.0f, 1.0f, 1.0f };
-	light_direction.Normalize();
-
+	
 	auto& camera = SpawnCamera(game);
-	auto& ambient_light = SpawnAmbientLight(game, { 1.0f, 1.0f, 1.0f }, 0.05f);
-	//auto& direction_light = SpawnDirectionLight(game, light_position, light_direction, light_color);
-	auto& point_light = SpawnPointLight(game, { 6.0f, 1.0f, 6.0f }, { 1.0f, 1.0f, 1.0f }, 4);
 	auto& katamari = SpawnKatamari(game, camera);
 	auto& grass = SpawnPlane(game, { 0.0f, -0.5f, 0.0f });
+
 	SpawnItems(game);	
 
-	//light_position = DirectX::SimpleMath::Vector3{ -15.0f, 6.0f, 0.0f };
-	//light_direction = DirectX::SimpleMath::Vector3{ 1.0f, -2.0f, 0.0f };
-	//light_direction.Normalize();
-	//SpawnDirectionLight(game, light_position, light_direction, light_color);
+	auto& ambient_light = SpawnAmbientLight(game, { 1.0f, 1.0f, 1.0f }, 0.01f);
+
+	DirectX::SimpleMath::Vector3 light_position = { 15.0f, 6.0f, 0.0f };
+	DirectX::SimpleMath::Vector3 light_direction = { -1.0f, -2.0f, 0.0f };
+	light_direction.Normalize();
+	auto& direction_light = SpawnDirectionLight(game, light_position, light_direction, { 0.2f, 0.0f, 0.2f });
+
+	auto& point_light1 = SpawnPointLight(game, { 6.0f, 1.0f, 6.0f }, { 1.0f, 1.0f, 1.0f }, 4);
+	auto& point_light2 = SpawnPointLight(game, { -6.0f, 1.0f, -6.0f }, { 1.0f, 1.0f, 1.0f }, 4);
 
 	game.Run();
 	Release();
