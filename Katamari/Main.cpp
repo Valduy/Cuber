@@ -30,6 +30,8 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
+engine::Model icosphere_model;
+
 engine::Model apricot_model;
 engine::Model pear_model;
 engine::Model statuette_model;
@@ -256,6 +258,27 @@ ecs::Entity& SpawnDirectionLight(
 	return light;
 }
 
+ecs::Entity& SpawnPointLight(
+	engine::Game& game,
+	DirectX::SimpleMath::Vector3 position,
+	DirectX::SimpleMath::Vector3 color,
+	float fade_radius)
+{
+	auto& light = game.GetEntityManager().CreateEntity();
+	auto& light_transform = AddTransform(light, position);
+	AttachModel(light, icosphere_model);
+	light_transform.SetScale({ fade_radius, fade_radius, fade_radius });
+
+	auto& point_light = light.Add<PointLightComponent>();
+	point_light.light_color = color;
+	point_light.fade_radius = fade_radius;
+
+	auto& sphere = engine::DebugUtils::CreateSphere(game, 1, { 1.0f, 1.0f, 1.0f, 0.0f });
+	light_transform.AddChild(sphere);
+
+	return light;
+}
+
 ecs::Entity& SpawnTile(
 	engine::Game& game, 
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
@@ -296,6 +319,9 @@ HRESULT LoadModels() {
 	using namespace engine;
 	HRESULT result;
 
+	if (result = Model::Load(icosphere_model, "Content/Primitives/Icosphere.obj"); FAILED(result)) {
+		return result;
+	}
 	if (result = Model::Load(apricot_model, "Content/Apricot/Apricot.obj"); FAILED(result)) {
 		return result;
 	}
@@ -354,7 +380,7 @@ HRESULT LoadNormal() {
 	if (result = TextureLoader::LoadWic(L"Content/Apple/Apple_Normal.jpg", &apple_normal); FAILED(result)) {
 		return result;
 	}
-	if (result = TextureLoader::LoadWic(L"Content/Plane/Plane_Normal.jpg", &tile_normal); FAILED(result)) {
+	if (result = TextureLoader::LoadWic(L"Content/Plane/Plane_Normal.png", &tile_normal); FAILED(result)) {
 		return result;
 	}
 
@@ -460,8 +486,9 @@ int main() {
 	light_direction.Normalize();
 
 	auto& camera = SpawnCamera(game);
-	auto& ambient_light = SpawnAmbientLight(game, { 1.0f, 1.0f, 1.0f }, 0.1f);
-	auto& direction_light = SpawnDirectionLight(game, light_position, light_direction, light_color);
+	auto& ambient_light = SpawnAmbientLight(game, { 1.0f, 1.0f, 1.0f }, 0.05f);
+	//auto& direction_light = SpawnDirectionLight(game, light_position, light_direction, light_color);
+	auto& point_light = SpawnPointLight(game, { 6.0f, 1.0f, 6.0f }, { 1.0f, 1.0f, 1.0f }, 4);
 	auto& katamari = SpawnKatamari(game, camera);
 	auto& grass = SpawnPlane(game, { 0.0f, -0.5f, 0.0f });
 	SpawnItems(game);	

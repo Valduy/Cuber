@@ -2,6 +2,7 @@
 
 #include "AmbientLightComponent.h"
 #include "GBuffer.h"
+#include "PointLightComponent.h"
 #include "../GraphicEngine/Shader.h"
 #include "../Engine/Game.h"
 
@@ -43,6 +44,11 @@ public:
 			graph::LayoutDescriptor::kEmpty,
 			L"Shaders/DirectionLightPassShader.hlsl");
 
+		point_light_shader_.Init(
+			&GetRenderer(),
+			graph::LayoutDescriptor::kPosition3Normal3Binormal3Tangent3Texture2,
+			L"Shaders/PointLightPassShader.hlsl");
+
 		tone_pass_shader_.Init(
 			&GetRenderer(),
 			graph::LayoutDescriptor::kEmpty,
@@ -74,6 +80,7 @@ private:
 	graph::Shader opaque_shader_;
 	graph::Shader ambient_light_shader_;
 	graph::Shader direction_light_shader_;	
+	graph::Shader point_light_shader_;	
 	graph::Shader tone_pass_shader_;
 	graph::Sampler sampler_;
 
@@ -126,6 +133,7 @@ private:
 
 		RenderAmbientLights();
 		RenderDirectionLights();
+		RenderPointLights();
 	}
 
 	void TonePass() {
@@ -183,6 +191,32 @@ private:
 			auto& direction_light_component = light.Get<DirectionLightComponent>();
 			direction_light_component.light_data_buffer.PSSetBuffer(0);
 			GetRenderer().GetContext().Draw(4, 0);
+		}
+	}
+
+	void RenderPointLights() {
+		GetRenderer().GetContext().RSSetState(cull_front_rs_.Get());
+		GetRenderer().GetContext().OMSetDepthStencilState(light_greater_dss_.Get(), 0);
+
+		point_light_shader_.SetShader();
+		g_buffer_.SetResources();
+
+		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		auto it = GetIterator<ModelComponent, PointLightComponent>();
+		for (; it.HasCurrent(); it.Next()) {
+			auto& light = it.Get();
+			auto& model_component = light.Get<ModelComponent>();
+			auto& point_light_component = light.Get<PointLightComponent>();
+			model_component.transform_buffer.VSSetBuffer(0);
+			point_light_component.light_data_buffer.PSSetBuffer(1);
+
+			for (MeshBuffers& mesh_buffers : model_component.model_buffers) {
+				mesh_buffers.vertex_buffer.SetBuffer(sizeof(engine::Vertex));
+				mesh_buffers.index_buffer.SetBuffer();
+				GetRenderer().GetContext().DrawIndexed(
+					mesh_buffers.index_buffer.GetSize(), 0, 0);
+			}
 		}
 	}
 

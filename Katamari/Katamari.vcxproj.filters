@@ -128,7 +128,19 @@
     <None Include="Shaders\ForwardShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\GeometryPassShader.hlsl">
+    <None Include="Shaders\PointLight.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\PointLight.hlsl" />
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\PointLight.hlsl" />
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\PointLight.hlsl" />
+    <None Include="Shaders\ShadowMapShader.hlsl" />
+    <None Include="Shaders\ForwardShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\PointLight.hlsl">
@@ -140,20 +152,6 @@
     <None Include="Shaders\ShadowMapShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\TonePassShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
-    <None Include="Shaders\PointLight.hlsl" />
-    <None Include="Shaders\ShadowMapShader.hlsl" />
-    <None Include="Shaders\PointLight.hlsl" />
-    <None Include="Shaders\ShadowMapDebugShader.hlsl" />
-    <None Include="Shaders\ShadowMapShader.hlsl" />
-    <None Include="Shaders\PointLight.hlsl" />
-    <None Include="Shaders\ShadowMapDebugShader.hlsl" />
-    <None Include="Shaders\ShadowMapShader.hlsl" />
-    <None Include="Shaders\**">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Shaders\PointLight.hlsl">
       <Filter>Shaders</Filter>
     </None>
@@ -163,7 +161,16 @@
     <None Include="Shaders\ShadowMapShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\**">
+    <None Include="Shaders\ForwardShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\PointLight.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapDebugShader.hlsl">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Shaders\ShadowMapShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
     <None Include="Shaders\ForwardShader.hlsl">
@@ -255,6 +262,12 @@
     <ClInclude Include="AmbientLightComponent.h">
       <Filter>Header Files\Components\Render\Light</Filter>
     </ClInclude>
+    <ClInclude Include="PointLightComponent.h">
+      <Filter>Header Files\Components\Render\Light</Filter>
+    </ClInclude>
+    <ClInclude Include="PointLightData.h">
+      <Filter>Header Files\ShaderData</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
@@ -275,6 +288,9 @@
       <Filter>Shaders\Defered</Filter>
     </CopyFileToFolders>
     <CopyFileToFolders Include="Shaders\AmbientLightPassShader.hlsl">
+      <Filter>Shaders\Defered</Filter>
+    </CopyFileToFolders>
+    <CopyFileToFolders Include="Shaders\PointLightPassShader.hlsl">
       <Filter>Shaders\Defered</Filter>
     </CopyFileToFolders>
   </ItemGroup>

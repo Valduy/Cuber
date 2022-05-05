@@ -3,9 +3,7 @@ struct LightData
 	float3 light_color;
 	float dummy0;
 	float intensity;
-	float dummy1;
-	float dummy2;
-	float dummy3;
+	float3 dummy1;
 };
 
 cbuffer LightBuffer : register(b0)
