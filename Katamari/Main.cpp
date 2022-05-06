@@ -297,9 +297,9 @@ ecs::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 positio
 	using namespace DirectX::SimpleMath;
 	auto& plane = game.GetEntityManager().CreateEntity();
 	auto& plane_transform = AddTransform(plane, position);
-	constexpr int ratio = 3;
+	constexpr int ratio = 5;
 	constexpr int half_ratio = ratio / 2;
-	constexpr float tile_size = 4;
+	constexpr float tile_size = 2;
 	
 	for (int i = 0; i < ratio; ++i) {
 		for (int j = 0; j < ratio; ++j) {
@@ -493,8 +493,8 @@ int main() {
 	light_direction.Normalize();
 	auto& direction_light = SpawnDirectionLight(game, light_position, light_direction, { 0.2f, 0.0f, 0.2f });
 
-	auto& point_light1 = SpawnPointLight(game, { 6.0f, 1.0f, 6.0f }, { 1.0f, 1.0f, 1.0f }, 4);
-	auto& point_light2 = SpawnPointLight(game, { -6.0f, 1.0f, -6.0f }, { 1.0f, 1.0f, 1.0f }, 4);
+	auto& point_light1 = SpawnPointLight(game, { 6.0f, 1.0f, 6.0f }, { 0.6f, 0.6f, 0.6f }, 4);
+	auto& point_light2 = SpawnPointLight(game, { -6.0f, 1.0f, -6.0f }, { 0.6f, 0.6f, 0.6f }, 4);
 
 	game.Run();
 	Release();

@@ -21,8 +21,6 @@ public:
 
 private:
 	Renderer* renderer_;
-	D3D11_FILTER filter_;
-	unsigned int max_anisotropy_;
 
 	Microsoft::WRL::ComPtr<ID3D11SamplerState> sampler_state_;
 };
