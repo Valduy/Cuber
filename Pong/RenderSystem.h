@@ -43,8 +43,8 @@ public:
 			IndexBuffer ib(shape_component.indexes.data(), shape_component.indexes.size());
 			ib.Init(&GetRenderer());
 
-			ConstantBuffer cb(sizeof(ConstData));
-			cb.Init(&GetRenderer());
+			ConstantBuffer cb;
+			cb.Init(&GetRenderer(), sizeof(ConstData));
 
 			entity.Add<RenderComponent>([&] {
 				return new RenderComponent(vertices, vb, ib, cb);
