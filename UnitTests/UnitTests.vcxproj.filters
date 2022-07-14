@@ -8,6 +8,18 @@
     <ClCompile Include="SignerTests.cpp">
       <Filter>ECS</Filter>
     </ClCompile>
+    <ClCompile Include="TypeTests.cpp">
+      <Filter>Ash</Filter>
+    </ClCompile>
+    <ClCompile Include="SignatureTests.cpp">
+      <Filter>Ash</Filter>
+    </ClCompile>
+    <ClCompile Include="FamilyTests.cpp">
+      <Filter>Ash</Filter>
+    </ClCompile>
+    <ClCompile Include="EntityTests.cpp">
+      <Filter>Ash</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -15,6 +27,9 @@
   <ItemGroup>
     <Filter Include="ECS">
       <UniqueIdentifier>{052d31af-d40e-4d39-8d43-bc844b246431}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ash">
+      <UniqueIdentifier>{be8a7630-f925-4145-b3c4-670fe6894539}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
