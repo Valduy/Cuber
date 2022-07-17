@@ -13,14 +13,8 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="Header Files\Ash">
-      <UniqueIdentifier>{d5f03d67-a0af-4050-b164-b31770913497}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Ash">
-      <UniqueIdentifier>{38c49cee-af9d-4923-a1e9-bcc55e56efed}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\Ash\Family">
-      <UniqueIdentifier>{e5556863-ab1c-4807-b870-7e4d87d6c4ba}</UniqueIdentifier>
+    <Filter Include="Header Files\Event">
+      <UniqueIdentifier>{8b13e392-c134-4fe7-9c7e-cfc6affc162b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -30,37 +24,25 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Entity.h">
-      <Filter>Header Files\Ash</Filter>
+    <ClInclude Include="Delegate.h">
+      <Filter>Header Files\Event</Filter>
     </ClInclude>
-    <ClInclude Include="Type.h">
-      <Filter>Header Files\Ash</Filter>
+    <ClInclude Include="EventHandler.h">
+      <Filter>Header Files\Event</Filter>
     </ClInclude>
-    <ClInclude Include="Signature.h">
-      <Filter>Header Files\Ash</Filter>
+    <ClInclude Include="IEventHandler.h">
+      <Filter>Header Files\Event</Filter>
     </ClInclude>
-    <ClInclude Include="EntityManager.h">
-      <Filter>Header Files\Ash</Filter>
-    </ClInclude>
-    <ClInclude Include="IFamily.h">
-      <Filter>Header Files\Ash\Family</Filter>
-    </ClInclude>
-    <ClInclude Include="Family.h">
-      <Filter>Header Files\Ash\Family</Filter>
-    </ClInclude>
-    <ClInclude Include="Filter.h">
-      <Filter>Header Files\Ash\Family</Filter>
+    <ClInclude Include="Event.h">
+      <Filter>Header Files\Event</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Ash.cpp">
+    <ClCompile Include="Utils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Type.cpp">
-      <Filter>Source Files\Ash</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

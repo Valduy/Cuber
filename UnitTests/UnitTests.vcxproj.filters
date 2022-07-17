@@ -20,9 +20,21 @@
     <ClCompile Include="EntityTests.cpp">
       <Filter>Ash</Filter>
     </ClCompile>
+    <ClCompile Include="FilterTests.cpp">
+      <Filter>Ash</Filter>
+    </ClCompile>
+    <ClCompile Include="Utils.cpp">
+      <Filter>Ash\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="DelegateTests.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
+    <ClInclude Include="Utils.h">
+      <Filter>Ash\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="ECS">
@@ -30,6 +42,12 @@
     </Filter>
     <Filter Include="Ash">
       <UniqueIdentifier>{be8a7630-f925-4145-b3c4-670fe6894539}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Ash\Utils">
+      <UniqueIdentifier>{868370e4-6bd6-4d6c-870f-28888b6c75f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{0a687edd-0069-4b52-b400-36037b08422a}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

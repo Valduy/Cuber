@@ -1,10 +1,8 @@
 #include "pch.h"
+#include "Utils.h"
 #include "../Ash/Entity.h"
 
 namespace ash_tests {
-
-template<size_t value>
-class TestComponent : public ash::Entity::ComponentBase {};
 
 TEST(Entity, Contain_EmptyEntity_False) {
 	ash::Entity entity;

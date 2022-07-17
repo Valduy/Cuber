@@ -36,12 +36,15 @@
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(ProjectName)</OutDir>
   </PropertyGroup>
   <ItemGroup>
+    <ClInclude Include="Utils.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BitIdentifierTests.cpp" />
     <ClCompile Include="EntityTests.cpp" />
+    <ClCompile Include="DelegateTests.cpp" />
     <ClCompile Include="FamilyTests.cpp" />
+    <ClCompile Include="FilterTests.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
@@ -51,6 +54,7 @@
     <ClCompile Include="SignatureTests.cpp" />
     <ClCompile Include="SignerTests.cpp" />
     <ClCompile Include="TypeTests.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -61,6 +65,9 @@
     </ProjectReference>
     <ProjectReference Include="..\ECS\ECS.vcxproj">
       <Project>{160b6897-7fe1-4c0b-b0a2-6684bab49baa}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Utils\Utils.vcxproj">
+      <Project>{008fad67-94c5-4d69-a444-4574ee2885db}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemDefinitionGroup />

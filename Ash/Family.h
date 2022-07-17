@@ -5,36 +5,17 @@
 #include <tuple>
 #include <functional>
 #include "Signature.h"
-#include "Entity.h"
+#include "IFamily.h"
 
 namespace ash {
 
-class IFamily {
-public: 
-	virtual ~IFamily() {}
-
-	virtual void Invalidate() = 0;
-
-	// Method try to add an entity into family. If this entity contains all required components,
-	// the family store it and create a node. Otherwise, the family ignores this entity.
-	// Note: this method should only be called from the entity manager when the family is created, to initialize
-	// that family by initial entities.
-	virtual bool TryAddEntity(Entity& entity) = 0;
-
-	// Method try to remove entity from family. If entity was contained in the family, method return true. Otherwise,
-	// method return false.
-	// Note: this method should be called from the entity manager on entity deletation.
-	virtual bool RemoveEntity(Entity& entity) = 0;
-
-	virtual void OnComponentAddedToEntity(Entity& entity, Type::Id id) = 0;
-	virtual void OnComponentRemovedFromEntity(Entity& entity, Type::Id id) = 0;	
-};
-
 template<typename... Args>
-class Family {
+class Family : public IFamily {
 public:
 
 	using Node = std::tuple<Entity&, Args&...>;
+
+	#pragma region Iterator
 
 	class Iterator {
 		
@@ -100,6 +81,8 @@ public:
 		}
 	};
 
+	#pragma endregion Iterator
+
 	Iterator GetIterator() {
 		return GetIterator(nodes_.begin(), nodes_.end(), nodes_.begin());
 	}
@@ -112,19 +95,6 @@ public:
 		return GetIterator(nodes_.begin(), nodes_.end(), nodes_.end());
 	}
 
-	bool TryAddEntity(Entity& entity) {
-		if (nodes_.find(&entity) != nodes_.end()) {
-			return false;
-		}
-
-		if (IsMatch(entity)) {
-			AddEntity(entity);
-			return true;
-		}
-		
-		return false;
-	}
-
 	static bool IsMatch(Entity& entity) {
 		for (auto id : Signature<Args...>::kIds) {
 			if (!entity.Contain(id)) {
@@ -135,7 +105,43 @@ public:
 		return true;
 	}
 	
-	void OnComponentAddedToEntity(Entity& entity, Type::Id id) {
+	#pragma region IFamily
+
+	void Invalidate() override {
+		for (auto entity : to_remove_) {
+			nodes_.erase(entity);
+		}
+
+		for (auto entity : to_add_) {
+			AddEntity(*entity);
+		}
+	}
+
+	bool TryAddEntity(Entity& entity) override {
+		if (nodes_.find(&entity) != nodes_.end()) {
+			return false;
+		}
+
+		if (IsMatch(entity)) {
+			AddEntity(entity);
+			return true;
+		}
+
+		return false;
+	}
+
+	virtual bool RemoveEntity(Entity& entity) override {
+		auto it = nodes_.find(&entity);
+
+		if (it != nodes_.end()) {
+			nodes_.erase(&entity);
+			return true;
+		}
+
+		return false;
+	}
+
+	void OnComponentAddedToEntity(Entity& entity, Type::Id id) override {
 		if (nodes_.find(&entity) != nodes_.end()) {
 			return;
 		}
@@ -146,22 +152,14 @@ public:
 		}
 	}
 
-	void OnComponentRemovedFromEntity(Entity& entity, Type::Id id) {
+	void OnComponentRemovedFromEntity(Entity& entity, Type::Id id) override {
 		if (Signature<Args...>::Contains(id)) {
 			to_add_.erase(&entity);
 			to_remove_.insert(&entity);
 		}
 	}
 
-	void Invalidate() {
-		for (auto entity : to_remove_) {
-			nodes_.erase(entity);
-		}
-
-		for (auto entity : to_add_) {
-			AddEntity(*entity);
-		}
-	}
+	#pragma endregion IFamily
 
 private:
 	template<typename...>
@@ -201,7 +199,7 @@ private:
 	Iterator GetIterator(
 		typename std::map<Entity*, Node>::iterator begin,
 		typename std::map<Entity*, Node>::iterator end,
-		typename std::map<Entity*, Node>::iterator temp) 
+		typename std::map<Entity*, Node>::iterator temp)
 	{
 		return {
 			begin,

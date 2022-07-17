@@ -102,8 +102,8 @@ public:
 
 	template<typename TComponent>
 	TComponent& Get() {
-		auto component = Get(Type::GetId<TComponent>());
-		return static_cast<TComponent&>(component);
+		Type::Id id = Type::GetId<TComponent>();
+		return static_cast<TComponent&>(Get(id));
 	}
 
 	ComponentBase& Get(Type::Id id) {
