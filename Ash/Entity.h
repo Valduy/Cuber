@@ -3,12 +3,21 @@
 #include <cassert>
 #include <functional>
 #include <map>
+#include "../Utils/Delegate.h"
+#include "../Utils/Event.h"
 #include "Type.h"
 
 namespace ash {
 
 class Entity {
+private:
+	utils::Delegate<Entity&, Type::Id> component_added_;
+	utils::Delegate<Entity&, Type::Id> component_removed_;
+
 public:
+	const utils::Event<Entity&, Type::Id> ComponentAdded = {component_added_};
+	const utils::Event<Entity&, Type::Id> ComponentRemoved = {component_removed_};
+
 	class ComponentBase {
 		
 		friend class Entity;
@@ -22,6 +31,8 @@ public:
 		ComponentBase()
 			: owner_(nullptr)
 		{}
+
+		virtual ~ComponentBase() = default;
 
 	protected:	
 		virtual void OnAdd(Entity& owner) {
@@ -72,6 +83,7 @@ public:
 			component->OnAdd(*this);
 		}
 
+		component_added_.Notify(*this, component_id);
 		return *component;
 	}
 
@@ -84,6 +96,7 @@ public:
 			it->second->OnRemove();
 			delete it->second;
 			components_map_.erase(it);
+			component_removed_.Notify(*this, component_id);
 			return true;
 		}
 

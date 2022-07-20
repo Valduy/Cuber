@@ -1,6 +1,6 @@
+#include "pch.h"
 #include <array>
 #include <algorithm>
-#include "pch.h"
 #include "Utils.h"
 #include "../Ash/Signature.h"
 
@@ -13,7 +13,7 @@ TEST(Signature, kIds_EmptySignature_kIdsSizeIs0) {
 }
 
 TEST(Signature, kIds_SomeTypes_SignatureIdsCorrespondToTypes) {
-	std::array<ash::Type::Id, 3> ids;
+	std::array<ash::Type::Id, 3> ids{};
 	const auto& signature = ash::Signature<TestComponent<0>, TestComponent<1>, TestComponent<2>>::kIds;
 
 	ids[0] = ash::Type::GetId<TestComponent<0>>();

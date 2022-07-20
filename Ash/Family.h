@@ -4,6 +4,7 @@
 #include <set>
 #include <tuple>
 #include <functional>
+#include <utility>
 #include "Signature.h"
 #include "IFamily.h"
 
@@ -53,11 +54,11 @@ public:
 
 		friend bool operator== (const Iterator& lhs, const Iterator& rhs) { 
 			return lhs.temp_ == rhs.temp_; 
-		};
+		}
 
 		friend bool operator!= (const Iterator& lhs, const Iterator& rhs) {
 			return lhs.temp_ != rhs.temp_;
-		};
+		}
 
 	private:
 		typename std::map<Entity*, Node>::iterator begin_;
@@ -70,10 +71,10 @@ public:
 			typename std::map<Entity*, Node>::iterator end,
 			typename std::map<Entity*, Node>::iterator temp,
 			std::function<bool(Entity*)> filter)
-			: begin_(begin)
-			, end_(end)
-			, temp_(temp)
-			, filter_(filter)
+			: begin_(std::move(begin))
+			, end_(std::move(end))
+			, temp_(std::move(temp))
+			, filter_(std::move(filter))
 		{
 			while (temp_ != end_ && !filter_(temp_->first)) {
 				++temp_;
@@ -112,13 +113,13 @@ public:
 			nodes_.erase(entity);
 		}
 
-		for (auto entity : to_add_) {
+		for (const auto entity : to_add_) {
 			AddEntity(*entity);
 		}
 	}
 
 	bool TryAddEntity(Entity& entity) override {
-		if (nodes_.find(&entity) != nodes_.end()) {
+		if (nodes_.contains(&entity)) {
 			return false;
 		}
 
@@ -130,11 +131,11 @@ public:
 		return false;
 	}
 
-	virtual bool RemoveEntity(Entity& entity) override {
+	bool RemoveEntity(Entity& entity) override {
 		auto it = nodes_.find(&entity);
 
 		if (it != nodes_.end()) {
-			nodes_.erase(&entity);
+			nodes_.erase(it);
 			return true;
 		}
 
@@ -142,7 +143,7 @@ public:
 	}
 
 	void OnComponentAddedToEntity(Entity& entity, Type::Id id) override {
-		if (nodes_.find(&entity) != nodes_.end()) {
+		if (nodes_.contains(&entity)) {
 			return;
 		}
 
@@ -163,19 +164,19 @@ public:
 
 private:
 	template<typename...>
-	struct Componenter;
+	struct NodeBuilder;
 
 	template<typename Head, typename... Tail>
-	struct Componenter<Head, Tail...> {
+	struct NodeBuilder<Head, Tail...> {
 		static std::tuple<Head&, Tail&...> Create(Entity& entity) {
 			std::tuple<Head&> head(entity.Get<Head>());
-			auto tail = Componenter<Tail...>::Create(entity);
+			auto tail = NodeBuilder<Tail...>::Create(entity);
 			return std::tuple_cat(head, tail);
 		}
 	};
 
 	template<>
-	struct Componenter<> {
+	struct NodeBuilder<> {
 		static std::tuple<> Create(Entity& entity) {
 			std::tuple<> head;
 			return head;
@@ -188,7 +189,7 @@ private:
 
 	static Node CreateNode(Entity& entity) {
 		std::tuple<Entity&> head(entity);
-		std::tuple<Args&...> tail = Componenter<Args...>::Create(entity);
+		std::tuple<Args&...> tail = NodeBuilder<Args...>::Create(entity);
 		return std::tuple_cat(head, tail);
 	}
 		
@@ -210,7 +211,7 @@ private:
 	}
 
 	bool IsRemoved(Entity* entity) {
-		auto it = to_remove_.find(entity);
+		const auto it = to_remove_.find(entity);
 		return it != to_remove_.end();
 	}
 };

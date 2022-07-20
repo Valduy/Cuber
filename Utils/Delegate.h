@@ -69,7 +69,7 @@ public:
 
 			if (is_current_removed_) {
 				is_current_removed_ = false;
-				Iterator removed = current_it_;				
+				auto removed = current_it_;				
 				++current_it_;
 				delete *removed;
 				handlers_.erase(removed);

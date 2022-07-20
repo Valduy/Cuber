@@ -1,13 +1,10 @@
+#include "pch.h"
 #include <vector>
 #include <algorithm>
-#include "pch.h"
 #include "../Utils/Delegate.h"
 #include "../Utils/Event.h"
 
 namespace utils_tests {
-
-//TODO: check detach on firing
-//TODO: check same method and object
 
 class BooleanObserver {
 public:
@@ -21,7 +18,7 @@ public:
 	}
 
 private:
-	bool is_fired_;
+	bool is_fired_ = false;
 };
 
 class Subject {
@@ -78,7 +75,7 @@ TEST_P(DelegateFixture, Notify_AttachMethodsToDelegateWithParams_EventsAreFired)
 		delegate.Attach(o, &BooleanObserver::Callback);
 	}
 
-	delegate.Notify(1, 2.0f, 3.0);
+	delegate.Notify(1, 2.0, 3.0);
 
 	EXPECT_TRUE(IsAllEventsFired(observers));
 }
@@ -112,9 +109,23 @@ TEST_P(DelegateFixture, Detach_AttachAndDetachMethodsToDelegateWithParams_Events
 		delegate.Detach(o, &BooleanObserver::Callback);
 	}
 
-	delegate.Notify(1, 2.0f, 3.0);
+	delegate.Notify(1, 2.0, 3.0);
 
 	EXPECT_TRUE(IsAllEventsNotFired(observers));
+}
+
+TEST_P(DelegateFixture, Attach_AttachOneMethodMultipleTime_EventFiredOnce) {
+	Subject subject;
+	std::vector<SubjectObserver> observers(GetParam());
+
+	for (auto& o : observers) {
+		subject.Event.Attach(o, &SubjectObserver::Callback);
+		subject.Event.Attach(o, &SubjectObserver::Callback);
+	}
+
+	subject.Notify();
+
+	EXPECT_TRUE(IsAllFiresCountEqual(observers, 1));
 }
 
 TEST_P(DelegateFixture, Detach_DetachWhenEventFired_CallbackDetached) {

@@ -24,7 +24,7 @@ public:
 	}
 
 	bool IsEqual(const BaseType& other) const override {
-		const MyType* concrete = dynamic_cast<const MyType*>(&other);
+		const auto* concrete = dynamic_cast<const MyType*>(&other);
 		return concrete != nullptr
 			&& &object_ == &(concrete->object_)
 			&& method_ == concrete->method_;
