@@ -22,13 +22,10 @@ public:
 
 	void Destroy(Entity& entity) {
 		destroy_pool_.push_back(&entity);
-		entity.ComponentAdded.Detach(*this, &EntityManager::OnComponentAdded);
-		entity.ComponentRemoved.Detach(*this, &EntityManager::OnComponentRemoved);
 	}
 
 	void Invalidate() {
-		for (const auto it : families_) {
-			const auto family = it.second;
+		for (const auto& [_, family] : families_) {
 			family->Invalidate();
 
 			for (const auto entity : destroy_pool_) {
@@ -38,6 +35,8 @@ public:
 
 		for (auto entity : destroy_pool_) {
 			entities_.erase(entity);
+			entity->ComponentAdded.Detach(*this, &EntityManager::OnComponentAdded);
+			entity->ComponentRemoved.Detach(*this, &EntityManager::OnComponentRemoved);
 		}
 
 		destroy_pool_.clear();

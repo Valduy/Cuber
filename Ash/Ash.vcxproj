@@ -153,6 +153,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Entities.h" />
     <ClInclude Include="EntityManager.h" />
     <ClInclude Include="Family.h" />
     <ClInclude Include="Filter.h" />

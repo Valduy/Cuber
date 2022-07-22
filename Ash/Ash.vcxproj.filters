@@ -51,6 +51,9 @@
     <ClInclude Include="Filter.h">
       <Filter>Header Files\Ash\Family</Filter>
     </ClInclude>
+    <ClInclude Include="Entities.h">
+      <Filter>Header Files\Ash</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Ash.cpp">
