@@ -11,19 +11,16 @@ public:
 	const float kDelay = 2;
 
 	void Update(float dt) override {
-		auto it = GetIterator<TransformComponent, BoundingBoxComponent, VelocityComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			ecs::Entity& entity = it.Get();
-			TransformComponent& transform_component = entity.Get<TransformComponent>();
-			BoundingBoxComponent& bounding_box_component = entity.Get<BoundingBoxComponent>();
+		for (auto& node : Filter<TransformComponent, BoundingBoxComponent, VelocityComponent>()) {
+			auto& [entity, transform_component, bounding_box_component, velocity_component] = node;
 
 			if (transform_component.x + bounding_box_component.width / 2 <= 0.0f) {
 				right_score += 1;
-				Restart(entity, -1, 0);
+				Restart(entity, transform_component, velocity_component, -1, 0);
 			}
 			else if (transform_component.x - bounding_box_component.width / 2 >= 2.0f) {
 				left_score += 1;
-				Restart(entity, 1, 0);
+				Restart(entity, transform_component, velocity_component, 1, 0);
 			}
 		}
 	}
@@ -32,14 +29,12 @@ private:
 	int left_score = 0;
 	int right_score = 0;
 
-	void Restart(ecs::Entity& e, float x, float y) {
-		TransformComponent& transform_component = e.Get<TransformComponent>();
-		transform_component.x = 1.0f;
-		transform_component.y = 1.0f;
+	void Restart(ash::Entity& e, TransformComponent& transform, VelocityComponent& velocity, float x, float y) {
+		transform.x = 1.0f;
+		transform.y = 1.0f;
 
-		VelocityComponent& velocity_component = e.Get<VelocityComponent>();
-		velocity_component.x = 0;
-		velocity_component.y = 0;
+		velocity.x = 0;
+		velocity.y = 0;
 
 		RestartComponent& restart_component = e.Add<RestartComponent>();
 		restart_component.delay = kDelay;

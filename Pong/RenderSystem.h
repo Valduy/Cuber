@@ -25,16 +25,13 @@ struct ConstData {
 class RenderSystem : public engine::Game::SystemBase {
 public:
 	void Init(engine::Game& game) override {
-		engine::Game::SystemBase::Init(game);
-
 		using namespace graph;
-		shader_.Init(&GetRenderer(), kLayout, L"Shaders/PongShader.hlsl");
-
 		using namespace DirectX::SimpleMath;
-		auto it = GetIterator<ShapeComponent, TransformComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			ecs::Entity& entity = it.Get();
-			ShapeComponent& shape_component = entity.Get<ShapeComponent>();
+
+		engine::Game::SystemBase::Init(game);		
+		shader_.Init(&GetRenderer(), kLayout, L"Shaders/PongShader.hlsl");
+		
+		for (auto& [entity, shape_component, transform_component] : Filter<ShapeComponent, TransformComponent>()) {
 			auto vertices = GetVertices(shape_component.points, shape_component.color);
 
 			VertexBuffer vb(vertices.data(), sizeof(Vector4) * vertices.size());
@@ -53,11 +50,7 @@ public:
 	}
 
 	void Update(float dt) override {
-		auto it = GetIterator<RenderComponent, TransformComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			ecs::Entity& entity = it.Get();
-			RenderComponent& render_component = entity.Get<RenderComponent>();
-			const TransformComponent& transform_component = entity.Get<TransformComponent>();
+		for (auto& [entity, render_component, transform_component] : Filter<RenderComponent, TransformComponent>()) {
 			ConstData data{ transform_component.x, transform_component.y };
 			render_component.transform_buffer.Update(&data);
 		}
@@ -67,11 +60,7 @@ public:
 		shader_.SetShader();
 		GetGame().GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		auto it = GetIterator<RenderComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			ecs::Entity& entity = it.Get();
-			RenderComponent& render_component = entity.Get<RenderComponent>();
-
+		for (auto& [entity, render_component] : Filter<RenderComponent>()) {
 			render_component.vertex_buffer.SetBuffer(32);
 			render_component.index_buffer.SetBuffer();
 			render_component.transform_buffer.VSSetBuffer();

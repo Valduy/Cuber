@@ -6,10 +6,7 @@
 class InputSystem : public engine::Game::SystemBase {
 public:
 	void Update(float dt) override {
-		auto it = GetIterator<InputComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			ecs::Entity& entity = it.Get();
-			InputComponent& input_component = entity.Get<InputComponent>();
+		for (auto& [entity, input_component] : Filter<InputComponent>()) {
 			input_component.up = false;
 			input_component.down = false;
 

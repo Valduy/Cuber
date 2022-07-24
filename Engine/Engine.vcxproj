@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-	<None Include="Shaders\**" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="Shaders\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -182,6 +182,9 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Ash\Ash.vcxproj">
+      <Project>{a20b5b03-11f2-4f52-8df6-7bffca740784}</Project>
+    </ProjectReference>
     <ProjectReference Include="..\ECS\ECS.vcxproj">
       <Project>{160b6897-7fe1-4c0b-b0a2-6684bab49baa}</Project>
     </ProjectReference>

@@ -3,7 +3,8 @@
 #include <vector>
 #include <chrono>
 
-#include "../ECS/EntityManager.h"
+#include "../Ash/EntityManager.h"
+#include "../Ash/Entities.h"
 #include "../GraphicEngine/Window.h"
 #include "../GraphicEngine/Renderer.h"
 
@@ -28,33 +29,28 @@ public:
 		virtual void Render();
 		virtual void Delete();
 
-		template<typename First, typename... Rest>
-		void For(ecs::EntityManager::Action action) const {
-			game_->GetEntityManager().For<First, Rest...>(action);
+		template<typename... Args>
+		ash::Filter<Args...> Filter() {
+			return game_->GetEntities().Filter<Args...>();
 		}
 
-		template<typename First, typename... Rest>
-		ecs::EntityManager::Iterator GetIterator() {
-			return game_->GetEntityManager().GetIterator<First, Rest...>();
+		ash::Entities& GetEntities() const {
+			return game_->GetEntities();
 		}
 
-		ecs::EntityManager::Iterator GetIterator(ecs::Signer::Signature signature) {
-			return game_->GetEntityManager().GetIterator(signature);
-		}
-
-		graph::Window& GetWindow() {
+		graph::Window& GetWindow() const {
 			return game_->GetWindow();
 		}
 
-		graph::Renderer& GetRenderer() {
+		graph::Renderer& GetRenderer() const {
 			return game_->GetRenderer();
 		}
 
-		graph::KeyboardState& GetKeyboardState() {
+		graph::KeyboardState& GetKeyboardState() const {
 			return game_->GetWindow().GetKeyboardState();
 		}
 
-		graph::MouseState& GetMouseState() {
+		graph::MouseState& GetMouseState() const {
 			return game_->GetWindow().GetMouseState();
 		}
 
@@ -62,7 +58,7 @@ public:
 		Game* game_;
 	};
 
-	ecs::EntityManager& GetEntityManager();
+	ash::Entities& GetEntities();
 	graph::Window& GetWindow();
 	graph::Renderer& GetRenderer();
 	
@@ -73,7 +69,8 @@ public:
 	void Run();
 
 private:
-	ecs::EntityManager entity_manager_;
+	ash::EntityManager entity_manager_;
+	ash::Entities entities_ = { entity_manager_ };
 	graph::Window window_;
 	graph::Renderer renderer_;
 	std::vector<SystemBase*> systems_;

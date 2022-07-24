@@ -1,13 +1,13 @@
 #pragma once
 
-#include "../ECS/Entity.h"
+#include "../Ash/Entity.h"
 
 enum class PlayerType {
 	kLeft,
 	kRight
 };
 
-class InputComponent : public ecs::Entity::ComponentBase {
+class InputComponent : public ash::Entity::ComponentBase {
 public:
 	PlayerType player_type;
 	bool up;

@@ -21,7 +21,7 @@
 #pragma comment(lib, "d3dcompiler.lib")
 #pragma comment(lib, "dxguid.lib")
 
-ShapeComponent& AddRectangleShape(ecs::Entity& entity, float width, float height) {
+ShapeComponent& AddRectangleShape(ash::Entity& entity, float width, float height) {
 	ShapeComponent& shape_component = entity.Add<ShapeComponent>();
 	shape_component.points = {
 		DirectX::XMFLOAT4(-1.0f + width / 2, -1.0f - height / 2, 0.5f, 1.0f),
@@ -51,7 +51,7 @@ std::vector<DirectX::SimpleMath::Vector4> GetCircleDots(float radius) {
 	return result;
 }
 
-ShapeComponent& AddCircleShape(ecs::Entity& entity, float radius) {
+ShapeComponent& AddCircleShape(ash::Entity& entity, float radius) {
 	ShapeComponent& shape_component = entity.Add<ShapeComponent>();
 	shape_component.points = GetCircleDots(radius);
 
@@ -64,7 +64,7 @@ ShapeComponent& AddCircleShape(ecs::Entity& entity, float radius) {
 	return shape_component;
 }
 
-ecs::Entity& CreatePaddle(
+ash::Entity& CreatePaddle(
 	engine::Game& game,
 	float x,
 	float y,
@@ -73,7 +73,7 @@ ecs::Entity& CreatePaddle(
 	float speed,
 	PlayerType player_type)
 {
-	ecs::Entity& paddle = game.GetEntityManager().CreateEntity();
+	ash::Entity& paddle = game.GetEntities().Create();
 
 	ShapeComponent& shape_component = AddRectangleShape(paddle, width, height);
 	shape_component.color = DirectX::SimpleMath::Vector4{ 1, 1, 1, 1 };
@@ -97,14 +97,14 @@ ecs::Entity& CreatePaddle(
 	return paddle;
 }
 
-ecs::Entity& CreateBall(
+ash::Entity& CreateBall(
 	engine::Game& game, 
 	float x, 
 	float y, 
 	float radius,
 	float speed)
 {
-	ecs::Entity& ball = game.GetEntityManager().CreateEntity();
+	ash::Entity& ball = game.GetEntities().Create();
 	
 	ShapeComponent& shape_component = AddCircleShape(ball, radius);
 	shape_component.color = DirectX::SimpleMath::Vector4{ 1, 1, 1, 1 };

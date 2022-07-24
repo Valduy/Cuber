@@ -25,8 +25,8 @@ void engine::Game::SystemBase::Delete() {
 	game_ = nullptr;
 }
 
-ecs::EntityManager& engine::Game::GetEntityManager() {
-	return entity_manager_;
+ash::Entities& engine::Game::GetEntities() {
+	return entities_;
 }
 
 graph::Window& engine::Game::GetWindow() {
@@ -95,6 +95,8 @@ void engine::Game::Update() {
 	for (SystemBase* system : systems_) {
 		system->Update(kDt);
 	}
+
+	entity_manager_.Invalidate();
 }
 
 void engine::Game::Render() {
@@ -104,6 +106,7 @@ void engine::Game::Render() {
 		system->Render();
 	}
 
+	entity_manager_.Invalidate();
 	renderer_.EndRender();
 }
 

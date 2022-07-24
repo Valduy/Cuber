@@ -1,11 +1,10 @@
 #pragma once
 
 #include <SimpleMath.h>
-
-#include "../ECS/Entity.h"
 #include <vector>
+#include "../Ash/Entity.h"
 
-class ShapeComponent : public ecs::Entity::ComponentBase {
+class ShapeComponent : public ash::Entity::ComponentBase {
 public:
 	std::vector<DirectX::SimpleMath::Vector4> points;
 	std::vector<int> indexes;
