@@ -18,15 +18,13 @@ public:
 	};
 
 	void Init(engine::Game& game) override {
-		engine::Game::SystemBase::Init(game);
-		
 		using namespace graph;
+		using namespace engine;
+
+		engine::Game::SystemBase::Init(game);		
 		shader_.Init(&GetRenderer(), kLayout, L"Shaders/SolarShader.hlsl");
 
-		using namespace engine;
-		for (auto it = GetIterator<TransformComponent, ShapeComponent>(); it.HasCurrent(); it.Next()) {
-			ecs::Entity& entity = it.Get();
-			ShapeComponent& shape_component = entity.Get<ShapeComponent>();
+		for (auto& [entity, transform_component, shape_component] : Filter<TransformComponent, ShapeComponent>()) {
 			auto vertices = GetVertices(shape_component.points);
 
 			VertexBuffer vb(vertices.data(), sizeof(DirectX::SimpleMath::Vector4) * vertices.size());
@@ -45,36 +43,28 @@ public:
 	}
 
 	void Update(float dt) override {
-		auto camera_it = GetIterator<engine::CameraComponent>();
-		if (!camera_it.HasCurrent()) return;
-
-		ecs::Entity& camera = camera_it.Get();
-		engine::CameraComponent& camera_component = camera.Get<engine::CameraComponent>();
+		// Only for first camera.
+		auto it = Filter<engine::CameraComponent>().GetIterator();
+		if (!it.HasCurrent()) return;
+		auto& [camera, camera_component] = it.Get();
 
 		using namespace engine;
-		for (auto it = GetIterator<RenderComponent, TransformComponent>(); it.HasCurrent(); it.Next()) {
-			ecs::Entity& mesh = it.Get();
-			RenderComponent& render_component = mesh.Get<RenderComponent>();
-			TransformComponent& transform_component = mesh.Get<TransformComponent>();
-
+		for (auto& [entity, render_component, transform_component] :  Filter<RenderComponent, TransformComponent>()) {
 			DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
 			DirectX::SimpleMath::Matrix camera_matrix = camera_component.GetCameraMatrix();
 			DirectX::SimpleMath::Matrix transform_matrix = model_matrix * camera_matrix;
 			TransformData data{ transform_matrix.Transpose() };
-
 			render_component.transform_buffer.Update(&data);
 		}
 	}
 
-	void Render() override {		
+	void Render() override {
+		using namespace engine;
+
 		shader_.SetShader();
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		using namespace engine;
-		for (auto it = GetIterator<RenderComponent>(); it.HasCurrent(); it.Next()) {
-			ecs::Entity& mesh = it.Get();
-			RenderComponent& render_component = mesh.Get<RenderComponent>();
-
+				
+		for (auto& [entity, render_component] : Filter<RenderComponent>()) {
 			render_component.vertex_buffer.SetBuffer(32);
 			render_component.index_buffer.SetBuffer();
 			render_component.transform_buffer.VSSetBuffer();
@@ -108,7 +98,7 @@ private:
 
 	graph::Shader shader_;
 
-	std::vector<DirectX::SimpleMath::Vector4> GetVertices(
+	static std::vector<DirectX::SimpleMath::Vector4> GetVertices(
 		const std::vector<DirectX::SimpleMath::Vector3>& points)
 	{
 		std::vector<DirectX::SimpleMath::Vector4> result;

@@ -2,11 +2,11 @@
 
 #include <SimpleMath.h>
 
-#include "../ECS/Entity.h"
+#include "../Ash/Entity.h"
 
 namespace engine {
 
-class CameraComponent : public ecs::Entity::ComponentBase {
+class CameraComponent : public ash::Entity::ComponentBase {
 public:
 	DirectX::SimpleMath::Matrix view_matrix;
 	DirectX::SimpleMath::Matrix projection_matrix;

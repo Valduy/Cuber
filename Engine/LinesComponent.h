@@ -3,11 +3,11 @@
 #include <vector>
 #include <SimpleMath.h>
 
-#include "../ECS/Entity.h"
+#include "../Ash/Entity.h"
 
 namespace engine {
 
-class LinesComponent : public ecs::Entity::ComponentBase {
+class LinesComponent : public ash::Entity::ComponentBase {
 public:
 	DirectX::SimpleMath::Vector4 color{ 1.0f, 1.0f, 1.0f, 1.0f };
 	std::vector<DirectX::SimpleMath::Vector3> points;

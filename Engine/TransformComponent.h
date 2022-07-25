@@ -6,7 +6,7 @@
 
 namespace engine {
 
-class TransformComponent : public ecs::Entity::ComponentBase {
+class TransformComponent : public ash::Entity::ComponentBase {
 public:
 	DirectX::SimpleMath::Quaternion GetLocalRotation() const {
 		return local_rotation_;
@@ -111,7 +111,7 @@ public:
 		return model;
 	}
 
-	ecs::Entity& GetParent() const {
+	ash::Entity& GetParent() const {
 		assert(parent_ != nullptr && "Entity hasn't parent.");
 		return *parent_;
 	}
@@ -127,7 +127,7 @@ public:
 		, local_position_(0.0f, 0.0f, 0.0f)
 	{}
 
-	void Delete() override {
+	void OnRemove() override {
 		if (IsHasParent()) {
 			parent_->Get<TransformComponent>().RemoveChild(GetOwner());
 		}
@@ -144,7 +144,7 @@ public:
 	}
 
 	// TODO: child of this or child check!!!
-	void AddChild(ecs::Entity& child) {
+	void AddChild(ash::Entity& child) {
 		assert(&child != &GetOwner() && "Entity can't contain itself.");
 		assert(child.Contain<TransformComponent>() && "Child don't contain transform component.");
 		assert(!IsChildOf(child) && "Child shouldn't be parent.");
@@ -154,7 +154,7 @@ public:
 		children_.push_back(&child);
 	}
 
-	bool RemoveChild(ecs::Entity& child) {
+	bool RemoveChild(ash::Entity& child) {
 		assert(child.Contain<TransformComponent>() && "Child don't contain transform component.");
 		TransformComponent& transform_component = child.Get<TransformComponent>();
 		if (transform_component.parent_ != &GetOwner()) return false;
@@ -170,7 +170,7 @@ public:
 		return true;
 	}
 
-	bool IsChildOf(ecs::Entity& entity) const {
+	bool IsChildOf(ash::Entity& entity) const {
 		const TransformComponent* temp = this;
 
 		do {
@@ -186,13 +186,13 @@ public:
 		} while (true);
 	}
 
-	ecs::Entity& operator[](size_t index) const {
+	ash::Entity& operator[](size_t index) const {
 		return *children_[index];
 	}
 
 private:
-	ecs::Entity* parent_;
-	std::vector<ecs::Entity*> children_{};
+	ash::Entity* parent_;
+	std::vector<ash::Entity*> children_{};
 
 	DirectX::SimpleMath::Quaternion local_rotation_;
 	DirectX::SimpleMath::Vector3 local_scale_;

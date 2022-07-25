@@ -9,16 +9,14 @@
 class SinSystem : public engine::Game::SystemBase {
 public:
 	void Update(float dt) override {
+		using namespace engine;
+
 		time += dt;
 
-		using namespace engine;
-		auto it = GetIterator<TransformComponent, RotationComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			ecs::Entity& planet = it.Get();
-			TransformComponent& transform = planet.Get<TransformComponent>();
-			auto position = transform.GetLocalPosition();	
+		for (auto& [entity, transform_component, rotation_component] : Filter<TransformComponent, RotationComponent>()) {
+			auto position = transform_component.GetLocalPosition();	
 			position.y = 2 * sin(time);
-			transform.SetLocalPosition(position);
+			transform_component.SetLocalPosition(position);
 		}
 	}
 

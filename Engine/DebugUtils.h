@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../ECS/Entity.h"
+#include <SimpleMath.h>
 #include "Game.h"
 #include "LinesComponent.h"
 #include "TransformComponent.h"
@@ -9,8 +9,10 @@ namespace engine {
 
 class DebugUtils {
 public:
-	static ecs::Entity& CreatePlane(Game& game, float size, int subdivisions) {
-		ecs::Entity& plane = game.GetEntityManager().CreateEntity();
+	static ash::Entity& CreatePlane(Game& game, float size, int subdivisions) {
+		using namespace DirectX::SimpleMath;
+
+		ash::Entity& plane = game.GetEntities().Create();
 		plane.Add<TransformComponent>();
 		LinesComponent& lines_component = plane.Add<LinesComponent>();
 		lines_component.topology = D3D_PRIMITIVE_TOPOLOGY_LINELIST;
@@ -19,7 +21,7 @@ public:
 		const float pivot_x = -size / 2;
 		const float pivot_z = -size / 2;
 
-		using namespace DirectX::SimpleMath;
+		
 		for (int i = 0; i <= subdivisions; ++i) {
 			const float x = pivot_x + cell_size * static_cast<float>(i);
 			lines_component.points.push_back(Vector3(x, 0.0f, pivot_z));
@@ -33,14 +35,15 @@ public:
 		return plane;
 	}
 
-	static ecs::Entity& CreateLine(
+	static ash::Entity& CreateLine(
 		Game& game,
 		DirectX::SimpleMath::Vector3 a,
 		DirectX::SimpleMath::Vector3 b,
 		DirectX::SimpleMath::Vector4 color)
 	{
 		using namespace DirectX::SimpleMath;
-		ecs::Entity& line = game.GetEntityManager().CreateEntity();
+
+		ash::Entity& line = game.GetEntities().Create();
 		line.Add<TransformComponent>();
 		LinesComponent& lines_component = line.Add<LinesComponent>();
 		lines_component.color = color;
@@ -49,25 +52,25 @@ public:
 		return line;
 	}
 
-	static ecs::Entity& CreateAxis(Game& game, float length) {
-		ecs::Entity& axis = game.GetEntityManager().CreateEntity();
+	static ash::Entity& CreateAxis(Game& game, float length) {
+		ash::Entity& axis = game.GetEntities().Create();
 		TransformComponent& transform = axis.Add<TransformComponent>();
 
-		ecs::Entity& x = CreateLine(
+		ash::Entity& x = CreateLine(
 			game,
 			{ 0.0f, 0.0f, 0.0f },
 			{ length, 0.0f, 0.0f },
 			{ 1.0f, 0.0f, 0.0f, 1.0f });
 		transform.AddChild(x);
 
-		ecs::Entity& y = CreateLine(
+		ash::Entity& y = CreateLine(
 			game,
 			{ 0.0f, 0.0f, 0.0f },
 			{ 0.0f, length, 0.0f },
 			{ 0.0f, 1.0f, 0.0f, 1.0f });
 		transform.AddChild(y);
 
-		ecs::Entity& z = CreateLine(
+		ash::Entity& z = CreateLine(
 			game,
 			{ 0.0f, 0.0f, 0.0f },
 			{ 0.0f, 0.0f, length },
@@ -77,12 +80,12 @@ public:
 		return axis;
 	}
 
-	static ecs::Entity& CreateCircle(
+	static ash::Entity& CreateCircle(
 		Game& game, 
 		float radius, 
 		DirectX::SimpleMath::Vector4 color)
 	{
-		ecs::Entity& circle = game.GetEntityManager().CreateEntity();
+		ash::Entity& circle = game.GetEntities().Create();
 		circle.Add<TransformComponent>();
 		LinesComponent& lines_component = circle.Add<LinesComponent>();
 		lines_component.points = GetCircleDots(radius);
@@ -91,23 +94,23 @@ public:
 		return circle;
 	}
 
-	static ecs::Entity& CreateSphere(
+	static ash::Entity& CreateSphere(
 		Game& game,
 		float radius,
 		DirectX::SimpleMath::Vector4 color)
 	{
-		ecs::Entity& sphere = game.GetEntityManager().CreateEntity();
+		ash::Entity& sphere = game.GetEntities().Create();
 		TransformComponent& sphere_transform = sphere.Add<TransformComponent>();
 
-		ecs::Entity& yaw = CreateCircle(game, radius, color);
+		ash::Entity& yaw = CreateCircle(game, radius, color);
 		sphere_transform.AddChild(yaw);
 
-		ecs::Entity& pitch = CreateCircle(game, radius, color);
+		ash::Entity& pitch = CreateCircle(game, radius, color);
 		TransformComponent& pitch_transform = pitch.Get<TransformComponent>();
 		pitch_transform.SetEuler({ 0.0f, 90.0f, 0.0f });
 		sphere_transform.AddChild(pitch);
 
-		ecs::Entity& roll = CreateCircle(game, radius, color);
+		ash::Entity& roll = CreateCircle(game, radius, color);
 		TransformComponent& roll_transform = roll.Get<TransformComponent>();
 		roll_transform.SetEuler({ 90.0f, 0.0f, 0.0f });
 		sphere_transform.AddChild(roll);

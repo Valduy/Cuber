@@ -4,9 +4,9 @@
 #include <array>
 #include <SimpleMath.h>
 
-#include "../ECS/Entity.h"
+#include "../Ash/Entity.h"
 
-class ShapeComponent : public ecs::Entity::ComponentBase {
+class ShapeComponent : public ash::Entity::ComponentBase {
 public:
 	const std::vector<DirectX::SimpleMath::Vector3> points{};
 	const std::vector<int> indexes{};

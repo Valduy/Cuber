@@ -22,10 +22,7 @@ public:
 	{}
 
 	void Update(float dt) override {
-		auto it = GetIterator<CameraComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			ecs::Entity& entity = it.Get();
-			CameraComponent& camera_component = entity.Get<CameraComponent>();
+		for (auto& [entity, camera_component] : Filter<CameraComponent>()) {
 			UpdateKeyboard();
 			UpdateMouse();
 			SetLookAtMatrix(&camera_component, dt);

@@ -8,16 +8,12 @@ class RotationSystem : public engine::Game::SystemBase {
 public:
 	void Update(float dt) override {
 		using namespace engine;
-		auto it = GetIterator<TransformComponent, RotationComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			ecs::Entity& entity = it.Get();
-			TransformComponent& transform_component = entity.Get<TransformComponent>();
-			RotationComponent& rotation_component = entity.Get<RotationComponent>();
+		using namespace DirectX::SimpleMath;
 
+		for (auto& [entity, transform_component, rotation_component] : Filter<TransformComponent, RotationComponent>()) {
 			const float amount = rotation_component.speed * dt;
-			const DirectX::SimpleMath::Vector3 new_rotation =
-				transform_component.GetLocalEuler() + rotation_component.axis * amount;
-			transform_component.SetLocalEuler(new_rotation);
+			const Quaternion quat = Quaternion::CreateFromYawPitchRoll(rotation_component.axis * amount);
+			transform_component.SetLocalRotation(transform_component.GetLocalRotation() * quat);
 		}
 	}
 };

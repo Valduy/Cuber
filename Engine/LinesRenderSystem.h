@@ -31,10 +31,7 @@ public:
 		shader_.Init(&GetRenderer(), graph::LayoutDescriptor::kPosition3, L"Shaders/LineShader.hlsl");
 #endif		
 
-		for (auto it = GetIterator<TransformComponent, LinesComponent>(); it.HasCurrent(); it.Next()) {
-			ecs::Entity& entity = it.Get();
-			LinesComponent& lines_component = entity.Get<LinesComponent>();
-
+		for (auto& [entity, transform_component, lines_component] : Filter<TransformComponent, LinesComponent>()) {
 			graph::VertexBuffer vb(
 				lines_component.points.data(),
 				sizeof(DirectX::SimpleMath::Vector3) * lines_component.points.size());
@@ -53,26 +50,20 @@ public:
 	}
 
 	void Update(float dt) override {
-		auto camera_it = GetIterator<CameraComponent>();
-		if (!camera_it.HasCurrent()) return;
+		auto it = Filter<CameraComponent>().GetIterator();
+		if (!it.HasCurrent()) return;
+		auto& [camera, camera_component] = it.Get();
 
-		ecs::Entity& camera = camera_it.Get();
-		CameraComponent& camera_component = camera.Get<CameraComponent>();
-
-		auto it = GetIterator<TransformComponent, LinesComponent, LinesRenderComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			ecs::Entity& entity = it.Get();
-			TransformComponent& transform_component = entity.Get<TransformComponent>();
-			LinesComponent& lines_component = entity.Get<LinesComponent>();
-			LinesRenderComponent& lines_render_component = entity.Get<LinesRenderComponent>();
+		for (auto& node : Filter<TransformComponent, LinesComponent, LinesRenderComponent>()) {
+			auto& [entity, transform_component, lines_component, lines_render_component] = node;
 
 			DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
 			DirectX::SimpleMath::Matrix camera_matrix = camera_component.GetCameraMatrix();
 			DirectX::SimpleMath::Matrix transform_matrix = model_matrix * camera_matrix;
 			MatrixData matrix_data{ transform_matrix.Transpose() };
 			ColorData color_data{ lines_component.color };
-						
-			lines_render_component.matrix_const_buffer.Update(&matrix_data);			
+
+			lines_render_component.matrix_const_buffer.Update(&matrix_data);
 			lines_render_component.color_const_buffer.Update(&color_data);
 		}
 	}
@@ -80,11 +71,7 @@ public:
 	void Render() override {
 		shader_.SetShader();
 
-		for (auto it = GetIterator<LinesComponent, LinesRenderComponent>(); it.HasCurrent(); it.Next()) {
-			ecs::Entity& entity = it.Get();
-			LinesComponent& lines_component = entity.Get<LinesComponent>();
-			LinesRenderComponent& lines_render_component = entity.Get<LinesRenderComponent>();
-
+		for (auto& [entity, lines_component, lines_render_component] : Filter<LinesComponent, LinesRenderComponent>()) {
 			lines_render_component.vertex_buffer.SetBuffer(sizeof(DirectX::SimpleMath::Vector3));
 			lines_render_component.matrix_const_buffer.VSSetBuffer(0);
 			lines_render_component.color_const_buffer.VSSetBuffer(1);

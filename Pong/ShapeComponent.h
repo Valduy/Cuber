@@ -2,6 +2,7 @@
 
 #include <SimpleMath.h>
 #include <vector>
+
 #include "../Ash/Entity.h"
 
 class ShapeComponent : public ash::Entity::ComponentBase {

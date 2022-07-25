@@ -6,7 +6,7 @@
 #include "../GraphicEngine/IndexBuffer.h"
 #include "../GraphicEngine/ConstantBuffer.h"
 
-class RenderComponent : public ecs::Entity::ComponentBase {
+class RenderComponent : public ash::Entity::ComponentBase {
 public:
 	std::vector<DirectX::SimpleMath::Vector4> vertices;
 	graph::VertexBuffer vertex_buffer;

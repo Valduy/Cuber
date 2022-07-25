@@ -1,12 +1,12 @@
 #pragma once
 
-#include "../ECS/Entity.h"
+#include "../Ash/Entity.h"
 #include "../GraphicEngine/VertexBuffer.h"
 #include "../GraphicEngine/ConstantBuffer.h"
 
 namespace engine {
 
-class LinesRenderComponent : public ecs::Entity::ComponentBase {
+class LinesRenderComponent : public ash::Entity::ComponentBase {
 public:
 	graph::VertexBuffer vertex_buffer;
 	graph::ConstantBuffer matrix_const_buffer;

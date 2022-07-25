@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cmath>
+
 #include "BoundingBoxComponent.h"
 #include "InputComponent.h"
 #include "TransformComponent.h"
