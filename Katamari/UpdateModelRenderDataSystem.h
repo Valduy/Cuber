@@ -44,12 +44,11 @@ private:
 		using namespace engine;
 		using namespace DirectX::SimpleMath;
 
-		auto camera_it = GetIterator<CameraComponent>();
-		if (!camera_it.HasCurrent()) return false;
+		auto it = Filter<CameraComponent>().GetIterator();
+		if (!it.HasCurrent()) return false;
 
-		auto& camera = camera_it.Get();
-		auto& camera_component = camera.Get<CameraComponent>();
-		*camera_matrix = camera.Get<CameraComponent>().GetCameraMatrix();
+		auto& [entity, camera_component] = it.Get();
+		*camera_matrix = camera_component.GetCameraMatrix();
 		return true;
 	}
 
@@ -57,27 +56,20 @@ private:
 		using namespace engine;
 		using namespace graph;
 
-		for (auto it = GetIterator<ModelComponent>(); it.HasCurrent(); it.Next()) {
-			auto& entity = it.Get();
-			auto& model_component = entity.Get<ModelComponent>();
+		for (auto& [entity, model_component] : Filter<ModelComponent>()) {
 			model_component.model_buffers = CreateMeshBuffers(model_component.model);
 			model_component.transform_buffer.Init(&GetRenderer(), sizeof(ModelTransformData));
 		}
 	}
 
 	void InitMaterials() {
-		for (auto it = GetIterator<MaterialComponent>(); it.HasCurrent(); it.Next()) {
-			auto& entity = it.Get();
-			auto& material_component = entity.Get<MaterialComponent>();
+		for (auto& [entity, material_component] : Filter<MaterialComponent>()) {
 			material_component.material_buffer.Init(&GetRenderer(), sizeof(MaterialData));
 		}
 	}
 
 	void InitDnsMaps() {
-		for (auto it = GetIterator<DnsMapsComponent>(); it.HasCurrent(); it.Next()) {
-			auto& entity = it.Get();
-			auto& dns_maps_component = entity.Get<DnsMapsComponent>();
-
+		for (auto& [entity, dns_maps_component] : Filter<DnsMapsComponent>()) {
 			if (dns_maps_component.diffuse.GetImageCount() > 0) {
 				dns_maps_component.diffuse_texture.Init(&GetRenderer(), dns_maps_component.diffuse);
 			}
@@ -95,11 +87,7 @@ private:
 		DirectX::SimpleMath::Matrix camera_matrix;
 		if (!TryGetCameraMatrix(&camera_matrix)) return;
 
-		for (auto it = GetIterator<TransformComponent, ModelComponent>(); it.HasCurrent(); it.Next()) {
-			auto& model = it.Get();
-			auto& transform_component = model.Get<TransformComponent>();
-			auto& model_component = model.Get<ModelComponent>();
-
+		for (auto& [entity, transform_component, model_component] : Filter<TransformComponent, ModelComponent>()) {
 			DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
 			DirectX::SimpleMath::Matrix world_view_proj_matrix = model_matrix * camera_matrix;
 			ModelTransformData model_transform_data{
@@ -112,10 +100,7 @@ private:
 	}
 
 	void UpdateMaterials() {
-		for (auto it = GetIterator<MaterialComponent>(); it.HasCurrent(); it.Next()) {
-			auto& entity = it.Get();
-			auto& material_component = entity.Get<MaterialComponent>();
-
+		for (auto& [entity, material_component] : Filter<MaterialComponent>()) {
 			MaterialData material_data{
 				material_component.material.ambient,
 				material_component.material.shininess,

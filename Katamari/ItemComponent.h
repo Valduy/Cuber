@@ -1,5 +1,5 @@
 #pragma once
 
-#include "../ECS/Entity.h"
+#include "../Ash/Entity.h"
 
-class ItemComponent : public ecs::Entity::ComponentBase {};
+class ItemComponent : public ash::Entity::ComponentBase {};

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <SimpleMath.h>
+
 #include "DirectionLightComponent.h"
 #include "../Engine/Game.h"
 #include "../GraphicEngine/Shader.h"
@@ -28,21 +29,23 @@ public:
 	{}
 
 	void Init(engine::Game& game) override {
-		engine::Game::SystemBase::Init(game);
-
 		using namespace graph;
+		using namespace DirectX::SimpleMath;
+
+		engine::Game::SystemBase::Init(game);
+				
 		shader_.Init(&GetRenderer(), LayoutDescriptor::kPosition2Texture2, L"Shaders/ShadowMapDebugShader.hlsl");
 		vertices_buffer_.Init(&GetRenderer());
 		indexes_buffer_.Init(&GetRenderer());
 		transform_buffer_.Init(&GetRenderer(), sizeof(TransformData));
-
-		using namespace DirectX::SimpleMath;
+				
 		Matrix transform = Matrix::CreateOrthographic(800, 800, 0.1, 1);
 		transform_buffer_.Update(&transform);
 	}
 
 	void Update(float dt) override {
 		using namespace DirectX::SimpleMath;
+
 		Vector2 position = { 150.0f, 150.0f };
 		Matrix projection = Matrix::CreateOrthographic(GetWindow().GetWidth(), GetWindow().GetHeight(), 0.1, 1);
 		TransformData transform {
@@ -53,16 +56,14 @@ public:
 	}
 
 	void Render() override {
-		auto light_it = GetIterator<DirectionLightComponent>();
+		auto light_it = Filter<DirectionLightComponent>().GetIterator();
 		if (!light_it.HasCurrent()) return;
 
-		auto& light = light_it.Get();
-		auto& light_component = light.Get<DirectionLightComponent>();
-
+		auto& [entity, direction_light_component] = light_it.Get();
 		shader_.SetShader();
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		
-		light_component.shadow_map.SetTexture(0);
+		direction_light_component.shadow_map.SetTexture(0);
 		vertices_buffer_.SetBuffer(sizeof(Vertex));
 		indexes_buffer_.SetBuffer();
 		transform_buffer_.VSSetBuffer();

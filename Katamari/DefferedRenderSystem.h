@@ -96,6 +96,8 @@ private:
 	Microsoft::WRL::ComPtr<ID3D11DepthStencilState> no_depth_dss_;
 
 	void OpaquePass() {
+		using namespace engine;
+
 		GetRenderer().GetContext().RSSetState(cull_back_rs_.Get());
 		GetRenderer().GetContext().OMSetBlendState(opaque_bs_.Get(), nullptr, 0xffffffff);
 		GetRenderer().GetContext().OMSetDepthStencilState(opaque_dss_.Get(), 0);
@@ -104,15 +106,8 @@ private:
 		sampler_.SetSampler();
 		g_buffer_.SetGeometryPassTargets();
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		using namespace engine;
-
-		const auto sign = ecs::Signer::GetSignature<ModelComponent, DnsMapsComponent>();
-		for (auto it = GetIterator(sign); it.HasCurrent(); it.Next()) {
-			auto& model = it.Get();
-			auto& model_component = model.Get<ModelComponent>();
-			auto& dns_maps_component = model.Get<DnsMapsComponent>();
-
+		
+		for (auto& [entity, model_component, dns_maps_component] : Filter<ModelComponent, DnsMapsComponent>()) {
 			model_component.transform_buffer.VSSetBuffer(0);
 			dns_maps_component.diffuse_texture.SetTexture(0);
 			dns_maps_component.normal_texture.SetTexture(1);
@@ -168,9 +163,7 @@ private:
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 		GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
 
-		for (auto it = GetIterator<AmbientLightComponent>(); it.HasCurrent(); it.Next()) {
-			auto& light = it.Get();
-			auto& ambient_light_component = light.Get<AmbientLightComponent>();
+		for (auto& [entity, ambient_light_component] : Filter<AmbientLightComponent>()) {
 			ambient_light_component.light_data_buffer.PSSetBuffer(0);
 			GetRenderer().GetContext().Draw(4, 0);
 		}
@@ -186,9 +179,7 @@ private:
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
 		GetRenderer().GetContext().IASetIndexBuffer(nullptr, DXGI_FORMAT_R32_UINT, 0);
 
-		for (auto it = GetIterator<DirectionLightComponent>(); it.HasCurrent(); it.Next()) {
-			auto& light = it.Get();
-			auto& direction_light_component = light.Get<DirectionLightComponent>();
+		for (auto& [entity, direction_light_component] : Filter<DirectionLightComponent>()) {
 			direction_light_component.light_data_buffer.PSSetBuffer(0);
 			GetRenderer().GetContext().Draw(4, 0);
 		}
@@ -203,11 +194,7 @@ private:
 
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		auto it = GetIterator<ModelComponent, PointLightComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			auto& light = it.Get();
-			auto& model_component = light.Get<ModelComponent>();
-			auto& point_light_component = light.Get<PointLightComponent>();
+		for (auto& [entity, model_component, point_light_component] : Filter<ModelComponent, PointLightComponent>()) {
 			model_component.transform_buffer.VSSetBuffer(0);
 			point_light_component.light_data_buffer.PSSetBuffer(1);
 

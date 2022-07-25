@@ -11,23 +11,20 @@ public:
 	void Update(float dt) override {
 		using namespace engine;
 
-		auto camera_it = GetIterator<TransformComponent, CameraComponent>();
+		const auto camera_it = Filter<TransformComponent, CameraComponent>().GetIterator();
 		if (!camera_it.HasCurrent()) return;
-		ecs::Entity& camera = camera_it.Get();
 
-		auto katamari_it = GetIterator<TransformComponent, KatamariControllerComponent>();
+		auto& [camera, camera_transform_component, camera_component] = camera_it.Get();
+
+		const auto katamari_it = Filter<TransformComponent, KatamariControllerComponent>().GetIterator();
 		if (!katamari_it.HasCurrent()) return;
-		ecs::Entity& katamari = katamari_it.Get();
-		
-		CameraComponent& camera_component = camera.Get<CameraComponent>();
-		const TransformComponent& camera_transform = camera.Get<TransformComponent>();
-		const TransformComponent& karamari_transform = katamari.Get<TransformComponent>();
-		camera_component.position = camera_transform.GetPosition();
+
+		auto& [katamari, katamari_transform_component, katamari_controller_component] = katamari_it.Get();
 
 		SetLookAtMatrix(
 			&camera_component,
-			camera_transform.GetPosition(),
-			karamari_transform.GetPosition());
+			camera_transform_component.GetPosition(),
+			katamari_transform_component.GetPosition());
 		SetProjectionMatrix(&camera_component);
 	}
 
@@ -41,7 +38,7 @@ private:
 			from, to, DirectX::SimpleMath::Vector3::UnitY);
 	}
 
-	void SetProjectionMatrix(engine::CameraComponent* camera_component) {
+	void SetProjectionMatrix(engine::CameraComponent* camera_component) const {
 		using namespace DirectX::SimpleMath;
 
 		camera_component->projection_matrix = Matrix::CreatePerspectiveFieldOfView(

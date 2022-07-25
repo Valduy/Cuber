@@ -21,11 +21,11 @@ public:
 	};
 
 	void Init(engine::Game& game) override {
-		engine::Game::SystemBase::Init(game);
-
 		using namespace graph;
 		using namespace engine;
 
+		SystemBase::Init(game);
+		
 		shader_.Init(
 			&GetRenderer(), 
 			LayoutDescriptor::kPosition3Normal3Binormal3Tangent3Texture2,
@@ -37,30 +37,25 @@ public:
 			D3D11_FILTER_MIN_MAG_MIP_LINEAR,
 			D3D11_COMPARISON_ALWAYS,
 			0);
-				
-		for (auto it = GetIterator<TransformComponent, ModelComponent>(); it.HasCurrent(); it.Next()) {
-			auto& entity = it.Get();
+
+		for (auto& [entity, transform_component, model_component] : Filter<TransformComponent, ModelComponent>()) {
 			auto& forward_render_component = entity.Add<ForwardRenderComponent>();
 			forward_render_component.light_transform_buffer.Init(&GetRenderer(), sizeof(LightTransformData));
 		}
 	}
 
 	void Update(float dt) override {
-		auto light_it = GetIterator<DirectionLightComponent>();
-		if (!light_it.HasCurrent()) return;
-
-		auto& light = light_it.Get();
-		auto& light_component = light.Get<DirectionLightComponent>();
-
 		using namespace engine;
-		auto it = GetIterator<TransformComponent, ForwardRenderComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			auto& model = it.Get();
-			auto& transform_component = model.Get<TransformComponent>();
-			auto& forward_render_component = model.Get<ForwardRenderComponent>();
 
+		auto it = Filter<DirectionLightComponent>().GetIterator();
+		if (!it.HasCurrent()) return;
+
+		auto& [entity, direction_light_component] = it.Get();
+		
+		for (auto& node : Filter<TransformComponent, ForwardRenderComponent>()) {
+			auto& [entity, transform_component, forward_render_component] = node;
 			DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
-			DirectX::SimpleMath::Matrix light_matrix = light_component.GetLightMatrix();
+			DirectX::SimpleMath::Matrix light_matrix = direction_light_component.GetLightMatrix();
 			DirectX::SimpleMath::Matrix light_world_view_proj_matrix = model_matrix * light_matrix;
 
 			LightTransformData light_transform_data {
@@ -71,6 +66,8 @@ public:
 	}
 
 	void Render() override {
+		using namespace engine;
+
 		shader_.SetShader();
 		sampler_.SetSampler();
 
@@ -78,32 +75,20 @@ public:
 		if (!TrySetLightData()) return;
 
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-		using namespace engine;
-		const auto sign = ecs::Signer::GetSignature<
-			ModelComponent,
-			MaterialComponent,
-			DnsMapsComponent,
-			ForwardRenderComponent>();
-
-		for (auto it = GetIterator(sign); it.HasCurrent(); it.Next()) {
-			auto& model = it.Get();
-			auto& model_component = model.Get<ModelComponent>();
-			auto& material_component = model.Get<MaterialComponent>();
-			auto& dns_maps_component = model.Get<DnsMapsComponent>();
-			auto& forward_render_component = model.Get<ForwardRenderComponent>();
-
+		
+		for (auto& node : Filter<ModelComponent, MaterialComponent, DnsMapsComponent, ForwardRenderComponent>()) {
+			auto& [entity, model_component, material_component, dns_maps_component, forward_render_component] = node;
 			model_component.transform_buffer.VSSetBuffer(0);
 			forward_render_component.light_transform_buffer.VSSetBuffer(1);
 			material_component.material_buffer.PSSetBuffer(2);
-			dns_maps_component.diffuse_texture.SetTexture(0);			
+			dns_maps_component.diffuse_texture.SetTexture(0);
 
 			for (MeshBuffers& mesh_buffers : model_component.model_buffers) {
 				mesh_buffers.vertex_buffer.SetBuffer(sizeof(Vertex));
 				mesh_buffers.index_buffer.SetBuffer();
 				GetRenderer().GetContext().DrawIndexed(
 					mesh_buffers.index_buffer.GetSize(), 0, 0);
-			}			
+			}
 		}
 	}
 
@@ -112,11 +97,10 @@ private:
 	graph::Sampler sampler_;
 
 	bool TrySetLightData() {
-		auto light_it = GetIterator<DirectionLightComponent>();
-		if (!light_it.HasCurrent()) return false;
+		auto it = Filter<DirectionLightComponent>().GetIterator();
+		if (!it.HasCurrent()) return false;
 
-		auto& light = light_it.Get();
-		auto& light_component = light.Get<DirectionLightComponent>();
+		auto& [entity, light_component] = it.Get();
 		light_component.light_data_buffer.PSSetBuffer(3);
 		light_component.shadow_map.SetTexture(1);
 		return true;

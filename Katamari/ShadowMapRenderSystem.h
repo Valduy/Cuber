@@ -14,46 +14,39 @@ public:
 	};
 
 	void Init(engine::Game& game) override {
-		engine::Game::SystemBase::Init(game);
-
 		using namespace graph;
+		using namespace engine;
+
+		SystemBase::Init(game);
+		
 		shader_.Init(
 			&GetRenderer(), 
 			LayoutDescriptor::kPosition3Normal3Binormal3Tangent3Texture2, 
 			L"Shaders/ShadowMapShader.hlsl");
 
-		auto light_it = GetIterator<DirectionLightComponent>();
-		if (!light_it.HasCurrent()) return;
+		auto it = Filter<DirectionLightComponent>().GetIterator();
+		if (!it.HasCurrent()) return;
 
-		auto& light = light_it.Get();
-		auto& light_component = light.Get<DirectionLightComponent>();
-		light_component.shadow_map.Init(&GetRenderer(), 2048, 2048);
+		auto& [entity, direction_light_component] = it.Get();
+		direction_light_component.shadow_map.Init(&GetRenderer(), 2048, 2048);
 
-		using namespace engine;
-		auto it = GetIterator<ModelComponent, TransformComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			auto& model = it.Get();
-
+		for (auto& [entity, model_component, transform_component] : Filter<ModelComponent, TransformComponent>()) {
 			ConstantBuffer transform_buffer;
 			transform_buffer.Init(&GetRenderer(), sizeof(TransformData));
 
-			model.Add<ShadowComponent>([&] {
+			entity.Add<ShadowComponent>([&] {
 				return new ShadowComponent(transform_buffer);
 			});
 		}
 	}
 
 	void Update(float dt) override {
+		using namespace engine;
+
 		DirectX::SimpleMath::Matrix light_matrix;
 		if (!TryGetLightMatrix(&light_matrix)) return;
 
-		using namespace engine;
-		auto it = GetIterator<TransformComponent, ShadowComponent>();
-		for (; it.HasCurrent(); it.Next()) {
-			auto& model = it.Get();
-			auto& transform_component = model.Get<TransformComponent>();
-			auto& shadow_component = model.Get<ShadowComponent>();
-
+		for (auto& [entity, transform_component, shadow_component] : Filter<TransformComponent, ModelComponent>()) {
 			DirectX::SimpleMath::Matrix model_matrix = transform_component.GetModelMatrix();
 			DirectX::SimpleMath::Matrix world_view_proj_matrix = model_matrix * light_matrix;
 			TransformData transform_data{
@@ -65,29 +58,19 @@ public:
 	}
 
 	void Render() override {
-		shader_.SetShader();
-
-		auto light_it = GetIterator<DirectionLightComponent>();
-		if (!light_it.HasCurrent()) return;
-
-		auto& light = light_it.Get();
-		auto& light_component = light.Get<DirectionLightComponent>();
-		light_component.shadow_map.SetRenderTarget();
-
-		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-		
 		using namespace engine;
 
-		const auto sign = ecs::Signer::GetSignature<
-			ModelComponent,
-			DnsMapsComponent,
-			ShadowComponent>();
+		shader_.SetShader();
 
-		for (auto it = GetIterator(sign); it.HasCurrent(); it.Next()) {
-			auto& model = it.Get();
-			auto& model_component = model.Get<ModelComponent>();
-			auto& dns_maps_component = model.Get<DnsMapsComponent>();
-			auto& shadow_component = model.Get<ShadowComponent>();
+		auto it = Filter<DirectionLightComponent>().GetIterator();
+		if (!it.HasCurrent()) return;
+
+		auto& [entity, direction_light_component] = it.Get();
+		direction_light_component.shadow_map.SetRenderTarget();
+		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+		
+		for (auto& node : Filter<ModelComponent, DnsMapsComponent, ShadowComponent>()) {
+			auto& [entity, model_component, dns_maps_component, shadow_component] = node;
 			shadow_component.transform_buffer.VSSetBuffer();
 			dns_maps_component.diffuse_texture.SetTexture();
 
@@ -106,12 +89,11 @@ private:
 	graph::Shader shader_;
 
 	bool TryGetLightMatrix(DirectX::SimpleMath::Matrix* light_matrix) {
-		auto light_it = GetIterator<DirectionLightComponent>();
-		if (!light_it.HasCurrent()) return false;
+		auto it = Filter<DirectionLightComponent>().GetIterator();
+		if (!it.HasCurrent()) return false;
 
-		auto& light = light_it.Get();
-		auto& light_component = light.Get<DirectionLightComponent>();
-		*light_matrix = light_component.GetLightMatrix();
+		auto& [entity, direction_light_component] = it.Get();
+		*light_matrix = direction_light_component.GetLightMatrix();
 		return true;
 	}
 };

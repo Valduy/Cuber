@@ -2,10 +2,10 @@
 
 #include <SimpleMath.h>
 
-#include "../ECS/Entity.h"
+#include "../Ash/Entity.h"
 #include "../GraphicEngine/ShadowMap.h"
 
-class DirectionLightComponent : public ecs::Entity::ComponentBase {
+class DirectionLightComponent : public ash::Entity::ComponentBase {
 public:
 	DirectX::SimpleMath::Vector3 light_direction;
 	DirectX::SimpleMath::Vector3 light_color;

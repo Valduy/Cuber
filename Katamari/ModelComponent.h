@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../ECS/Entity.h"
+#include "../Ash/Entity.h"
 #include "../Engine/Model.h"
 #include "../GraphicEngine/ConstantBuffer.h"
 #include "../GraphicEngine/VertexBuffer.h"
@@ -19,7 +19,7 @@ public:
 	{}
 };
 
-class ModelComponent : public ecs::Entity::ComponentBase {
+class ModelComponent : public ash::Entity::ComponentBase {
 public:
 	engine::Model& model;
 	std::vector<MeshBuffers> model_buffers;

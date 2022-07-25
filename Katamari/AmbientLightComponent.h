@@ -1,10 +1,11 @@
 #pragma once
 
 #include <SimpleMath.h>
-#include "../ECS/Entity.h"
+
+#include "../Ash/Entity.h"
 #include "../GraphicEngine/ConstantBuffer.h"
 
-class AmbientLightComponent : public ecs::Entity::ComponentBase {
+class AmbientLightComponent : public ash::Entity::ComponentBase {
 public:
 	DirectX::SimpleMath::Vector3 light_color;
 	float intensity;

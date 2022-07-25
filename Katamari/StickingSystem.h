@@ -13,26 +13,17 @@ public:
 		using namespace engine;
 		using namespace DirectX::SimpleMath;
 
-		static const auto katamari_sign = 
-			Signer::GetSignature<TransformComponent, KatamariComponent, CollisionComponent>();
+		auto filter = Filter<TransformComponent, KatamariComponent, CollisionComponent>();
+		const auto it = filter.GetIterator();
+		if (!it.HasCurrent()) return;
 
-		static const auto item_sign 	= 
-			Signer::GetSignature<TransformComponent, ItemComponent, CollisionComponent>();
+		auto& [katamari, katamari_transform, katamari_component, katamari_collision] = it.Get();
+		
+		for (auto& node : Filter<TransformComponent, ItemComponent, CollisionComponent>()) {
+			auto& [item, item_transform, item_component, item_collision] = node;
 
-		auto katamari_it = GetIterator(katamari_sign);
-		if (!katamari_it.HasCurrent()) return;
-		Entity& katamari = katamari_it.Get();
-
-		auto& katamari_transform = katamari.Get<TransformComponent>();
-		auto& katamari_collision = katamari.Get<CollisionComponent>();
-
-		for (auto it = GetIterator(item_sign); it.HasCurrent(); it.Next()) {
-			Entity& item = it.Get();
-			auto& item_transform = item.Get<TransformComponent>();
-			auto& item_collision = item.Get<CollisionComponent>();
-			
 			if (IsCanCatch(katamari_transform, katamari_collision, item_transform, item_collision) &&
-				IsCollide(katamari_transform, katamari_collision, item_transform, item_collision)) 
+				IsCollide(katamari_transform, katamari_collision, item_transform, item_collision))
 			{
 				item.Remove<ItemComponent>();
 				const Vector3 position = item_transform.GetPosition();

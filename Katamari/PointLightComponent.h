@@ -2,10 +2,10 @@
 
 #include <SimpleMath.h>
 
-#include "../ECS/Entity.h"
+#include "../Ash/Entity.h"
 #include "../GraphicEngine/ConstantBuffer.h"
 
-class PointLightComponent : public ecs::Entity::ComponentBase {
+class PointLightComponent : public ash::Entity::ComponentBase {
 public:
 	DirectX::SimpleMath::Vector3 view_position;
 	DirectX::SimpleMath::Vector3 light_position;

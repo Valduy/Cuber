@@ -1,4 +1,4 @@
-#include <directxmath.h>
+#include <DirectXMath.h>
 #include <vector>
 
 #include "BorderSystem.h"

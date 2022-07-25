@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../ECS/Entity.h"
+#include "../Ash/Entity.h"
 #include "../GraphicEngine/ConstantBuffer.h"
 
-class ShadowComponent : public ecs::Entity::ComponentBase {
+class ShadowComponent : public ash::Entity::ComponentBase {
 public:
 	graph::ConstantBuffer transform_buffer;
 

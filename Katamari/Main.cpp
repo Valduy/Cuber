@@ -1,3 +1,4 @@
+#include <DirectXMath.h>
 #include <random>
 
 #include "../Engine/Game.h"
@@ -57,7 +58,7 @@ DirectX::ScratchImage apple_specular;
 DirectX::ScratchImage tile_specular;
 
 engine::TransformComponent& AddTransform(
-	ecs::Entity& entity,
+	ash::Entity& entity,
 	DirectX::SimpleMath::Vector3 position,
 	DirectX::SimpleMath::Vector3 euler = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f })
@@ -70,7 +71,7 @@ engine::TransformComponent& AddTransform(
 }
 
 ModelComponent& AttachModel(
-	ecs::Entity& entity, 
+	ash::Entity& entity, 
 	engine::Model& model)
 {
 	return entity.Add<ModelComponent>([&] {
@@ -78,14 +79,14 @@ ModelComponent& AttachModel(
 	});
 }
 
-MaterialComponent& AttachMaterial(ecs::Entity& entity, Material material) {
+MaterialComponent& AttachMaterial(ash::Entity& entity, Material material) {
 	auto& material_component = entity.Add<MaterialComponent>();
 	material_component.material = material;
 	return material_component;
 }
 
 DnsMapsComponent& AttachDnsMaps(
-	ecs::Entity& entity,
+	ash::Entity& entity,
 	DirectX::ScratchImage& diffuse,
 	DirectX::ScratchImage& normal, 
 	DirectX::ScratchImage& specular)
@@ -96,9 +97,9 @@ DnsMapsComponent& AttachDnsMaps(
 	return maps_component;
 }
 
-ecs::Entity& AttachSphere(
+ash::Entity& AttachSphere(
 	engine::Game& game, 
-	ecs::Entity& entity,
+	ash::Entity& entity,
 	float radius,
 	DirectX::SimpleMath::Vector3 local_position = { 0.0f, 0.0f, 0.0f })
 {
@@ -118,12 +119,12 @@ ecs::Entity& AttachSphere(
 	return sphere;
 }
 
-ecs::Entity& SpawnApricot(
+ash::Entity& SpawnApricot(
 	engine::Game& game,
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	auto& apricot = game.GetEntityManager().CreateEntity();
+	auto& apricot = game.GetEntities().Create();
 	AddTransform(apricot, position, rotation, { 0.3f, 0.3f, 0.3f });
 	AttachModel(apricot, apricot_model);
 	AttachMaterial(apricot, { 0.1f, 3.0f, 0.5f });
@@ -133,12 +134,12 @@ ecs::Entity& SpawnApricot(
 	return apricot;
 }
 
-ecs::Entity& SpawnPear(
+ash::Entity& SpawnPear(
 	engine::Game& game,
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	auto& pear = game.GetEntityManager().CreateEntity();
+	auto& pear = game.GetEntities().Create();
 	AddTransform(pear, position, rotation, { 0.3f, 0.3f, 0.3f });
 	AttachModel(pear, pear_model);
 	AttachMaterial(pear, { 0.1f, 32.0f, 0.75f });
@@ -148,12 +149,12 @@ ecs::Entity& SpawnPear(
 	return pear;
 }
 
-ecs::Entity& SpawnStatuette(
+ash::Entity& SpawnStatuette(
 	engine::Game& game,
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 rotation = { 0.0f, 0.0f, 0.0f })
 {
-	auto& statuette = game.GetEntityManager().CreateEntity();
+	auto& statuette = game.GetEntities().Create();
 	AddTransform(statuette, position, rotation, { 0.3f, 0.3f, 0.3f });
 	AttachModel(statuette, statuette_model);
 	AttachMaterial(statuette, { 0.1f, 32.0f, 0.75f });
@@ -193,15 +194,15 @@ void SpawnItems(engine::Game& game) {
 	}
 }
 
-ecs::Entity& SpawnCamera(engine::Game& game) {
-	ecs::Entity& camera = game.GetEntityManager().CreateEntity();
+ash::Entity& SpawnCamera(engine::Game& game) {
+	auto& camera = game.GetEntities().Create();
 	camera.Add<engine::CameraComponent>();
 	camera.Add<engine::TransformComponent>();
 	return camera;
 }
 
-ecs::Entity& SpawnKatamari(engine::Game& game, ecs::Entity& camera) {
-	auto& apple = game.GetEntityManager().CreateEntity();
+ash::Entity& SpawnKatamari(engine::Game& game, ash::Entity& camera) {
+	auto& apple = game.GetEntities().Create();
 	AddTransform(apple, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
 	AttachModel(apple, apple_model);
 	AttachMaterial(apple, { 0.1f, 32.0f, 0.6f });
@@ -209,7 +210,7 @@ ecs::Entity& SpawnKatamari(engine::Game& game, ecs::Entity& camera) {
 	AttachSphere(game, apple, 1.0f);
 	apple.Add<KatamariComponent>();
 
-	auto& katamari = game.GetEntityManager().CreateEntity();	
+	auto& katamari = game.GetEntities().Create();	
 	katamari.Add<KatamariControllerComponent>([&] {
 		return new KatamariControllerComponent(apple, 3.0f, 3.0f);
 	});
@@ -222,25 +223,25 @@ ecs::Entity& SpawnKatamari(engine::Game& game, ecs::Entity& camera) {
 	return katamari;
 }
 
-ecs::Entity& SpawnAmbientLight(
+ash::Entity& SpawnAmbientLight(
 	engine::Game& game,
 	DirectX::SimpleMath::Vector3 color, 
 	float intensity)
 {
-	auto& light = game.GetEntityManager().CreateEntity();
+	auto& light = game.GetEntities().Create();
 	auto& ambient_light = light.Add<AmbientLightComponent>();
 	ambient_light.light_color = color;
 	ambient_light.intensity = intensity;
 	return light;
 }
 
-ecs::Entity& SpawnDirectionLight(
+ash::Entity& SpawnDirectionLight(
 	engine::Game& game, 
 	DirectX::SimpleMath::Vector3 position, 
 	DirectX::SimpleMath::Vector3 direction,
 	DirectX::SimpleMath::Vector3 color)
 {
-	auto& light = game.GetEntityManager().CreateEntity();
+	auto& light = game.GetEntities().Create();
 	auto& light_transform = light.Add<engine::TransformComponent>();
 	light_transform.SetPosition(position);
 
@@ -258,13 +259,13 @@ ecs::Entity& SpawnDirectionLight(
 	return light;
 }
 
-ecs::Entity& SpawnPointLight(
+ash::Entity& SpawnPointLight(
 	engine::Game& game,
 	DirectX::SimpleMath::Vector3 position,
 	DirectX::SimpleMath::Vector3 color,
 	float fade_radius)
 {
-	auto& light = game.GetEntityManager().CreateEntity();
+	auto& light = game.GetEntities().Create();
 	auto& light_transform = AddTransform(light, position);
 	AttachModel(light, icosphere_model);
 	light_transform.SetScale({ fade_radius, fade_radius, fade_radius });
@@ -279,12 +280,12 @@ ecs::Entity& SpawnPointLight(
 	return light;
 }
 
-ecs::Entity& SpawnTile(
+ash::Entity& SpawnTile(
 	engine::Game& game, 
 	DirectX::SimpleMath::Vector3 position = { 0.0f, 0.0f, 0.0f },
 	DirectX::SimpleMath::Vector3 scale = { 1.0f, 1.0f, 1.0f })
 {
-	auto& tile = game.GetEntityManager().CreateEntity();
+	auto& tile = game.GetEntities().Create();
 	AddTransform(tile, position, { 0.0f, 0.0f, 0.0f }, scale);
 	AttachModel(tile, tile_model);
 	AttachMaterial(tile, { 0.1f, 10.0f, 0.1f });
@@ -293,9 +294,9 @@ ecs::Entity& SpawnTile(
 }
 
 
-ecs::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 position) {
+ash::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 position) {
 	using namespace DirectX::SimpleMath;
-	auto& plane = game.GetEntityManager().CreateEntity();
+	auto& plane = game.GetEntities().Create();
 	auto& plane_transform = AddTransform(plane, position);
 	constexpr int ratio = 5;
 	constexpr int half_ratio = ratio / 2;

@@ -17,14 +17,11 @@ public:
 	void Update(float dt) override {
 		using namespace engine;
 
-		auto it = GetIterator<TransformComponent, KatamariControllerComponent>();
-		if (!it.HasCurrent()) return;
-		ecs::Entity& katamari = it.Get();
-
-		TransformComponent& transform_component = katamari.Get<TransformComponent>();
-		KatamariControllerComponent& katamari_component = katamari.Get<KatamariControllerComponent>();
-		UpdatePosition(&transform_component, &katamari_component, dt);
-		UpdateRotation(&transform_component);
+		for (auto& node : Filter<TransformComponent, KatamariControllerComponent>()) {
+			auto& [entity, transform_component, katamari_controller_component] = node;
+			UpdatePosition(&transform_component, &katamari_controller_component, dt);
+			UpdateRotation(&transform_component);
+		}
 	}
 
 private:

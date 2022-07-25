@@ -1,10 +1,11 @@
 #pragma once
 
 #include <DirectXTex.h>
-#include "../ECS/Entity.h"
+
+#include "../Ash/Entity.h"
 #include "../GraphicEngine/Texture.h"
 
-class DnsMapsComponent : public ecs::Entity::ComponentBase {
+class DnsMapsComponent : public ash::Entity::ComponentBase {
 public:
 	DirectX::ScratchImage& diffuse;
 	DirectX::ScratchImage& normal;
