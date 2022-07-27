@@ -46,6 +46,6 @@ TEST_P(FilterEntitiesFixture, Filter_AddEntitiesWithNecessaryComponentsToFamilyW
 INSTANTIATE_TEST_CASE_P(
 	Filter,
 	FilterEntitiesFixture,
-	testing::Values(0, 1, 2, 3), );
+	testing::Values(0, 1, 2, 3, 10), );
 
 } // namespace ash_tests

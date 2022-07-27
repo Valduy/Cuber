@@ -62,7 +62,7 @@ TEST_P(FamilyEntitiesFixture, TryAddEntity_AddEntityWithoutNecessaryComponents_E
 	DeleteEntities(&entities);
 }
 
-TEST_P(FamilyEntitiesFixture, OnComponentAddedToEntity_NotCorrectComponentWithInvalidation_EntitiesNotAdded) {
+TEST_P(FamilyEntitiesFixture, OnComponentAddedToEntity_NotCorrectComponents_EntitiesNotAdded) {
 	auto entities = CreateEntities(GetParam());
 	ash::Family<TestComponent<2>> family;
 	size_t count = 0;
@@ -73,8 +73,6 @@ TEST_P(FamilyEntitiesFixture, OnComponentAddedToEntity_NotCorrectComponentWithIn
 		family.OnComponentAddedToEntity(*it, id);
 	}
 
-	family.Invalidate();
-
 	for (auto& node : family) {
 		count += 1;
 	}
@@ -83,7 +81,7 @@ TEST_P(FamilyEntitiesFixture, OnComponentAddedToEntity_NotCorrectComponentWithIn
 	DeleteEntities(&entities);
 }
 
-TEST_P(FamilyEntitiesFixture, OnComponentAddedToEntity_CorrectComponentWithoutInvalidation_NewEntitiesSciped) {
+TEST_P(FamilyEntitiesFixture, OnComponentAddedToEntity_CorrectComponents_EntitiesAdded) {
 	auto entities = CreateEntities(GetParam());
 	ash::Family<TestComponent<0>> family;
 	size_t count = 0;
@@ -93,27 +91,6 @@ TEST_P(FamilyEntitiesFixture, OnComponentAddedToEntity_CorrectComponentWithoutIn
 		const ash::Type::Id id = ash::Type::GetId<TestComponent<0>>();
 		family.OnComponentAddedToEntity(*it, id);
 	}
-
-	for (auto& node : family) {
-		count += 1;
-	}
-
-	EXPECT_EQ(count, 0);
-	DeleteEntities(&entities);
-}
-
-TEST_P(FamilyEntitiesFixture, OnComponentAddedToEntity_CorrectComponentWithInvalidation_NewEntitiesSciped) {
-	auto entities = CreateEntities(GetParam());
-	ash::Family<TestComponent<0>> family;
-	size_t count = 0;
-
-	for (const auto it : entities) {
-		it->Add<TestComponent<0>>();
-		const ash::Type::Id id = ash::Type::GetId<TestComponent<0>>();
-		family.OnComponentAddedToEntity(*it, id);
-	}
-
-	family.Invalidate();
 
 	for (auto& node : family) {
 		count += 1;
@@ -123,7 +100,7 @@ TEST_P(FamilyEntitiesFixture, OnComponentAddedToEntity_CorrectComponentWithInval
 	DeleteEntities(&entities);
 }
 
-TEST_P(FamilyEntitiesFixture, OnComponentRemovedFromEntity_CorrectComponentWithoutInvalidation_EntitiesSciped) {
+TEST_P(FamilyEntitiesFixture, OnComponentRemovedFromEntity_CorrectComponents_EntitiesRemoved) {
 	auto entities = CreateEntities(GetParam());
 	ash::Family<TestComponent<0>> family;
 	ComponentAdder<TestComponent<0>>::Add(entities.begin(), entities.end());
@@ -144,6 +121,27 @@ TEST_P(FamilyEntitiesFixture, OnComponentRemovedFromEntity_CorrectComponentWitho
 	}
 
 	EXPECT_EQ(count, 0);
+	DeleteEntities(&entities);
+}
+
+TEST_P(FamilyEntitiesFixture, OnComponentRemovedFromEntity_RemoveComponentsWhenIterate_IterateAllEntities) {
+	auto entities = CreateEntities(GetParam());
+	ash::Family<TestComponent<0>> family;
+	ComponentAdder<TestComponent<0>>::Add(entities.begin(), entities.end());
+	size_t count = 0;
+
+	for (const auto it : entities) {
+		family.TryAddEntity(*it);
+	}
+	
+	for (auto& [entity, component] : family) {
+		entity.Remove<TestComponent<0>>();
+		const ash::Type::Id id = ash::Type::GetId<TestComponent<0>>();
+		family.OnComponentRemovedFromEntity(entity, id);
+		count += 1;
+	}
+
+	EXPECT_EQ(count, entities.size());
 	DeleteEntities(&entities);
 }
 
@@ -172,6 +170,6 @@ TEST_P(FamilyEntitiesFixture, RemoveEntity_RemoveAllAddedEntities_FamilyIsEmpty)
 INSTANTIATE_TEST_CASE_P(
 	Family,
 	FamilyEntitiesFixture,
-	testing::Values(0, 1, 2, 3),);
+	testing::Values(0, 1, 2, 3, 10),);
 
 } // namespace ash_tests

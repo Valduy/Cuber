@@ -115,7 +115,7 @@ public:
 
 	template<typename TComponent>
 	TComponent& Get() {
-		Type::Id id = Type::GetId<TComponent>();
+		const Type::Id id = Type::GetId<TComponent>();
 		return static_cast<TComponent&>(Get(id));
 	}
 

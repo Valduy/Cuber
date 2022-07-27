@@ -26,30 +26,12 @@ TEST(EntityManager, DeleteRemoveAndFilterEntities) {
 	entity1.Add<TestComponent<1>>();
 	entity2.Add<TestComponent<1>>();
 
-	// Some entities contains TestComponent<0>, but invalidation isn't called.
-	counter = 0;
-	for (auto [entity, component] : manager.Filter<TestComponent<0>>()) {
-		counter += 1;
-	}
-	ASSERT_EQ(counter, 0);
-
-	// This is new filter and all necessary entities should be added to this filter initially.
-	counter = 0;
-	for (auto [entity, component] : manager.Filter<TestComponent<1>>()) {
-		counter += 1;
-	}
-	ASSERT_EQ(counter, 2);
-
-	manager.Invalidate();
-
-	// Entities with TestComponent<0> should be filtered after invalidation.
 	counter = 0;
 	for (auto [entity, component] : manager.Filter<TestComponent<0>>()) {
 		counter += 1;
 	}
 	ASSERT_EQ(counter, 2);
 
-	// Check, that TestComponent<1> filter works fine.
 	counter = 0;
 	for (auto [entity, component] : manager.Filter<TestComponent<1>>()) {
 		counter += 1;

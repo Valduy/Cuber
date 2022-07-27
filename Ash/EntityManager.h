@@ -26,8 +26,6 @@ public:
 
 	void Invalidate() {
 		for (const auto& [_, family] : families_) {
-			family->Invalidate();
-
 			for (const auto entity : destroy_pool_) {
 				family->RemoveEntity(*entity);
 			}
@@ -37,6 +35,7 @@ public:
 			entities_.erase(entity);
 			entity->ComponentAdded.Detach(*this, &EntityManager::OnComponentAdded);
 			entity->ComponentRemoved.Detach(*this, &EntityManager::OnComponentRemoved);
+			delete entity;
 		}
 
 		destroy_pool_.clear();

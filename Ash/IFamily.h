@@ -8,8 +8,6 @@ class IFamily {
 public:
 	virtual ~IFamily() = default;
 
-	virtual void Invalidate() = 0;
-
 	// Method try to add an entity into family. If this entity contains all required components,
 	// the family store it and create a node. Otherwise, the family ignores this entity.
 	// Note: this method should only be called from the entity manager when the family is created, to initialize

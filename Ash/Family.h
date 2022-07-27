@@ -1,9 +1,7 @@
 #pragma once
 
 #include <map>
-#include <set>
 #include <tuple>
-#include <functional>
 #include <utility>
 #include "Signature.h"
 #include "IFamily.h"
@@ -13,8 +11,27 @@ namespace ash {
 template<typename... Args>
 class Family : public IFamily {
 public:
+	using Tuple = std::tuple<Entity&, Args&...>;
 
-	using Node = std::tuple<Entity&, Args&...>;
+private:
+
+	#pragma region Node
+
+	struct Node {
+		Tuple data;
+		std::shared_ptr<Node> next;
+		std::shared_ptr<Node> prev;
+
+		Node(Tuple tuple)
+			: data(std::move(tuple))
+			, next(nullptr)
+			, prev(nullptr)
+		{}
+	};
+
+	#pragma endregion Node
+
+public:
 
 	#pragma region Iterator
 
@@ -23,21 +40,19 @@ public:
 		friend class Family;
 
 	public:
-		Node& Get() const {
-			return temp_->second;
+		Tuple& Get() const {
+			return temp_->data;
 		}
 
 		bool HasCurrent() const {
-			return temp_ != end_;
+			return temp_ != nullptr;
 		}
 
 		void Next() {
-			do {
-				++temp_;
-			} while (temp_ != end_ && !filter_(temp_->first));
+			temp_ = temp_->next;
 		}
 
-		Node& operator*() const {
+		Tuple& operator*() const {
 			return Get();
 		}
 
@@ -61,39 +76,25 @@ public:
 		}
 
 	private:
-		typename std::map<Entity*, Node>::iterator begin_;
-		typename std::map<Entity*, Node>::iterator end_;
-		typename std::map<Entity*, Node>::iterator temp_;
-		std::function<bool (Entity*)> filter_;
+		std::shared_ptr<Node> temp_;
 
-		Iterator(
-			typename std::map<Entity*, Node>::iterator begin,
-			typename std::map<Entity*, Node>::iterator end,
-			typename std::map<Entity*, Node>::iterator temp,
-			std::function<bool(Entity*)> filter)
-			: begin_(std::move(begin))
-			, end_(std::move(end))
-			, temp_(std::move(temp))
-			, filter_(std::move(filter))
-		{
-			while (temp_ != end_ && !filter_(temp_->first)) {
-				++temp_;
-			}
-		}
+		Iterator(std::shared_ptr<Node> ptr)
+			: temp_(std::move(ptr))
+		{}
 	};
 
 	#pragma endregion Iterator
 
 	Iterator GetIterator() {
-		return GetIterator(nodes_.begin(), nodes_.end(), nodes_.begin());
+		return Iterator(head_);
 	}
 
 	Iterator begin() {
-		return GetIterator(nodes_.begin(), nodes_.end(), nodes_.begin());
+		return Iterator(head_);
 	}
 
 	Iterator end() {
-		return GetIterator(nodes_.begin(), nodes_.end(), nodes_.end());
+		return Iterator(nullptr);
 	}
 
 	static bool IsMatch(Entity& entity) {
@@ -108,18 +109,8 @@ public:
 	
 	#pragma region IFamily
 
-	void Invalidate() override {
-		for (auto entity : to_remove_) {
-			nodes_.erase(entity);
-		}
-
-		for (const auto entity : to_add_) {
-			AddEntity(*entity);
-		}
-	}
-
 	bool TryAddEntity(Entity& entity) override {
-		if (nodes_.contains(&entity)) {
+		if (nodes_map_.contains(&entity)) {
 			return false;
 		}
 
@@ -132,10 +123,11 @@ public:
 	}
 
 	bool RemoveEntity(Entity& entity) override {
-		auto it = nodes_.find(&entity);
+		auto it = nodes_map_.find(&entity);
 
-		if (it != nodes_.end()) {
-			nodes_.erase(it);
+		if (it != nodes_map_.end()) {
+			Remove(it->second);
+			nodes_map_.erase(it);
 			return true;
 		}
 
@@ -143,20 +135,12 @@ public:
 	}
 
 	void OnComponentAddedToEntity(Entity& entity, Type::Id id) override {
-		if (nodes_.contains(&entity)) {
-			return;
-		}
-
-		if (IsMatch(entity)) {
-			to_add_.insert(&entity);
-			to_remove_.erase(&entity);
-		}
+		TryAddEntity(entity);
 	}
 
 	void OnComponentRemovedFromEntity(Entity& entity, Type::Id id) override {
 		if (Signature<Args...>::Contains(id)) {
-			to_add_.erase(&entity);
-			to_remove_.insert(&entity);
+			RemoveEntity(entity);
 		}
 	}
 
@@ -164,55 +148,72 @@ public:
 
 private:
 	template<typename...>
-	struct NodeBuilder;
+	struct TupleBuilder;
 
 	template<typename Head, typename... Tail>
-	struct NodeBuilder<Head, Tail...> {
+	struct TupleBuilder<Head, Tail...> {
 		static std::tuple<Head&, Tail&...> Create(Entity& entity) {
 			std::tuple<Head&> head(entity.Get<Head>());
-			auto tail = NodeBuilder<Tail...>::Create(entity);
+			auto tail = TupleBuilder<Tail...>::Create(entity);
 			return std::tuple_cat(head, tail);
 		}
 	};
 
 	template<>
-	struct NodeBuilder<> {
+	struct TupleBuilder<> {
 		static std::tuple<> Create(Entity& entity) {
 			std::tuple<> head;
 			return head;
 		}
 	};
 
-	std::map<Entity*, Node> nodes_;
-	std::set<Entity*> to_add_;
-	std::set<Entity*> to_remove_;
+	std::shared_ptr<Node> head_;
+	std::shared_ptr<Node> tail_;
+	std::map<Entity*, std::shared_ptr<Node>> nodes_map_ = {};
 
-	static Node CreateNode(Entity& entity) {
+	static Tuple CreateTuple(Entity& entity) {
 		std::tuple<Entity&> head(entity);
-		std::tuple<Args&...> tail = NodeBuilder<Args...>::Create(entity);
+		std::tuple<Args&...> tail = TupleBuilder<Args...>::Create(entity);
 		return std::tuple_cat(head, tail);
 	}
 		
 	void AddEntity(Entity& entity) {
-		nodes_.insert({ &entity, CreateNode(entity) });
+		auto data = CreateTuple(entity);
+		std::shared_ptr<Node> node = std::make_shared<Node>(std::move(data));
+		Insert(node);
+		nodes_map_[&entity] = node;
 	}
 
-	Iterator GetIterator(
-		typename std::map<Entity*, Node>::iterator begin,
-		typename std::map<Entity*, Node>::iterator end,
-		typename std::map<Entity*, Node>::iterator temp)
-	{
-		return {
-			begin,
-			end,
-			temp,
-			[&](Entity* e) { return !IsRemoved(e); }
-		};
+	void Insert(std::shared_ptr<Node> node) {
+		if (head_ == nullptr) {
+			node->prev = nullptr;
+			node->next = nullptr;
+			head_ = node;
+			tail_ = node;
+		} else {
+			tail_->next = node;
+			node->prev = tail_;
+			node->next = nullptr;
+			tail_ = node;
+		}
 	}
 
-	bool IsRemoved(Entity* entity) {
-		const auto it = to_remove_.find(entity);
-		return it != to_remove_.end();
+	void Remove(std::shared_ptr<Node> node) {
+		if (head_ == node) {
+			head_ = node->next;
+		}
+
+		if (tail_ == node) {
+			tail_ = tail_->prev;
+		}
+
+		if (node->prev != nullptr) {
+			node->prev->next = node->next;
+		}
+
+		if (node->next != nullptr) {
+			node->next->prev = node->prev;
+		}
 	}
 };
 
