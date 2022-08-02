@@ -24,7 +24,7 @@ public:
 			LayoutDescriptor::kPosition3Normal3Binormal3Tangent3Texture2, 
 			L"Shaders/ShadowMapShader.hlsl");
 
-		auto it = Filter<DirectionLightComponent>().GetIterator();
+		const auto it = Filter<DirectionLightComponent>().GetIterator();
 		if (!it.HasCurrent()) return;
 
 		auto& [entity, direction_light_component] = it.Get();
@@ -62,7 +62,7 @@ public:
 
 		shader_.SetShader();
 
-		auto it = Filter<DirectionLightComponent>().GetIterator();
+		const auto it = Filter<DirectionLightComponent>().GetIterator();
 		if (!it.HasCurrent()) return;
 
 		auto& [entity, direction_light_component] = it.Get();
@@ -89,7 +89,7 @@ private:
 	graph::Shader shader_;
 
 	bool TryGetLightMatrix(DirectX::SimpleMath::Matrix* light_matrix) {
-		auto it = Filter<DirectionLightComponent>().GetIterator();
+		const auto it = Filter<DirectionLightComponent>().GetIterator();
 		if (!it.HasCurrent()) return false;
 
 		auto& [entity, direction_light_component] = it.Get();

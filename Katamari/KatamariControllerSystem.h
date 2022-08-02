@@ -34,6 +34,8 @@ private:
 		float dt)
 	{
 		using namespace DirectX::SimpleMath;
+		using namespace engine;
+
 		const Matrix model = transform->GetModelMatrix();
 		Vector3 input_axis = Vector3::Zero;
 		Vector3 direction = Vector3::Zero;
@@ -59,8 +61,7 @@ private:
 		const Vector3 velocity = direction * katamari_component->speed;
 		const Vector3 movement = velocity * dt;		
 		transform->SetPosition(transform->GetPosition() + movement);
-
-		using namespace engine;
+		
 		input_axis.Normalize();
 		input_axis = input_axis.Cross(Vector3::UnitY) * dt * katamari_component->angle_speed;
 		const Quaternion quat = Quaternion::CreateFromYawPitchRoll(0, input_axis.z, -input_axis.x);

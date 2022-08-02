@@ -34,7 +34,7 @@ public:
 				item_transform.SetPosition(position);
 				item_transform.SetScale(scale);
 				item_transform.SetRotation(rotation);
-				ScaleUp(katamari_transform, katamari_collision, item_transform, item_collision);
+				ScaleUp(katamari_collision);
 			}
 		}
 	}
@@ -58,6 +58,7 @@ private:
 		const CollisionComponent& item_collision)
 	{
 		using namespace DirectX::SimpleMath;
+
 		const Vector3 katamari_offset = Vector3::Transform(
 			katamari_collision.offset, 
 			katamari_transform.GetModelMatrix());
@@ -72,12 +73,7 @@ private:
 		return difference.Length() < katamari_radius + item_radius;
 	}
 
-	static void ScaleUp(
-		const engine::TransformComponent& katamari_transform,
-		CollisionComponent& katamari_collision,
-		const engine::TransformComponent& item_transform,
-		const CollisionComponent& item_collision)
-	{
+	static void ScaleUp(CollisionComponent& katamari_collision) {
 		using namespace DirectX::SimpleMath;
 		constexpr float ratio = 0.05f;
 

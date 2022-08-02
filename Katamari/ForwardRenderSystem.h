@@ -38,7 +38,8 @@ public:
 			D3D11_COMPARISON_ALWAYS,
 			0);
 
-		for (auto& [entity, transform_component, model_component] : Filter<TransformComponent, ModelComponent>()) {
+		for (auto& node : Filter<TransformComponent, ModelComponent>()) {
+			auto& [entity, transform_component, model_component] = node;
 			auto& forward_render_component = entity.Add<ForwardRenderComponent>();
 			forward_render_component.light_transform_buffer.Init(&GetRenderer(), sizeof(LightTransformData));
 		}
@@ -47,7 +48,7 @@ public:
 	void Update(float dt) override {
 		using namespace engine;
 
-		auto it = Filter<DirectionLightComponent>().GetIterator();
+		const auto it = Filter<DirectionLightComponent>().GetIterator();
 		if (!it.HasCurrent()) return;
 
 		auto& [entity, direction_light_component] = it.Get();
@@ -97,7 +98,7 @@ private:
 	graph::Sampler sampler_;
 
 	bool TrySetLightData() {
-		auto it = Filter<DirectionLightComponent>().GetIterator();
+		const auto it = Filter<DirectionLightComponent>().GetIterator();
 		if (!it.HasCurrent()) return false;
 
 		auto& [entity, light_component] = it.Get();

@@ -56,10 +56,10 @@ public:
 	}
 
 	void Render() override {
-		auto light_it = Filter<DirectionLightComponent>().GetIterator();
-		if (!light_it.HasCurrent()) return;
+		const auto it = Filter<DirectionLightComponent>().GetIterator();
+		if (!it.HasCurrent()) return;
 
-		auto& [entity, direction_light_component] = light_it.Get();
+		auto& [entity, direction_light_component] = it.Get();
 		shader_.SetShader();
 		GetRenderer().GetContext().IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 		
