@@ -156,6 +156,7 @@
     <ClInclude Include="ConstantBuffer.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="IndexBuffer.h" />
+    <ClInclude Include="IWindow.h" />
     <ClInclude Include="KeyboardState.h" />
     <ClInclude Include="LayoutDescriptor.h" />
     <ClInclude Include="MouseState.h" />

@@ -29,7 +29,7 @@ ash::Entities& engine::Game::GetEntities() {
 	return entities_;
 }
 
-graph::Window& engine::Game::GetWindow() {
+graph::IWindow& engine::Game::GetWindow() {
 	return window_;
 }
 

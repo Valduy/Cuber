@@ -19,6 +19,9 @@
     <Filter Include="Source Files\graph">
       <UniqueIdentifier>{605f21c3-772b-46b0-8a76-cc24ee103c79}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\graph\Window">
+      <UniqueIdentifier>{170e9975-875d-49ba-9e2f-b6191298b6f0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -33,22 +36,13 @@
     <ClInclude Include="Renderer.h">
       <Filter>Header Files\graph</Filter>
     </ClInclude>
-    <ClInclude Include="Window.h">
-      <Filter>Header Files\graph</Filter>
-    </ClInclude>
     <ClInclude Include="VertexBuffer.h">
       <Filter>Header Files\graph</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">
       <Filter>Header Files\graph</Filter>
     </ClInclude>
-    <ClInclude Include="KeyboardState.h">
-      <Filter>Header Files\graph</Filter>
-    </ClInclude>
     <ClInclude Include="ConstantBuffer.h">
-      <Filter>Header Files\graph</Filter>
-    </ClInclude>
-    <ClInclude Include="MouseState.h">
       <Filter>Header Files\graph</Filter>
     </ClInclude>
     <ClInclude Include="LayoutDescriptor.h">
@@ -62,6 +56,18 @@
     </ClInclude>
     <ClInclude Include="ShadowMap.h">
       <Filter>Header Files\graph</Filter>
+    </ClInclude>
+    <ClInclude Include="Window.h">
+      <Filter>Header Files\graph\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="IWindow.h">
+      <Filter>Header Files\graph\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="KeyboardState.h">
+      <Filter>Header Files\graph\Window</Filter>
+    </ClInclude>
+    <ClInclude Include="MouseState.h">
+      <Filter>Header Files\graph\Window</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

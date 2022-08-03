@@ -38,7 +38,7 @@ public:
 			return game_->GetEntities();
 		}
 
-		graph::Window& GetWindow() const {
+		graph::IWindow& GetWindow() const {
 			return game_->GetWindow();
 		}
 
@@ -59,7 +59,7 @@ public:
 	};
 
 	ash::Entities& GetEntities();
-	graph::Window& GetWindow();
+	graph::IWindow& GetWindow();
 	graph::Renderer& GetRenderer();
 	
 	Game();
