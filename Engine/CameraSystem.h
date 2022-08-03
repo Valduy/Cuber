@@ -67,23 +67,14 @@ private:
 	void UpdateMouse() {
 		using namespace DirectX::SimpleMath;
 
-		if (first_move_) {
-			position_x_ = GetMouseState().GetX();
-			position_y_ = GetMouseState().GetY();
-			first_move_ = false;
-		}
-		else {
-			static constexpr float weight = 0.03f;
-			const int dx = GetMouseState().GetX() - position_x_;
-			const int dy = GetMouseState().GetY() - position_y_;
-			position_x_ = GetMouseState().GetX();
-			position_y_ = GetMouseState().GetY();
-			yaw_ -= weight * dx * mouse_sensitivity;
-			pitch_ -= weight * dy * mouse_sensitivity;
-			pitch_ = pitch_ < -DirectX::XM_PIDIV2
-				? -DirectX::XM_PIDIV2
-				: DirectX::XM_PIDIV2 < pitch_ ? DirectX::XM_PIDIV2 : pitch_;
-		}
+		static constexpr float weight = 0.03f;
+		const int dx = GetMouseState().GetDeltaX();
+		const int dy = GetMouseState().GetDeltaY();
+		yaw_ -= weight * dx * mouse_sensitivity;
+		pitch_ -= weight * dy * mouse_sensitivity;
+		pitch_ = pitch_ < -DirectX::XM_PIDIV2
+			? -DirectX::XM_PIDIV2
+			: DirectX::XM_PIDIV2 < pitch_ ? DirectX::XM_PIDIV2 : pitch_;
 	}
 
 	void SetLookAtMatrix(CameraComponent* camera_component, float dt) {

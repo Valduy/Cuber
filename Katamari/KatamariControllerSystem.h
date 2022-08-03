@@ -73,15 +73,8 @@ private:
 	void UpdateRotation(engine::TransformComponent* transform) {
 		using namespace DirectX::SimpleMath;
 
-		if (first_move_) {
-			position_x_ = GetMouseState().GetX();
-			first_move_ = false;
-		}
-		else {
-			const int dy = GetMouseState().GetX() - position_x_;
-			const float angle = static_cast<float>(dy) * mouse_sensitivity;
-			transform->SetEuler(transform->GetEuler() -= Vector3::UnitY * angle);
-			position_x_ = GetMouseState().GetX();
-		}
+		const int dx = GetMouseState().GetDeltaX();
+		const float angle = static_cast<float>(dx) * mouse_sensitivity;
+		transform->SetEuler(transform->GetEuler() -= Vector3::UnitY * angle);
 	}
 };

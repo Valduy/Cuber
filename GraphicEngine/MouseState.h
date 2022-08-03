@@ -11,24 +11,29 @@ public:
 		, y_(0)
 	{}
 
-	int GetX() const {
+	int GetDeltaX() const {
 		return x_;
 	}
 
-	int GetY() const {
+	int GetDeltaY() const {
 		return y_;
 	}
-
+	
 private:
 	int x_;
 	int y_;
 
-	void SetX(int x) {
+	void SetDeltaX(int x) {
 		x_ = x;
 	}
 
-	void SetY(int y) {
+	void SetDeltaY(int y) {
 		y_ = y;
+	}
+
+	void Reset() {
+		x_ = 0;
+		y_ = 0;
 	}
 };
 

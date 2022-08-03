@@ -96,6 +96,7 @@ void engine::Game::Update() {
 		system->Update(kDt);
 	}
 
+	window_.ResetInputs();
 	entity_manager_.Invalidate();
 }
 

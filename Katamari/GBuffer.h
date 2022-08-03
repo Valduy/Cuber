@@ -169,8 +169,8 @@ private:
 
 	D3D11_TEXTURE2D_DESC CreateTextureDescriptor(DXGI_FORMAT format) const {
 		return {
-			renderer_->GetWindow().GetWidth(),
-			renderer_->GetWindow().GetHeight(),
+			static_cast<UINT>(renderer_->GetWindow().GetWidth()),
+			static_cast<UINT>(renderer_->GetWindow().GetHeight()),
 			1,
 			1,
 			format,

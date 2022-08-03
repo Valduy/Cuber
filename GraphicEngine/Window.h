@@ -10,14 +10,15 @@ namespace graph {
 
     class Window {
     public:
-        HWND GetHandler();
-        unsigned int GetWidth() const;
-        unsigned int GetHeight() const;
-        float GetAspectRatio() const;
+        HWND GetHandler() const;
+        LONG GetWidth() const;
+        LONG GetHeight() const;
+        FLOAT GetAspectRatio() const;
         KeyboardState& GetKeyboardState();
         MouseState& GetMouseState();
+        void ResetInputs();
 
-        Window(HINSTANCE instance, LPCWSTR window_name, unsigned int width, unsigned int height);
+        Window(HINSTANCE instance, LPCWSTR window_name, LONG width, LONG height);
         void Show();
 
     private:
@@ -25,8 +26,8 @@ namespace graph {
         MouseState mouse_state_;
         HINSTANCE instance_;
         LPCWSTR window_name_;
-        unsigned int width_;
-        unsigned int height_;
+        LONG width_;
+        LONG height_;
         HWND handle_;        
 
         static LRESULT CALLBACK WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam);
@@ -34,6 +35,7 @@ namespace graph {
         HWND RegisterAndCreateWindow();
         void RegisterWindowClass();
         HWND CreateWindowInstance();
+        BOOL RegisterRowInputDevice();
     };
 
 } // namespace engine
