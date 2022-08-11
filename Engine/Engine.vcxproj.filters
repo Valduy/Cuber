@@ -25,14 +25,14 @@
     <Filter Include="Header Files\engine\Components">
       <UniqueIdentifier>{c6af7ccc-06ff-4abc-a80c-2bbc45c8d1a9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\engine\Utils">
-      <UniqueIdentifier>{d16ff02d-1a13-403e-8b9d-38ebe9b906e0}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\engine\Model">
       <UniqueIdentifier>{cb17dabd-e6e2-4702-91f4-4216e44972d0}</UniqueIdentifier>
     </Filter>
     <Filter Include="Shaders">
       <UniqueIdentifier>{278425b3-5466-47e4-acdf-128669afd752}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Utils">
+      <UniqueIdentifier>{d16ff02d-1a13-403e-8b9d-38ebe9b906e0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -64,7 +64,7 @@
       <Filter>Header Files\engine\Systems</Filter>
     </ClInclude>
     <ClInclude Include="DebugUtils.h">
-      <Filter>Header Files\engine\Utils</Filter>
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
     <ClInclude Include="Mesh.h">
       <Filter>Header Files\engine\Model</Filter>
@@ -76,7 +76,10 @@
       <Filter>Header Files\engine\Model</Filter>
     </ClInclude>
     <ClInclude Include="TextureLoader.h">
-      <Filter>Header Files\engine\Utils</Filter>
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="CoreErrors.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -87,6 +90,9 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Game.cpp">
+      <Filter>Source Files\engine</Filter>
+    </ClCompile>
+    <ClCompile Include="CoreErrors.cpp">
       <Filter>Source Files\engine</Filter>
     </ClCompile>
   </ItemGroup>

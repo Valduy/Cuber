@@ -202,15 +202,12 @@ private:
 		if (head_ == node) {
 			head_ = node->next;
 		}
-
 		if (tail_ == node) {
 			tail_ = tail_->prev;
 		}
-
 		if (node->prev != nullptr) {
 			node->prev->next = node->next;
 		}
-
 		if (node->next != nullptr) {
 			node->next->prev = node->prev;
 		}

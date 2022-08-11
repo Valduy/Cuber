@@ -298,7 +298,7 @@ ash::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 positio
 	using namespace DirectX::SimpleMath;
 	auto& plane = game.GetEntities().Create();
 	auto& plane_transform = AddTransform(plane, position);
-	constexpr int ratio = 5;
+	constexpr int ratio = 7;
 	constexpr int half_ratio = ratio / 2;
 	constexpr float tile_size = 2;
 	
@@ -316,100 +316,138 @@ ash::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 positio
 	return plane;
 }
 
-HRESULT LoadModels() {
+std::error_code LoadModels() {
 	using namespace engine;
-	HRESULT result;
+	std::error_code ec;
 
-	if (result = Model::Load(icosphere_model, "Content/Primitives/Icosphere.obj"); FAILED(result)) {
-		return result;
-	}
-	if (result = Model::Load(apricot_model, "Content/Apricot/Apricot.obj"); FAILED(result)) {
-		return result;
-	}
-	if (result = Model::Load(pear_model, "Content/Pear/Pear.obj"); FAILED(result)) {
-		return result;
-	}
-	if (result = Model::Load(statuette_model, "Content/Statuette/Statuette.obj"); FAILED(result)) {
-		return result;
-	}
-	if (result = Model::Load(apple_model, "Content/Apple/Apple.obj"); FAILED(result)) {
-		return result;
-	}
-	if (result = Model::Load(tile_model, "Content/Plane/Plane.obj"); FAILED(result)) {
-		return result;
+	ec = Model::LoadObj("Content/Primitives/Icosphere.obj", &icosphere_model);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
 	}
 
-	return result;
+	ec = Model::LoadObj("Content/Apricot/Apricot.obj", &apricot_model);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	ec = Model::LoadObj("Content/Pear/Pear.obj", &pear_model);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	ec = Model::LoadObj("Content/Statuette/Statuette.obj", &statuette_model);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	ec = Model::LoadObj("Content/Apple/Apple.obj", &apple_model);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	ec = Model::LoadObj("Content/Plane/Plane.obj", &tile_model);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	return ec;
 }
 
-HRESULT LoadDiffuse() {
+std::error_code LoadDiffuse() {
 	using namespace engine;
-	HRESULT result;
+	std::error_code ec;
 
-	if (result = TextureLoader::LoadWicSrgb(L"Content/Apricot/Apricot_Diffuse.png", &apricot_diffuse); FAILED(result)) {
-		return result;
-	}
-	if (result = TextureLoader::LoadWicSrgb(L"Content/Pear/Pear_Diffuse.jpg", &pear_diffuse); FAILED(result)) {
-		return result;
-	}
-	if (result = TextureLoader::LoadWicSrgb(L"Content/Statuette/Statuette_Diffuse.png", &statuette_diffuse); FAILED(result)) {
-		return result;
-	}
-	if (result = TextureLoader::LoadWicSrgb(L"Content/Apple/Apple_Diffuse.jpg", &apple_diffuse); FAILED(result)) {
-		return result;
-	}
-	if (result = TextureLoader::LoadWicSrgb(L"Content/Plane/Plane_Diffuse.jpg", &tile_diffuse); FAILED(result)) {
-		return result;
+	ec = TextureLoader::LoadWicSrgb(L"Content/Apricot/Apricot_Diffuse.png", &apricot_diffuse);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
 	}
 
-	return result;
+	ec = TextureLoader::LoadWicSrgb(L"Content/Pear/Pear_Diffuse.jpg", &pear_diffuse);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	ec = TextureLoader::LoadWicSrgb(L"Content/Statuette/Statuette_Diffuse.png", &statuette_diffuse);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	ec = TextureLoader::LoadWicSrgb(L"Content/Apple/Apple_Diffuse.jpg", &apple_diffuse);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	ec = TextureLoader::LoadWicSrgb(L"Content/Plane/Plane_Diffuse.jpg", &tile_diffuse);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	return ec;
 }
 
-HRESULT LoadNormal() {
+std::error_code LoadNormal() {
 	using namespace engine;
-	HRESULT result;
+	std::error_code ec;
 
-	if (result = TextureLoader::LoadWic(L"Content/Apricot/Apricot_Normal.png", &apricot_normal); FAILED(result)) {
-		return result;
-	}
-	if (result = TextureLoader::LoadWic(L"Content/Pear/Pear_Normal.jpg", &pear_normal); FAILED(result)) {
-		return result;
-	}
-	if (result = TextureLoader::LoadWic(L"Content/Statuette/Statuette_Normal.png", &statuette_normal); FAILED(result)) {
-		return result;
-	}
-	if (result = TextureLoader::LoadWic(L"Content/Apple/Apple_Normal.jpg", &apple_normal); FAILED(result)) {
-		return result;
-	}
-	if (result = TextureLoader::LoadWic(L"Content/Plane/Plane_Normal.png", &tile_normal); FAILED(result)) {
-		return result;
+	ec = TextureLoader::LoadWic(L"Content/Apricot/Apricot_Normal.png", &apricot_normal);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
 	}
 
-	return result;
+	ec = TextureLoader::LoadWic(L"Content/Pear/Pear_Normal.jpg", &pear_normal);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	ec = TextureLoader::LoadWic(L"Content/Statuette/Statuette_Normal.png", &statuette_normal);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	ec = TextureLoader::LoadWic(L"Content/Apple/Apple_Normal.jpg", &apple_normal);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	ec = TextureLoader::LoadWic(L"Content/Plane/Plane_Normal.png", &tile_normal);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
+	}
+
+	return ec;
 }
 
-HRESULT LoadSpecular() {
+std::error_code LoadSpecular() {
 	using namespace engine;
-	HRESULT result;
+	std::error_code ec;
 
-	if (result = TextureLoader::LoadWic(L"Content/Apricot/Apricot_Specular.png", &apricot_specular); FAILED(result)) {
-		return result;
+	ec = TextureLoader::LoadWic(L"Content/Apricot/Apricot_Specular.png", &apricot_specular);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
 	}
-	if (result = TextureLoader::LoadWic(L"Content/Pear/Pear_Specular.jpg", &pear_specular); FAILED(result)) {
-		return result;
+
+	ec = TextureLoader::LoadWic(L"Content/Pear/Pear_Specular.jpg", &pear_specular);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
 	}
-	if (result = TextureLoader::LoadWic(L"Content/Statuette/Statuette_Specular.png", &statuette_specular); FAILED(result)) {
-		return result;
+
+	ec = TextureLoader::LoadWic(L"Content/Statuette/Statuette_Specular.png", &statuette_specular);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
 	}
-	if (result = TextureLoader::LoadWic(L"Content/Apple/Apple_Specular.jpg", &apple_specular); FAILED(result)) {
-		return result;
+
+	ec = TextureLoader::LoadWic(L"Content/Apple/Apple_Specular.jpg", &apple_specular);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
 	}
+
 	// Use apple specular just because...
-	if (result = TextureLoader::LoadWic(L"Content/Apple/Apple_Specular.jpg", &tile_specular); FAILED(result)) {
-		return result;
+	ec = TextureLoader::LoadWic(L"Content/Apple/Apple_Specular.jpg", &tile_specular);
+	if (ec != CoreErrors::kSuccess) {
+		return ec;
 	} 
 
-	return result;
+	return ec;
 }
 
 void Release() {	
@@ -433,22 +471,23 @@ void Release() {
 }
 
 int main() {
-	HRESULT result;
+	if (HRESULT result = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED); FAILED(result)) {
+		return result;
+	}
 
-	if (result = CoInitializeEx(nullptr, COINITBASE_MULTITHREADED); FAILED(result)) {
-		return result;
+	std::error_code ec;
+
+	if (ec = LoadModels(); ec) {
+		return ec.value();
 	}
-	if (result = LoadModels(); FAILED(result)) {
-		return result;
+	if (ec = LoadDiffuse(); ec) {
+		return ec.value();
 	}
-	if (result = LoadDiffuse(); FAILED(result)) {
-		return result;
+	if (ec = LoadNormal(); ec) {
+		return ec.value();
 	}
-	if (result = LoadNormal(); FAILED(result)) {
-		return result;
-	}
-	if (result = LoadSpecular(); FAILED(result)) {
-		return result;
+	if (ec = LoadSpecular(); ec) {
+		return ec.value();
 	}
 
 	using namespace engine;

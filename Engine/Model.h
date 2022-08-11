@@ -1,13 +1,15 @@
 #pragma once
 
+#include "Mesh.h"
+#include "CoreErrors.h"
+
 #include <winerror.h>
+#include <optional>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 #include <iostream>
 #include <vector>
-
-#include "Mesh.h"
 
 namespace engine {
 
@@ -25,19 +27,20 @@ public:
 		: meshes_(meshes)
 	{}
 
-	static HRESULT Load(Model& model, const std::string& path) {
-		model.meshes_.clear();
+	static std::error_code LoadObj(const std::string& path, Model* model) {
 		Assimp::Importer importer;
 		const aiScene* scene = importer.ReadFile(
 			path, aiProcess_Triangulate | aiProcess_FlipUVs | aiProcess_FlipWindingOrder | aiProcess_CalcTangentSpace);
 
-		if (scene == nullptr || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || scene->mRootNode == nullptr) {
-			std::cout << importer.GetErrorString() << std::endl;
-			return E_FAIL;
+		if (scene == nullptr) {
+			return CoreErrors::kFailToLoadResource;
+		}
+		if (scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || scene->mRootNode == nullptr) {
+			return CoreErrors::kResourceIsInvalid;
 		}
 
-		ProcessNode(model, scene, scene->mRootNode);
-		return S_OK;
+		ProcessNode(*model, scene, scene->mRootNode);
+		return CoreErrors::kSuccess;
 	}
 
 private:
@@ -88,8 +91,7 @@ private:
 				indices.push_back(face.mIndices[j]);
 			}
 		}
-		
-		// TODO: now I load only diffuse texture, but i should load all necessary textures in future.
+
 		return Mesh(vertices, indices);
 	}
 
