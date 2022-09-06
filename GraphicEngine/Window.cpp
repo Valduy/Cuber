@@ -88,12 +88,10 @@ LRESULT graph::Window::WndProc(HWND hwnd, UINT msg, WPARAM wparam, LPARAM lparam
 			window->mouse_state_.SetDeltaY(raw->data.mouse.lLastY);
 		}
 		if (raw->header.dwType == RIM_TYPEKEYBOARD) {
-			if (raw->data.keyboard.Flags == RI_KEY_MAKE) {
-				const auto key = static_cast<unsigned int>(wparam);
+			if (raw->data.keyboard.Flags == RI_KEY_MAKE || raw->data.keyboard.Flags & RI_KEY_E0) {
 				window->keyboard_state_.AddPressedKey(raw->data.keyboard.VKey);
 			}
-			if (raw->data.keyboard.Flags == RI_KEY_BREAK) {
-				const auto key = static_cast<unsigned int>(wparam);
+			if (raw->data.keyboard.Flags & RI_KEY_BREAK) {
 				window->keyboard_state_.RemovePressedKey(raw->data.keyboard.VKey);
 			}
 		}
