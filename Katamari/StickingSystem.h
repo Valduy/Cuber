@@ -30,7 +30,7 @@ public:
 				const Vector3 scale = item_transform.GetScale();
 				const Quaternion rotation = item_transform.GetRotation();
 
-				katamari_transform.AddChild(item);
+				item.Get<TransformComponent>().SetParent(katamari);
 				item_transform.SetPosition(position);
 				item_transform.SetScale(scale);
 				item_transform.SetRotation(rotation);

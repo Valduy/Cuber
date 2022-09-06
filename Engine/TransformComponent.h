@@ -53,8 +53,9 @@ public:
 			parent_->Get<TransformComponent>().GetRotation().Inverse(quat);
 			local_rotation_ = quat * rotation;
 		}
-		else
+		else {
 			local_rotation_ = rotation;
+		}			
 	}
 
 	DirectX::SimpleMath::Vector3 GetEuler() const {
@@ -113,7 +114,18 @@ public:
 
 	ash::Entity& GetParent() const {
 		assert(parent_ != nullptr && "Entity hasn't parent.");
+
 		return *parent_;
+	}
+
+	void SetParent(ash::Entity& parent) {
+		assert(&this->GetOwner() != &parent && "Entity can't be parent for itself.");
+		assert(!parent.Get<TransformComponent>().IsChildOf(this->GetOwner()) && 
+			"Parent doesn't have to be a child.");
+		
+		MakeRoot();
+		parent_ = &parent;
+		parent.Get<TransformComponent>().children_.push_back(&this->GetOwner());
 	}
 
 	size_t GetChildrenCount() const {
@@ -127,47 +139,25 @@ public:
 		, local_position_(0.0f, 0.0f, 0.0f)
 	{}
 
+	~TransformComponent() {
+		BreakRelations();
+	}
+
 	void OnRemove() override {
-		if (IsHasParent()) {
-			parent_->Get<TransformComponent>().RemoveChild(GetOwner());
-		}
-
-		for (const auto child : children_) {
-			child->Get<TransformComponent>().parent_ = nullptr;
-		}
-
-		children_.clear();
+		BreakRelations();
 	}
 
-	bool IsHasParent() const {
-		return parent_ != nullptr;
+	bool IsRoot() const {
+		return parent_ == nullptr;
 	}
 
-	// TODO: child of this or child check!!!
-	void AddChild(ash::Entity& child) {
-		assert(&child != &GetOwner() && "Entity can't contain itself.");
-		assert(child.Contain<TransformComponent>() && "Child don't contain transform component.");
-		assert(!IsChildOf(child) && "Child shouldn't be parent.");
-
-		TransformComponent& transform_component = child.Get<TransformComponent>();
-		transform_component.parent_ = &GetOwner();
-		children_.push_back(&child);
-	}
-
-	bool RemoveChild(ash::Entity& child) {
-		assert(child.Contain<TransformComponent>() && "Child don't contain transform component.");
-		TransformComponent& transform_component = child.Get<TransformComponent>();
-		if (transform_component.parent_ != &GetOwner()) return false;
-
-		for (auto it = children_.begin(); it != children_.end(); ++it) {
-			if (*it == &child) {
-				children_.erase(it);
-				transform_component.parent_ = nullptr;
-				break;
-			}
+	void MakeRoot() {
+		if (parent_ != nullptr) {
+			auto& parent_transform = parent_->Get<TransformComponent>();
+			auto it = std::find(parent_transform.children_.begin(), parent_transform.children_.end(), &this->GetOwner());
+			parent_transform.children_.erase(it);
+			parent_ = nullptr;
 		}
-
-		return true;
 	}
 
 	bool IsChildOf(ash::Entity& entity) const {
@@ -197,6 +187,16 @@ private:
 	DirectX::SimpleMath::Quaternion local_rotation_;
 	DirectX::SimpleMath::Vector3 local_scale_;
 	DirectX::SimpleMath::Vector3 local_position_;
+
+	void BreakRelations() {
+		MakeRoot();
+
+		for (const auto child : children_) {
+			child->Get<TransformComponent>().parent_ = nullptr;
+		}
+
+		children_.clear();
+	}
 };
 	
 } // namespace engine

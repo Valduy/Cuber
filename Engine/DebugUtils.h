@@ -54,28 +54,28 @@ public:
 
 	static ash::Entity& CreateAxis(Game& game, float length) {
 		ash::Entity& axis = game.GetEntities().Create();
-		TransformComponent& transform = axis.Add<TransformComponent>();
+		axis.Add<TransformComponent>();
 
 		ash::Entity& x = CreateLine(
 			game,
 			{ 0.0f, 0.0f, 0.0f },
 			{ length, 0.0f, 0.0f },
 			{ 1.0f, 0.0f, 0.0f, 1.0f });
-		transform.AddChild(x);
+		x.Get<TransformComponent>().SetParent(axis);
 
 		ash::Entity& y = CreateLine(
 			game,
 			{ 0.0f, 0.0f, 0.0f },
 			{ 0.0f, length, 0.0f },
 			{ 0.0f, 1.0f, 0.0f, 1.0f });
-		transform.AddChild(y);
+		y.Get<TransformComponent>().SetParent(axis);
 
 		ash::Entity& z = CreateLine(
 			game,
 			{ 0.0f, 0.0f, 0.0f },
 			{ 0.0f, 0.0f, length },
 			{ 0.0f, 0.0f, 1.0f, 1.0f });
-		transform.AddChild(z);
+		z.Get<TransformComponent>().SetParent(axis);
 
 		return axis;
 	}
@@ -100,20 +100,21 @@ public:
 		DirectX::SimpleMath::Vector4 color)
 	{
 		ash::Entity& sphere = game.GetEntities().Create();
-		TransformComponent& sphere_transform = sphere.Add<TransformComponent>();
+		sphere.Add<TransformComponent>();
 
 		ash::Entity& yaw = CreateCircle(game, radius, color);
-		sphere_transform.AddChild(yaw);
+		auto& yaw_transform = yaw.Get<TransformComponent>();
+		yaw_transform.SetParent(sphere);
 
-		ash::Entity& pitch = CreateCircle(game, radius, color);
-		TransformComponent& pitch_transform = pitch.Get<TransformComponent>();
+		auto& pitch = CreateCircle(game, radius, color);
+		auto& pitch_transform = pitch.Get<TransformComponent>();
 		pitch_transform.SetEuler({ 0.0f, 90.0f, 0.0f });
-		sphere_transform.AddChild(pitch);
+		pitch_transform.SetParent(sphere);
 
-		ash::Entity& roll = CreateCircle(game, radius, color);
-		TransformComponent& roll_transform = roll.Get<TransformComponent>();
+		auto& roll = CreateCircle(game, radius, color);
+		auto& roll_transform = roll.Get<TransformComponent>();
 		roll_transform.SetEuler({ 90.0f, 0.0f, 0.0f });
-		sphere_transform.AddChild(roll);
+		roll_transform.SetParent(sphere);
 
 		return sphere;
 	}

@@ -3,12 +3,9 @@
 #include "Mesh.h"
 #include "CoreErrors.h"
 
-#include <winerror.h>
-#include <optional>
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <iostream>
 #include <vector>
 
 namespace engine {

@@ -19,9 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Shaders\**" CopyToOutputDirectory="PreserveNewest" />
   </ItemGroup>
-	<PropertyGroup Label="Globals">
+  <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
     <ProjectGuid>{f23d856b-156d-4b30-a51e-00375c8d63e7}</ProjectGuid>
@@ -152,9 +153,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="RenderComponent.h" />
     <ClInclude Include="RenderSystem.h" />
     <ClInclude Include="RotationComponent.h" />
@@ -164,12 +162,12 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\packages\directxtk_uwp.2022.3.1.1\build\native\directxtk_uwp.targets" Condition="Exists('..\packages\directxtk_uwp.2022.3.1.1\build\native\directxtk_uwp.targets')" />
+    <Import Project="..\packages\directxtk_uwp.2022.7.30.1\build\native\directxtk_uwp.targets" Condition="Exists('..\packages\directxtk_uwp.2022.7.30.1\build\native\directxtk_uwp.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\packages\directxtk_uwp.2022.3.1.1\build\native\directxtk_uwp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_uwp.2022.3.1.1\build\native\directxtk_uwp.targets'))" />
+    <Error Condition="!Exists('..\packages\directxtk_uwp.2022.7.30.1\build\native\directxtk_uwp.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\directxtk_uwp.2022.7.30.1\build\native\directxtk_uwp.targets'))" />
   </Target>
 </Project>

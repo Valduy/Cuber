@@ -29,13 +29,10 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="packages.config" />
     <None Include="Shaders\**">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="$(SolutionDir)Shaders\**">
-      <Filter>Shaders</Filter>
-    </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShapeComponent.h">

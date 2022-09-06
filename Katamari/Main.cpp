@@ -104,11 +104,10 @@ ash::Entity& AttachSphere(
 	DirectX::SimpleMath::Vector3 local_position = { 0.0f, 0.0f, 0.0f })
 {
 	using namespace engine;
-	auto& entity_transform = entity.Get<TransformComponent>();
 
 	auto& sphere = DebugUtils::CreateSphere(game, 1.0f, { 0.0f, 1.0f, 0.0f, 1.0f });
 	auto& sphere_transform = sphere.Get<TransformComponent>();
-	entity_transform.AddChild(sphere);
+	sphere_transform.SetParent(entity);
 	sphere_transform.SetLocalPosition(local_position);
 	sphere_transform.SetLocalScale({ radius, radius, radius });
 
@@ -203,7 +202,7 @@ ash::Entity& SpawnCamera(engine::Game& game) {
 
 ash::Entity& SpawnKatamari(engine::Game& game, ash::Entity& camera) {
 	auto& apple = game.GetEntities().Create();
-	AddTransform(apple, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
+	auto& apple_transform = AddTransform(apple, { 0.0f, 0.0f, 0.0f }, { 0.0f, 0.0f, 0.0f }, { 1.0f, 1.0f, 1.0f });
 	AttachModel(apple, apple_model);
 	AttachMaterial(apple, { 0.1f, 32.0f, 0.6f });
 	AttachDnsMaps(apple, apple_diffuse, apple_normal, apple_specular);
@@ -217,9 +216,13 @@ ash::Entity& SpawnKatamari(engine::Game& game, ash::Entity& camera) {
 
 	auto& katamari_transform = katamari.Add<engine::TransformComponent>();
 	katamari_transform.SetPosition({ -9.0f, 0.0f, 0.0f });
-	katamari_transform.AddChild(apple);
-	katamari_transform.AddChild(camera);
-	camera.Get<engine::TransformComponent>().SetLocalPosition({ 0.0, 5.0, -10.0 });
+
+	apple_transform.SetParent(katamari);
+
+	auto& camera_transform = camera.Get<engine::TransformComponent>();
+	camera_transform.SetParent(katamari);
+	camera_transform.SetLocalPosition({ 0.0, 5.0, -10.0 });
+
 	return katamari;
 }
 
@@ -242,14 +245,14 @@ ash::Entity& SpawnDirectionLight(
 	DirectX::SimpleMath::Vector3 color)
 {
 	auto& light = game.GetEntities().Create();
-	auto& light_transform = light.Add<engine::TransformComponent>();
-	light_transform.SetPosition(position);
+	auto& light_thransform = light.Add<engine::TransformComponent>();
+	light_thransform.SetPosition(position);
 
 	auto& axis = engine::DebugUtils::CreateAxis(game, 1);
-	light_transform.AddChild(axis);
+	axis.Get<engine::TransformComponent>().SetParent(light);
 
 	auto& sphere = engine::DebugUtils::CreateSphere(game, 1, { 1.0f, 1.0f, 1.0f, 0.0f });
-	light_transform.AddChild(sphere);
+	sphere.Get<engine::TransformComponent>().SetParent(light);
 
 	auto& line = engine::DebugUtils::CreateLine(game, position, position + direction, { 1.0f, 1.0f, 0.0f, 0.0f });
 
@@ -275,7 +278,7 @@ ash::Entity& SpawnPointLight(
 	point_light.fade_radius = fade_radius;
 
 	auto& sphere = engine::DebugUtils::CreateSphere(game, 1, { 1.0f, 1.0f, 1.0f, 0.0f });
-	light_transform.AddChild(sphere);
+	sphere.Get<engine::TransformComponent>().SetParent(light);
 
 	return light;
 }
@@ -297,7 +300,7 @@ ash::Entity& SpawnTile(
 ash::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 position) {
 	using namespace DirectX::SimpleMath;
 	auto& plane = game.GetEntities().Create();
-	auto& plane_transform = AddTransform(plane, position);
+	AddTransform(plane, position);
 	constexpr int ratio = 7;
 	constexpr int half_ratio = ratio / 2;
 	constexpr float tile_size = 2;
@@ -308,7 +311,7 @@ ash::Entity& SpawnPlane(engine::Game& game, DirectX::SimpleMath::Vector3 positio
 			const float local_z = tile_size * (j - half_ratio) * 2;
 			auto& tile = SpawnTile(game, {}, { tile_size, 1.0f, tile_size });
 			auto& tile_transform = tile.Get<engine::TransformComponent>();
-			plane_transform.AddChild(tile);
+			tile_transform.SetParent(plane);
 			tile_transform.SetLocalPosition(Vector3{ local_x, 0, local_z });
 		}		
 	}

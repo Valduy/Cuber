@@ -32,18 +32,13 @@ ash::Entity& CreatePlanet(
 	transform.SetLocalScale(local_scale);
 
 	ash::Entity& axis = engine::DebugUtils::CreateAxis(game, 3.0f);
-	planet.Get<engine::TransformComponent>().AddChild(axis);
+	axis.Get<engine::TransformComponent>().SetParent(planet);
 
 	RotationComponent& rotation = planet.Add<RotationComponent>();
 	if (rotation_axis.Length() != 0) rotation_axis.Normalize();
 	rotation.axis = rotation_axis;
 	rotation.speed = speed;
 	return planet;
-}
-
-void SetParent(ash::Entity& parent, ash::Entity& child) {
-	engine::TransformComponent& parent_transform = parent.Get<engine::TransformComponent>();
-	parent_transform.AddChild(child);
 }
 
 int main() {
@@ -82,14 +77,14 @@ int main() {
 		Vector3(10.0f, 0.0f, 0.0f), 
 		Vector3(0.75f, 0.75f, 0.75f), 
 		2.0f);
-	SetParent(planet1, planet2);
+	planet2.Get<engine::TransformComponent>().SetParent(planet1);
 
 	ash::Entity& planet3 = CreatePlanet(
 		game,
 		Vector3(5.0f, 0.0f, -5.0f),
 		Vector3(0.75f, 0.75f, 0.75f),
 		2.0f);
-	SetParent(planet2, planet3);
+	planet3.Get<engine::TransformComponent>().SetParent(planet2);
 
 	ash::Entity& planet4 = CreatePlanet(
 		game,
@@ -97,21 +92,21 @@ int main() {
 		Vector3(0.75f, 0.75f, 0.75f),
 		2.0f,
 		Vector3(1.0f, 0.0f, 0.0f));
-	SetParent(planet3, planet4);
+	planet4.Get<engine::TransformComponent>().SetParent(planet3);
 
 	ash::Entity& planet5 = CreatePlanet(
 		game,
 		Vector3(0.0f, 2.0f, 0.0f),
 		Vector3(0.75f, 0.75f, 0.75f),
 		2.0f);
-	SetParent(planet4, planet5);
+	planet5.Get<engine::TransformComponent>().SetParent(planet4);
 
 	ash::Entity& planet6 = CreatePlanet(
 		game,
 		Vector3(30.0f, 0.0f, 10.0f),
 		Vector3(0.75f, 0.75f, 0.75f),
 		3.0f);
-	SetParent(planet1, planet6);
+	planet6.Get<engine::TransformComponent>().SetParent(planet1);
 	
 	ash::Entity& planet7 = CreatePlanet(
 		game,
@@ -119,7 +114,7 @@ int main() {
 		Vector3(0.75f, 0.75f, 0.75f),
 		1.0f,
 		Vector3(1.0f, 0.0f, 0.0f));
-	SetParent(planet6, planet7);
+	planet7.Get<engine::TransformComponent>().SetParent(planet6);
 
 	ash::Entity& planet8 = CreatePlanet(
 		game,
@@ -127,7 +122,7 @@ int main() {
 		Vector3(0.5f, 0.5f, 0.5f),
 		2.0f,
 		Vector3(0.0f, 1.0f, 0.0f));
-	SetParent(planet7, planet8);	
+	planet8.Get<engine::TransformComponent>().SetParent(planet7);
 
 	game.Run();
 	return 0;

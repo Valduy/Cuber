@@ -26,7 +26,7 @@ public:
 			image.GetMetadata(),
 			D3D11_USAGE_DEFAULT,
 			D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET,
-			0, 0, false,
+			0, 0, DirectX::CREATETEX_FLAGS::CREATETEX_DEFAULT,
 			reinterpret_cast<ID3D11Resource**>(texture_.GetAddressOf()));
 
 		if (FAILED(result)) {

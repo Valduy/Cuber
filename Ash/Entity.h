@@ -1,11 +1,12 @@
 #pragma once
 
-#include <cassert>
-#include <functional>
-#include <map>
 #include "../Utils/Delegate.h"
 #include "../Utils/Event.h"
 #include "Type.h"
+
+#include <cassert>
+#include <functional>
+#include <map>
 
 namespace ash {
 
@@ -31,6 +32,8 @@ public:
 		ComponentBase()
 			: owner_(nullptr)
 		{}
+
+		ComponentBase(const ComponentBase& other) = delete;
 
 		virtual ~ComponentBase() = default;
 
@@ -127,6 +130,7 @@ public:
 
 private:
 	std::map<Type::Id, ComponentBase*> components_map_;
+
 };
 
 } // namespace ash
