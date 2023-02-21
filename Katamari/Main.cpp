@@ -169,7 +169,7 @@ void SpawnItems(engine::Game& game) {
 	constexpr int max = 2 * radius;
 	std::random_device dev;
 	std::mt19937 rng(dev());
-	const std::uniform_int_distribution<std::mt19937::result_type> dist(0, max);
+	std::uniform_int_distribution<std::mt19937::result_type> dist(0, max);
 
 	constexpr int statuette_count = 5;
 	for (int i = 0; i < statuette_count; ++i) {

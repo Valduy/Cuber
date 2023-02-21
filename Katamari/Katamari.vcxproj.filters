@@ -152,9 +152,6 @@
     <None Include="Shaders\PointLight.hlsl">
       <Filter>Shaders</Filter>
     </None>
-    <None Include="Shaders\ShadowMapDebugShader.hlsl">
-      <Filter>Shaders</Filter>
-    </None>
     <None Include="Shaders\ShadowMapShader.hlsl">
       <Filter>Shaders</Filter>
     </None>
